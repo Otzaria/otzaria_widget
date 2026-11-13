@@ -25,13 +25,14 @@ $pkgDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $root   = Split-Path -Parent $pkgDir
 $kits   = 'C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64'
 $artifacts = Join-Path $root 'artifacts'
-$layout = Join-Path $artifacts 'layout'
+$layout = Join-Path $artifacts 'layout'   # build.ps1 may fall back to another folder if this one is locked (see artifacts\layout.txt)
 
 if (-not $SkipBuild) {
   if ($Version) { & (Join-Path $pkgDir 'build.ps1') -Version $Version -Publisher $Publisher }
   else { & (Join-Path $pkgDir 'build.ps1') -Publisher $Publisher }
 }
 $Version = (Get-Content (Join-Path $artifacts 'version.txt') -Raw).Trim()
+$layout = (Get-Content (Join-Path $artifacts 'layout.txt') -Raw).Trim()
 
 $msix = Join-Path $artifacts "Otzaria.Widget_${Version}_x64.msix"
 $cer  = Join-Path $artifacts 'OtzariaDev.cer'
