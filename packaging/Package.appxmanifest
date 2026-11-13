@@ -253,8 +253,9 @@
 
         <!-- 3) otzaria-widget://settings : lets a card button (Action.OpenUrl) start the settings window even when the
                 host only allows OpenUrl (unauthenticated user context). The exe receives the URI as its first argument.
-             VERIFIED: without the explicit Executable/EntryPoint on this extension the shell activation fails (AppModel-Runtime event 203, 0x80070057,
-             ShellExecute "Access is denied"); with them the exe starts with the argument "otzaria-widget://settings/". -->
+                NOT RELIABLE on the dev machine: protocol activation of this loose-registered package worked once (with the
+                explicit Executable/EntryPoint below) and then failed again (AppModel-Runtime event 203, 0x80070057).
+                Cards use the Action.Execute verb "settings" (provider starts the exe, verified with run-hostsim.ps1) wherever Execute works. -->
         <uap:Extension Category="windows.protocol" Executable="OtzariaWidget.exe" EntryPoint="Windows.FullTrustApplication">
           <uap:Protocol Name="otzaria-widget">
             <uap:DisplayName>ווידג'ט אוצריא</uap:DisplayName>

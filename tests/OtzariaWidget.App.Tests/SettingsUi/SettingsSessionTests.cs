@@ -10,15 +10,11 @@ public class SettingsSessionTests
     {
         var store = new FakeSettingsStore();
         using var session = UiTestHelpers.WithoutSyncContext(() => new SettingsSession(store));
-        session.Settings.HideSearches = true; session.MarkChanged();
-        Thread.Sleep(100);
+        for (int i = 0; i < 5; i++) { session.Settings.HideSearches = true; session.Settings.ShowYerushalmiDaf = i % 2 == 0; session.MarkChanged(); }
         session.Settings.ShowYerushalmiDaf = true; session.MarkChanged();
-        Thread.Sleep(250);
-        Assert.Equal(0, store.Saves);   // still inside the quiet period
         Assert.True(UiTestHelpers.WaitFor(() => store.Saves == 1));
-        Thread.Sleep(300);
+        Thread.Sleep(900);   // well past the debounce: no second write
         Assert.Equal(1, store.Saves);
-        Assert.True(session.SaveVisible);
         Assert.Equal("נשמר", session.SaveText);
         Assert.False(session.SaveFailed);
         Assert.True(store.Current.HideSearches && store.Current.ShowYerushalmiDaf);

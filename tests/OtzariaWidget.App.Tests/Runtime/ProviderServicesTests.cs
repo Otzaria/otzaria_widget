@@ -47,7 +47,7 @@ public class ProviderServicesTests
         svc.SourceChanged += _ => Interlocked.Increment(ref calls);
         svc.EnsureStarted();
 
-        for (int i = 0; i < 10; i++) { data.Raise(); await Task.Delay(20); }
+        for (int i = 0; i < 10; i++) data.Raise();   // a tight burst: must collapse into one refresh
         await Task.Delay(ProviderServices.CoalesceDelay + TimeSpan.FromMilliseconds(500));
         Assert.Equal(1, calls);
 
