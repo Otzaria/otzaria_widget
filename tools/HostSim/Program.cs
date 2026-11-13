@@ -10,7 +10,7 @@
 //   packaging\run-hostsim.ps1   (Invoke-CommandInDesktopPackage)
 //
 // Widget ids are "hostsim-*": the provider will call WidgetManager.UpdateWidget for them and the real Widgets service rejects/ignores
-// unknown ids (see docs\research\host-simulation.md); nothing is created on the board.
+// unknown ids (verified: UpdateWidget returns normally and GetWidgetInfos still reports 0 widgets afterwards); nothing is created on the board.
 using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
