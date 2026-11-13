@@ -40,7 +40,7 @@ if ($p) {
   # in the real %LOCALAPPDATA% (an unpackaged dev run creates it): so the log is in one of these two places.
   Write-Host "Provider log: $env:LOCALAPPDATA\OtzariaWidget\provider.log"
   Write-Host "          or: $env:LOCALAPPDATA\Packages\$($p.PackageFamilyName)\LocalCache\Local\OtzariaWidget\provider.log"
-  Write-Host 'Drive the provider without the board:  packagingun-hostsim.ps1   (fake Widgets host inside the package identity)'
+  Write-Host 'Drive the provider without the board:  packaging/run-hostsim.ps1   (fake Widgets host inside the package identity)'
 
   Write-Host 'Open the Widgets board (Win+W) > "+" to add the widgets. Pinned widgets survive re-registration.' -ForegroundColor Green
 }
