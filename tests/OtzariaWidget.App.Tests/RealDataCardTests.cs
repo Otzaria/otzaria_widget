@@ -66,6 +66,25 @@ public sealed class RealDataCardTests : IDisposable
     }
 
     [Fact]
+    public void Every_link_in_every_real_card_is_statically_valid_and_the_city_resolves()
+    {
+        if (_snap is null) return;
+        foreach (var kind in WidgetKinds.All)
+            foreach (var size in CardExpander.Sizes)
+                foreach (var mode in Enum.GetValues<LinkOpenMode>())
+                {
+                    var ctx = new CardContext
+                    {
+                        Kind = kind, Size = CardSizes.Parse(size), Settings = new WidgetAppSettings { LinkMode = mode }, Calendar = _cal,
+                        Now = DateTimeOffset.Now, Snapshot = _snap, State = new WidgetCustomState(),
+                    };
+                    LinkValidationTests.AssertLinksAreValid(CardBuilders.BuildSafe(ctx).DataJson, mode == LinkOpenMode.ProviderLaunch, $"REAL {kind}/{size}/{mode}");
+                }
+        // Otzaria's own stored city name must be a known city (otherwise every calendar widget silently shows Jerusalem)
+        Assert.NotNull(_cal.FindCity(_snap.Preferences.SelectedCity));
+    }
+
+    [Fact]
     public void Real_recent_books_show_real_titles_and_deep_links()
     {
         if (_snap is null || _snap.RecentBooks.Count == 0) return;
