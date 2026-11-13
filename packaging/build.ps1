@@ -31,7 +31,11 @@ param(
 $ErrorActionPreference = 'Stop'
 $pkgDir   = Split-Path -Parent $MyInvocation.MyCommand.Path
 $root     = Split-Path -Parent $pkgDir
-$kits     = 'C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x64'
+# Windows SDK tools (makepri / makeappx / signtool): newest installed SDK that has them (no hard-coded SDK version)
+$kits = @(Get-ChildItem (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\bin') -Directory -ErrorAction SilentlyContinue |
+    Where-Object { $_.Name -match '^10\.' } | Sort-Object { [version]$_.Name } -Descending |
+    ForEach-Object { Join-Path $_.FullName 'x64' } | Where-Object { Test-Path (Join-Path $_ 'makepri.exe') })[0]
+if (-not $kits) { throw 'Windows SDK (makepri.exe / makeappx.exe / signtool.exe) not found: install the Windows 10/11 SDK' }
 $artifacts = Join-Path $root 'artifacts'
 $layout   = Join-Path $artifacts 'layout'
 $project  = Join-Path $root 'src\OtzariaWidget.App\OtzariaWidget.App.csproj'
