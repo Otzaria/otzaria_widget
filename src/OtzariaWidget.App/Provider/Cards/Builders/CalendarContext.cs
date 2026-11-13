@@ -25,7 +25,8 @@ internal static class CalendarContext
     public static IReadOnlyList<string> ZmanimIds(CardContext ctx)
     {
         if (ctx.State.ZmanimMode == "custom" && ctx.State.ZmanimIds.Count > 0) return ctx.State.ZmanimIds;
-        if (ctx.Settings.ZmanimOverride is { Count: > 0 } o) return o;
+        // An override (even an empty one: the settings UI says "no times selected - the widget shows none") wins over Otzaria's own list.
+        if (ctx.Settings.ZmanimOverride is { } o) return o;
         if (ctx.Prefs.EnabledZmanim.Count > 0) return ctx.Prefs.EnabledZmanim;
         return ctx.Calendar.DefaultEnabledZmanim;
     }

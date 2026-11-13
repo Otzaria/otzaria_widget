@@ -249,6 +249,41 @@ internal static unsafe class Program
             Action(zmanim, "settings", "{}"); Pause(3000);
             Delete(zmanim.Id, "{}"); Pause(500);
         }
+        else if (scenario is "all")
+        {
+            // one widget of every kind in the catalog (sizes mixed), all visible; hold them for --hold=<seconds> (resource sampling),
+            // optionally flip a widget setting through settings.json (--mutate-settings) to prove the refresh reaches the active widgets
+            int hold = int.TryParse(args.FirstOrDefault(a => a.StartsWith("--hold=", StringComparison.Ordinal))?[7..], out var h) ? h : 5;
+            var all = new[]
+            {
+                new Ctx("hostsim-all-recent", "RecentBooks", Medium, true), new Ctx("hostsim-all-bookmarks", "Bookmarks", Large, true),
+                new Ctx("hostsim-all-sz", "ShamorZachor", Medium, true), new Ctx("hostsim-all-zmanim", "Zmanim", Large, true),
+                new Ctx("hostsim-all-calendar", "HebrewCalendar", Small, true), new Ctx("hostsim-all-dashboard", "Dashboard", Large, true),
+            };
+            foreach (var c in all) { CreateWidget(c); Pause(400); Activate(c); Pause(400); }
+            // every size of every kind (the host resizes widgets in place)
+            foreach (var c in all) foreach (var sz in new[] { Small, Medium, Large }) { ContextChanged(c with { Size = sz }); Pause(150); }
+            foreach (var c in all) { Action(c, "refresh", "{}"); Pause(150); }
+            if (args.Contains("--mutate-settings"))
+            {
+                var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "OtzariaWidget");
+                var file = Path.Combine(dir, "settings.json");
+                bool existed = File.Exists(file);
+                var backup = existed ? File.ReadAllText(file) : null;
+                try
+                {
+                    Directory.CreateDirectory(dir);
+                    Say("settings.json: CityOverride=ניו יורק, TwelveHourClockOverride=true, LinkMode=ProviderLaunch, DayTransitionOverride=tzais");
+                    File.WriteAllText(file, "{\"CityOverride\":\"ניו יורק\",\"TwelveHourClockOverride\":true,\"LinkMode\":\"ProviderLaunch\",\"DayTransitionOverride\":\"tzais\"}", new UTF8Encoding(false));
+                    Pause(6000);   // 300 ms settings debounce + 400 ms coalesce + render
+                }
+                finally { if (backup is null) File.Delete(file); else File.WriteAllText(file, backup, new UTF8Encoding(false)); }
+                Say("settings.json restored");
+                Pause(6000);
+            }
+            Pause(hold * 1000);
+            foreach (var c in all) { Delete(c.Id, "{}"); Pause(200); }
+        }
         else if (scenario is "keep")
         {
             // leave one widget pinned (from the provider's point of view) to prove the process stays alive past the idle window
