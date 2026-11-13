@@ -1,0 +1,109 @@
+name: Build & Release
+
+on:
+  push:
+    branches: [master]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore OtzariaWidget.sln
+
+      - name: Run tests
+        run: dotnet test OtzariaWidget.sln -c Release --no-restore --logger "console;verbosity=minimal"
+
+      - name: Generate version
+        id: version
+        shell: pwsh
+        run: |
+          $d = Get-Date -Format 'yyyy.MMdd.HHmm'
+          $sha = "${{ github.sha }}".Substring(0, 7)
+          $tag = "v$d"
+          "version=$d" >> $env:GITHUB_OUTPUT
+          "tag=$tag"   >> $env:GITHUB_OUTPUT
+          "sha=$sha"   >> $env:GITHUB_OUTPUT
+
+      - name: Publish app
+        run: >
+          dotnet publish src/OtzariaWidget.App/OtzariaWidget.App.csproj
+          -c Release -r win-x64 -o artifacts/layout --nologo
+
+      - name: Copy packaging assets into layout
+        shell: pwsh
+        run: |
+          $layout = 'artifacts/layout'
+          foreach ($d in 'Assets', 'ProviderAssets') {
+            $dst = Join-Path $layout $d
+            if (Test-Path $dst) { Remove-Item $dst -Recurse -Force }
+            Copy-Item "packaging/$d" $dst -Recurse
+          }
+          $tplDst = Join-Path $layout 'Templates'
+          New-Item -ItemType Directory -Force $tplDst | Out-Null
+          Copy-Item 'src/OtzariaWidget.App/Templates/*.json' $tplDst -Force
+          Copy-Item 'THIRD-PARTY-NOTICES.md' (Join-Path $layout 'THIRD-PARTY-NOTICES.md') -Force
+
+      - name: Write AppxManifest
+        shell: pwsh
+        run: |
+          $version = '${{ steps.version.outputs.version }}'.Replace('.', '.')
+          $parts = '${{ steps.version.outputs.version }}'.Split('.')
+          $appxVer = "$($parts[0]).$($parts[1]).$($parts[2]).0"
+          $manifest = (Get-Content 'packaging/Package.appxmanifest' -Raw -Encoding UTF8)
+          $manifest = $manifest.Replace('@VERSION@', $appxVer).Replace('@PUBLISHER@', 'CN=OtzariaDev')
+          Set-Content 'artifacts/layout/AppxManifest.xml' $manifest -Encoding UTF8
+
+      - name: Generate resources.pri (makepri)
+        shell: pwsh
+        run: |
+          $kits = @(Get-ChildItem "${env:ProgramFiles(x86)}/Windows Kits/10/bin" -Directory -ErrorAction SilentlyContinue |
+              Where-Object { $_.Name -match '^10\.' } |
+              Sort-Object { [version]$_.Name } -Descending |
+              ForEach-Object { Join-Path $_.FullName 'x64' } |
+              Where-Object { Test-Path (Join-Path $_ 'makepri.exe') })[0]
+          if (-not $kits) { Write-Warning 'makepri not found, skipping resources.pri'; return }
+          $layout = 'artifacts/layout'
+          $cfg = 'artifacts/priconfig.xml'
+          & "$kits/makepri.exe" createconfig /cf $cfg /dq en-US /pv 10.0.0 /o | Out-Null
+          (Get-Content $cfg -Raw) -replace '<autoResourcePackage[^>]*/>', '' | Set-Content $cfg -Encoding UTF8
+          & "$kits/makepri.exe" new /pr $layout /cf $cfg /mn "$layout/AppxManifest.xml" /of "$layout/resources.pri" /o | Out-Null
+
+      - name: Clean layout
+        shell: pwsh
+        run: |
+          $layout = 'artifacts/layout'
+          Get-ChildItem $layout -Recurse -Include '*.pdb' -File | Remove-Item -Force
+          Remove-Item "$layout/createdump.exe" -Force -ErrorAction SilentlyContinue
+          Get-ChildItem $layout -Directory |
+            Where-Object { $_.Name -match '^[a-z]{2,3}(-[A-Za-z]{2,4})?$' -and
+              -not (Get-ChildItem $_.FullName -Recurse -File | Where-Object { $_.Name -notlike '*.resources.dll' }) } |
+            Remove-Item -Recurse -Force
+
+      - name: Zip layout
+        shell: pwsh
+        run: |
+          Compress-Archive -Path 'artifacts/layout/*' -DestinationPath "artifacts/OtzariaWidget-${{ steps.version.outputs.version }}-x64.zip"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: "Otzaria Widget ${{ steps.version.outputs.version }} (${{ steps.version.outputs.sha }})"
+          body: |
+            Automated build from commit ${{ github.sha }}.
+
+            **Install:** extract the zip, then register with `Add-AppxPackage -Register <path>\AppxManifest.xml` (Developer Mode), or use `packaging\make-msix.ps1` locally to create a signed MSIX.
+          files: artifacts/OtzariaWidget-${{ steps.version.outputs.version }}-x64.zip
+          generate_release_notes: true
