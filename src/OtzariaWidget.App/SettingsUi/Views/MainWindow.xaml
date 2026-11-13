@@ -1,0 +1,83 @@
+<Window x:Class="OtzariaWidget.App.SettingsUi.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:OtzariaWidget.App.SettingsUi.ViewModels"
+        xmlns:views="clr-namespace:OtzariaWidget.App.SettingsUi.Views"
+        Title="הגדרות ווידג'ט אוצריא"
+        Width="1100" Height="760" MinWidth="880" MinHeight="620"
+        FlowDirection="RightToLeft"
+        Language="he-IL"
+        FontFamily="Segoe UI Variable Text, Segoe UI"
+        UseLayoutRounding="True" TextOptions.TextFormattingMode="Ideal"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:StatusViewModel}"><views:StatusPage/></DataTemplate>
+        <DataTemplate DataType="{x:Type vm:DataLocationsViewModel}"><views:DataLocationsPage/></DataTemplate>
+        <DataTemplate DataType="{x:Type vm:TimesViewModel}"><views:TimesPage/></DataTemplate>
+        <DataTemplate DataType="{x:Type vm:DisplayViewModel}"><views:DisplayPage/></DataTemplate>
+        <DataTemplate DataType="{x:Type vm:AboutViewModel}"><views:AboutPage/></DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="212"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Navigation pane (right side in RTL) -->
+        <Grid Grid.Column="0" Margin="8,12,8,12">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Margin="12,4,12,16">
+                <TextBlock Text="אוצריא" FontSize="22" FontWeight="SemiBold"
+                           Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                <TextBlock Text="הגדרות הווידג'ט" Style="{StaticResource Secondary}"/>
+            </StackPanel>
+
+            <ListBox Grid.Row="1" x:Name="Nav" ItemsSource="{Binding Pages}" SelectedItem="{Binding SelectedPage, Mode=TwoWay}"
+                     BorderThickness="0" Background="Transparent"
+                     HorizontalContentAlignment="Stretch" ItemContainerStyle="{StaticResource ListItemStyle}"
+                     AutomationProperties.Name="ניווט">
+                <ListBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:NavItem}">
+                        <StackPanel Orientation="Horizontal" Margin="4,10">
+                            <TextBlock Text="{Binding Glyph}" Style="{StaticResource IconText}" FontSize="16" Width="26"/>
+                            <TextBlock Text="{Binding Title}" FontSize="14" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <!-- subtle auto-save indicator -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="16,8"
+                        Visibility="{Binding Session.SaveVisible, Converter={StaticResource BoolToVis}}">
+                <TextBlock x:Name="SaveGlyph" Style="{StaticResource IconText}" FontSize="13" Text="&#xE73E;" Margin="0,0,0,0"
+                           Foreground="{StaticResource StateOkBrush}"/>
+                <TextBlock Text="{Binding Session.SaveText}" Style="{StaticResource Secondary}" Margin="6,0,0,0" VerticalAlignment="Center"
+                           x:Name="SaveLabel"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Content -->
+        <Border Grid.Column="1" Margin="0,8,8,8" CornerRadius="8"
+                Background="{DynamicResource LayerFillColorDefaultBrush}"
+                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Border Grid.Row="0" Style="{StaticResource Banner}" Margin="24,16,24,0"
+                        Visibility="{Binding HasBanner, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="{Binding Session.LoadError}" Style="{StaticResource StateText}" Foreground="{StaticResource StateWarningBrush}"/>
+                </Border>
+                <ContentControl Grid.Row="1" Content="{Binding SelectedPage.Page}" IsTabStop="False"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
