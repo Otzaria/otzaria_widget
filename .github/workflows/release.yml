@@ -32,9 +32,9 @@ jobs:
           $d = Get-Date -Format 'yyyy.MMdd.HHmm'
           $sha = "${{ github.sha }}".Substring(0, 7)
           $tag = "v$d"
-          "version=$d" >> $env:GITHUB_OUTPUT
-          "tag=$tag"   >> $env:GITHUB_OUTPUT
-          "sha=$sha"   >> $env:GITHUB_OUTPUT
+          "version=$d"   >> $env:GITHUB_OUTPUT
+          "tag=$tag"     >> $env:GITHUB_OUTPUT
+          "sha=$sha"     >> $env:GITHUB_OUTPUT
 
       - name: Publish app
         run: >
@@ -58,7 +58,6 @@ jobs:
       - name: Write AppxManifest
         shell: pwsh
         run: |
-          $version = '${{ steps.version.outputs.version }}'.Replace('.', '.')
           $parts = '${{ steps.version.outputs.version }}'.Split('.')
           $appxVer = "$($parts[0]).$($parts[1]).$($parts[2]).0"
           $manifest = (Get-Content 'packaging/Package.appxmanifest' -Raw -Encoding UTF8)
@@ -73,7 +72,7 @@ jobs:
               Sort-Object { [version]$_.Name } -Descending |
               ForEach-Object { Join-Path $_.FullName 'x64' } |
               Where-Object { Test-Path (Join-Path $_ 'makepri.exe') })[0]
-          if (-not $kits) { Write-Warning 'makepri not found, skipping resources.pri'; return }
+          if (-not $kits) { throw 'makepri.exe not found on the runner' }
           $layout = 'artifacts/layout'
           $cfg = 'artifacts/priconfig.xml'
           & "$kits/makepri.exe" createconfig /cf $cfg /dq en-US /pv 10.0.0 /o | Out-Null
@@ -91,10 +90,64 @@ jobs:
               -not (Get-ChildItem $_.FullName -Recurse -File | Where-Object { $_.Name -notlike '*.resources.dll' }) } |
             Remove-Item -Recurse -Force
 
-      - name: Zip layout
+      - name: Create self-signed certificate
         shell: pwsh
         run: |
-          Compress-Archive -Path 'artifacts/layout/*' -DestinationPath "artifacts/OtzariaWidget-${{ steps.version.outputs.version }}-x64.zip"
+          $cert = New-SelfSignedCertificate -Type Custom -Subject 'CN=OtzariaDev' `
+            -KeyUsage DigitalSignature -FriendlyName 'Otzaria CI signing' `
+            -CertStoreLocation Cert:\CurrentUser\My -KeyExportPolicy Exportable `
+            -TextExtension @('2.5.29.37={text}1.3.6.1.5.5.7.3.3', '2.5.29.19={text}') `
+            -NotAfter (Get-Date).AddYears(3)
+          "thumbprint=$($cert.Thumbprint)" >> $env:GITHUB_OUTPUT
+          Export-Certificate -Cert $cert -FilePath artifacts/OtzariaDev.cer -Force | Out-Null
+        id: cert
+
+      - name: Build MSIX (makeappx + signtool)
+        shell: pwsh
+        run: |
+          $kits = @(Get-ChildItem "${env:ProgramFiles(x86)}/Windows Kits/10/bin" -Directory -ErrorAction SilentlyContinue |
+              Where-Object { $_.Name -match '^10\.' } |
+              Sort-Object { [version]$_.Name } -Descending |
+              ForEach-Object { Join-Path $_.FullName 'x64' } |
+              Where-Object { Test-Path (Join-Path $_ 'makeappx.exe') })[0]
+          if (-not $kits) { throw 'makeappx.exe not found on the runner' }
+          $version = '${{ steps.version.outputs.version }}'
+          $msix = "artifacts/Otzaria.Widget_${version}_x64.msix"
+          & "$kits/makeappx.exe" pack /d artifacts/layout /p $msix /o /nv | Out-Null
+          if ($LASTEXITCODE) { throw 'makeappx failed' }
+          & "$kits/signtool.exe" sign /fd SHA256 /sha1 ${{ steps.cert.outputs.thumbprint }} $msix | Out-Null
+          if ($LASTEXITCODE) { throw 'signtool failed' }
+
+      - name: Collect Windows App Runtime dependencies
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force artifacts/dependencies | Out-Null
+          $src = Get-ChildItem "$env:USERPROFILE/.nuget/packages/microsoft.windowsappsdk.runtime" -Directory -ErrorAction SilentlyContinue |
+            Sort-Object Name -Descending |
+            ForEach-Object { Join-Path $_.FullName 'tools/MSIX/win10-x64' } |
+            Where-Object { Test-Path $_ } | Select-Object -First 1
+          if ($src) {
+            Copy-Item "$src/*.msix" artifacts/dependencies/ -Force
+            Write-Host "Copied runtime packages from $src"
+          } else {
+            Write-Warning 'Windows App Runtime MSIX packages not in NuGet cache; installer will skip dependency install'
+          }
+
+      - name: Build installer EXE (Inno Setup)
+        shell: pwsh
+        run: |
+          $version = '${{ steps.version.outputs.version }}'
+          $msixName = "Otzaria.Widget_${version}_x64.msix"
+          $iscc = 'C:/Program Files (x86)/Inno Setup 6/ISCC.exe'
+          & $iscc packaging/installer.iss `
+            "/DAppVersion=$version" `
+            "/DMsixPath=$((Resolve-Path "artifacts/$msixName").Path)" `
+            "/DMsixName=$msixName" `
+            "/DCerPath=$((Resolve-Path 'artifacts/OtzariaDev.cer').Path)" `
+            "/DDepsPath=$((Resolve-Path 'artifacts/dependencies').Path)" `
+            "/DIconPath=$((Resolve-Path 'src/OtzariaWidget.App/Assets/app.ico').Path)" `
+            "/DOutputDir=$((Resolve-Path 'artifacts').Path)"
+          if ($LASTEXITCODE) { throw 'Inno Setup compilation failed' }
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
@@ -104,6 +157,7 @@ jobs:
           body: |
             Automated build from commit ${{ github.sha }}.
 
-            **Install:** extract the zip, then register with `Add-AppxPackage -Register <path>\AppxManifest.xml` (Developer Mode), or use `packaging\make-msix.ps1` locally to create a signed MSIX.
-          files: artifacts/OtzariaWidget-${{ steps.version.outputs.version }}-x64.zip
+            **Install:** download and run the setup EXE (requires Administrator — it imports the signing certificate and installs the MSIX).
+            After installation, open the Widgets board (`Win+W`) and click `+` to add Otzaria widgets.
+          files: artifacts/OtzariaWidget-${{ steps.version.outputs.version }}-x64-setup.exe
           generate_release_notes: true
