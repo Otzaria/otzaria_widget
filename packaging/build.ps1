@@ -93,6 +93,9 @@ $tplDst = Join-Path $layout 'Templates'
 New-Item -ItemType Directory -Force $tplDst | Out-Null
 Copy-Item (Join-Path $tplSrc '*.json') $tplDst -Force
 
+# licence notices travel with the binaries (LGPL Kosher.Zmanim, Apache/MIT SQLite stack, ...)
+Copy-Item (Join-Path $root 'THIRD-PARTY-NOTICES.md') (Join-Path $layout 'THIRD-PARTY-NOTICES.md') -Force
+
 $manifestOut = Join-Path $layout 'AppxManifest.xml'
 (Get-Content (Join-Path $pkgDir 'Package.appxmanifest') -Raw -Encoding UTF8).Replace('@VERSION@', $Version).Replace('@PUBLISHER@', $Publisher) |
   Set-Content $manifestOut -Encoding UTF8

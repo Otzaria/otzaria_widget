@@ -45,3 +45,31 @@ and ship it next to the application / inside the MSIX).
 * The widget resolves IANA zone ids through the operating system (Windows ICU / registry) via `TimeZoneInfo`.
   No third-party time zone package is bundled. (`OtzariaWidget.Calendar.Cities.TimeZones` contains a small correction for
   Alberta / British Columbia, whose permanent-time change in tzdata 2026 may not yet be present in every Windows build.)
+
+---
+
+## .NET runtime and libraries (self-contained)
+
+* The package ships the .NET 10 runtime and base class libraries (self-contained): **MIT License**, (c) .NET Foundation and Contributors.
+  <https://github.com/dotnet/runtime/blob/main/LICENSE.TXT>
+
+---
+
+## Microsoft.Data.Sqlite 11.0.0, SQLitePCLRaw 2.1.12 and SQLite
+
+* Used by: `src/OtzariaWidget.Core` (strictly read-only access to Otzaria's `user_state.db` / `seforim.db`).
+* `Microsoft.Data.Sqlite` / `Microsoft.Data.Sqlite.Core`: **MIT License** (c) .NET Foundation and Contributors.
+  <https://licenses.nuget.org/MIT>
+* `SQLitePCLRaw.core`, `SQLitePCLRaw.provider.e_sqlite3`, `SQLitePCLRaw.lib.e_sqlite3`, `SQLitePCLRaw.bundle_e_sqlite3`: **Apache License 2.0**,
+  (c) Eric Sink. <https://licenses.nuget.org/Apache-2.0>
+* `e_sqlite3.dll` is a build of **SQLite**, which is in the **public domain**. <https://www.sqlite.org/copyright.html>
+
+---
+
+## Windows App SDK 1.8 (Widgets projection)
+
+* Used by: `src/OtzariaWidget.App` (`Microsoft.WindowsAppSDK.Widgets` / `.Base` / `.Runtime` 1.8.x). The projection assembly
+  `Microsoft.Windows.Widgets.Projection.dll` is shipped in the package; the Windows App Runtime itself is a framework package
+  (`Microsoft.WindowsAppRuntime.1.8`) that the user's system provides.
+* License: Microsoft Software License Terms (the `license.txt` inside each NuGet package; the open source parts are MIT:
+  <https://github.com/microsoft/WindowsAppSDK/blob/main/LICENSE>).
