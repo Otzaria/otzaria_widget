@@ -27,7 +27,7 @@ public static class SettingsLog
                 var sb = new StringBuilder();
                 sb.Append(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture))
                   .Append(' ').Append(level).Append(' ').Append(message);
-                if (ex is not null) sb.Append(" :: ").Append(ex.GetType().Name).Append(": ").Append(ex.Message);
+                if (ex is not null) sb.Append(" :: ").Append(Provider.ProviderLog.Describe(ex));   // type + HRESULT; the message is dropped when it contains a path (user name)
                 sb.AppendLine();
                 File.AppendAllText(FilePath, sb.ToString(), Encoding.UTF8);
             }

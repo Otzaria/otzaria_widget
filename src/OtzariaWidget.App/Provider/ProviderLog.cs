@@ -16,10 +16,15 @@ internal static class ProviderLog
     /// at roughly twice this value.</summary>
     internal const long MaxBytes = 512 * 1024;
     private static readonly object Gate = new();
-    private static readonly string Dir =
+    private static readonly string DefaultDir =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "OtzariaWidget");
 
-    public static string FilePath { get; } = Path.Combine(Dir, "provider.log");
+    /// <summary>Tests point this at a temp folder so unit tests never write into the real provider.log.</summary>
+    internal static string? DirectoryOverride { get; set; }
+
+    private static string Dir => DirectoryOverride ?? DefaultDir;
+
+    public static string FilePath => Path.Combine(Dir, "provider.log");
 
     public static void Info(string message) => Write("INFO ", message);
     public static void Warn(string message) => Write("WARN ", message);

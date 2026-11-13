@@ -107,7 +107,7 @@ internal sealed class ProviderServices : IWidgetEnvironment, IDisposable
         catch (Exception ex)
         {
             error = ex.GetType().Name;
-            ProviderLog.Warn($"GetSnapshot failed: {ex.GetType().Name}: {ex.Message}");
+            ProviderLog.Warn($"GetSnapshot failed: {ProviderLog.Describe(ex)}");   // the message may contain a path (user name)
             return null;
         }
     }
@@ -177,6 +177,8 @@ internal sealed class ProviderServices : IWidgetEnvironment, IDisposable
             _coalesce = null;
             try { _data?.Dispose(); } catch (Exception ex) { ProviderLog.Error("data.Dispose", ex); }
             _data = null;
+            try { (_settings as IDisposable)?.Dispose(); } catch (Exception ex) { ProviderLog.Error("settings.Dispose", ex); }   // its FileSystemWatcher + timer
+            _settings = null;
         }
     }
 }
