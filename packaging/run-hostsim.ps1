@@ -9,13 +9,15 @@
   "hostsim-*" widget ids and writes its own HRESULT trace to -Out. The provider's log lines for the run are printed afterwards.
 
 .PARAMETER Scenario
-  full (default) | settings | keep
+  full (default) | settings | keep | all   (all = one widget of each of the 6 kinds, every size, optional --hold / settings mutation)
 .PARAMETER WaitIdle
   Also wait up to 90 s and report whether the provider exits by itself (idle exit: 60 s with no widgets).
 #>
 [CmdletBinding()]
 param(
-  [ValidateSet('full', 'settings', 'keep')][string]$Scenario = 'full',
+  [ValidateSet('full', 'settings', 'keep', 'all')][string]$Scenario = 'full',
+  [int]$Hold = 5,
+  [switch]$MutateSettings,
   [switch]$WaitIdle,
   [string]$Out = (Join-Path $env:TEMP 'otzaria-hostsim.txt')
 )
@@ -39,11 +41,11 @@ $before = @{}; foreach ($l in $logs) { $before[$l] = if (Test-Path $l) { (Get-It
 Get-Process OtzariaWidget -ErrorAction SilentlyContinue | Stop-Process -Force   # start from a cold provider
 Remove-Item $Out -ErrorAction SilentlyContinue
 
-$hostArgs = "`"$dll`" `"$Out`" --scenario=$Scenario" + $(if ($WaitIdle) { ' --wait-idle' } else { '' }) + $(if ($Scenario -eq 'keep') { ' --keep-provider' } else { '' })
+$hostArgs = "`"$dll`" `"$Out`" --scenario=$Scenario" + $(if ($WaitIdle) { ' --wait-idle' } else { '' }) + $(if ($Scenario -eq 'keep') { ' --keep-provider' } else { '' }) + $(if ($Scenario -eq 'all') { " --hold=$Hold" + $(if ($MutateSettings) { ' --mutate-settings' } else { '' }) } else { '' })
 Write-Host "== Invoke-CommandInDesktopPackage ($($pkg.PackageFamilyName)!$appId)" -ForegroundColor Cyan
 Invoke-CommandInDesktopPackage -PackageFamilyName $pkg.PackageFamilyName -AppId $appId -Command $dotnet -Args $hostArgs -PreventBreakaway
 
-$deadline = (Get-Date).AddSeconds($(if ($WaitIdle) { 150 } else { 60 }))
+$deadline = (Get-Date).AddSeconds($(if ($WaitIdle) { 150 } else { 60 }) + $(if ($Scenario -eq 'all') { 45 + $Hold } else { 0 }))
 while ((Get-Date) -lt $deadline) {
   if ((Test-Path $Out) -and (Select-String -Path $Out -Pattern ' HOSTSIM done$' -Quiet)) { break }
   Start-Sleep -Milliseconds 500

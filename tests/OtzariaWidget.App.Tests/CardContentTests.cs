@@ -215,7 +215,7 @@ public class CardContentTests
         Assert.NotEmpty(glyphs);
         Assert.Contains(glyphs, b => b.TryGetProperty("color", out var c) && c.GetString() == "accent");
         Assert.Contains(glyphs, b => b.TryGetProperty("isSubtle", out var c) && c.GetBoolean());
-        Assert.Empty(CardExpander.Elements(ex.Root, "Container").Where(c => c.TryGetProperty("style", out _)));
+        Assert.DoesNotContain(CardExpander.Elements(ex.Root, "Container"), c => c.TryGetProperty("style", out _));
     }
 
     [Fact]
