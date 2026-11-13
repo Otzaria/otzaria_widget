@@ -14,7 +14,10 @@ param(
 $ErrorActionPreference = 'Stop'
 $pkgDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $root   = Split-Path -Parent $pkgDir
-if (-not $Layout) { $Layout = Join-Path $root 'artifacts\layout' }
+if (-not $Layout) {
+  $lt = Join-Path $root 'artifacts\layout.txt'
+  $Layout = if (Test-Path $lt) { (Get-Content $lt -Raw).Trim() } else { Join-Path $root 'artifacts\layout' }
+}
 $manifest = Join-Path $Layout 'AppxManifest.xml'
 if (-not (Test-Path $manifest)) { throw "No layout at $Layout - run packaging\build.ps1 first." }
 

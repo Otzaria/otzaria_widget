@@ -61,7 +61,16 @@ Start-Sleep -Milliseconds 300
 
 # 2. publish ----------------------------------------------------------------------------------------------------
 if (-not $SkipPublish) {
-  if (Test-Path $layout) { Remove-Item $layout -Recurse -Force }
+  if (Test-Path $layout) {
+    try { Remove-Item $layout -Recurse -Force -ErrorAction Stop }
+    catch {
+      # Something (a process started by Invoke-CommandInDesktopPackage / the Widgets host / an indexer) still holds a handle on the folder:
+      # do not fail the build, publish next to it. artifacts\layout.txt tells install-dev.ps1 / make-msix.ps1 where the layout is.
+      $layout = Join-Path $artifacts "layout-$Version"
+      Write-Warning "artifacts\layout is locked; using $layout instead"
+      if (Test-Path $layout) { Remove-Item $layout -Recurse -Force }
+    }
+  }
   Write-Host '== dotnet publish' -ForegroundColor Cyan
   dotnet publish $project -c $Configuration -r win-x64 -o $layout --nologo -v quiet
   if ($LASTEXITCODE) { throw 'dotnet publish failed' }
@@ -111,7 +120,8 @@ if ($LASTEXITCODE) { throw 'makepri createconfig failed' }
 if ($LASTEXITCODE) { throw 'makepri new failed' }
 
 Set-Content (Join-Path $artifacts 'version.txt') $Version -Encoding ASCII
+Set-Content (Join-Path $artifacts 'layout.txt') $layout -Encoding UTF8
 Write-Host "Layout ready: $layout  (version $Version)" -ForegroundColor Green
 
 # 5. register -------------------------------------------------------------------------------------------------------
-if ($Register) { & (Join-Path $pkgDir 'install-dev.ps1') }
+if ($Register) { & (Join-Path $pkgDir 'install-dev.ps1') -Layout $layout }
