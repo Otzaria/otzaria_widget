@@ -1,0 +1,11 @@
+bin/
+obj/
+*.user
+.vs/
+artifacts/
+out/
+*.pfx
+*.msix
+__pycache__/
+TestResults/
+‏‏מסמך טקסט חדש.md

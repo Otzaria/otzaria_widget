@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  MSIX manifest for "Otzaria Widget" (ווידג'ט אוצריא): Windows 11 Widgets Board provider + settings app, one package.
+  build.ps1 copies this file to <layout>\AppxManifest.xml and substitutes @VERSION@ / @PUBLISHER@.
+
+  KEEP IN SYNC (a unit test checks all of this):
+    * CLSID EB0AF4C1-58BE-4FA6-9F1B-88F8188C6326 appears three times below (com:Class Id, CreateInstance ClassId) and in
+      src\OtzariaWidget.App\Provider\Cards\WidgetKinds.cs (ProviderIds.Clsid).
+    * Definition Id values == WidgetKinds.* ids (RecentBooks, Bookmarks, ShamorZachor, Zmanim, HebrewCalendar, Dashboard).
+    * Executable == OtzariaWidget.exe (AssemblyName of src\OtzariaWidget.App).
+-->
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+  xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap uap3 com rescap">
+
+  <Identity Name="Otzaria.Widget" Publisher="@PUBLISHER@" Version="@VERSION@" ProcessorArchitecture="x64" />
+
+  <Properties>
+    <DisplayName>ווידג'ט אוצריא</DisplayName>
+    <PublisherDisplayName>Otzaria Dev</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.19041.0" MaxVersionTested="10.0.26100.0" />
+    <!-- Framework-dependent Windows App SDK 1.8 (supplies Microsoft.Windows.Widgets.dll + IWidgetProvider2 proxy/stub). -->
+    <PackageDependency Name="Microsoft.WindowsAppRuntime.1.8" MinVersion="8000.806.2252.0"
+                       Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="he-IL" />
+    <Resource Language="en-US" />
+  </Resources>
+
+  <Applications>
+    <Application Id="App" Executable="OtzariaWidget.exe" EntryPoint="Windows.FullTrustApplication">
+      <!-- The app itself = the settings window (Start menu entry). -->
+      <uap:VisualElements DisplayName="ווידג'ט אוצריא"
+                          Description="הגדרות הווידג'טים של אוצריא"
+                          BackgroundColor="transparent"
+                          Square150x150Logo="Assets\Square150x150Logo.png"
+                          Square44x44Logo="Assets\Square44x44Logo.png">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" />
+      </uap:VisualElements>
+
+      <Extensions>
+        <!-- 1) Out-of-proc COM server: the Widgets host CoCreateInstance()s the provider (packaged equivalent of HKCU\...\LocalServer32). -->
+        <com:Extension Category="windows.comServer">
+          <com:ComServer>
+            <com:ExeServer Executable="OtzariaWidget.exe" Arguments="-RegisterProcessAsComServer" DisplayName="Otzaria Widget Provider">
+              <com:Class Id="EB0AF4C1-58BE-4FA6-9F1B-88F8188C6326" DisplayName="Otzaria Widget Provider" />
+            </com:ExeServer>
+          </com:ComServer>
+        </com:Extension>
+
+        <!-- 2) Widget provider registration (read by the Widgets host). -->
+        <uap3:Extension Category="windows.appExtension">
+          <uap3:AppExtension Name="com.microsoft.windows.widgets"
+                             DisplayName="ווידג'ט אוצריא"
+                             Id="OtzariaWidget"
+                             PublicFolder="Public">
+            <uap3:Properties>
+              <WidgetProvider>
+                <ProviderIcons>
+                  <Icon Path="ProviderAssets\Icon.png" />
+                </ProviderIcons>
+                <Activation>
+                  <CreateInstance ClassId="EB0AF4C1-58BE-4FA6-9F1B-88F8188C6326" />
+                </Activation>
+                <Definitions>
+                  <Definition Id="RecentBooks"
+                              DisplayName="אוצריא · ספרים אחרונים"
+                              Description="הספרים האחרונים שקראת באוצריא, עם המשך קריאה בלחיצה אחת"
+                              AllowMultiple="true"
+                              IsCustomizable="true">
+                    <Capabilities>
+                      <Capability><Size Name="small" /></Capability>
+                      <Capability><Size Name="medium" /></Capability>
+                      <Capability><Size Name="large" /></Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="ProviderAssets\Icon_RecentBooks.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="ProviderAssets\Screenshot_RecentBooks.png" DisplayAltText="אוצריא · ספרים אחרונים" />
+                      </Screenshots>
+                      <DarkMode>
+                        <Screenshots>
+                          <Screenshot Path="ProviderAssets\Screenshot_RecentBooks_dark.png" DisplayAltText="אוצריא · ספרים אחרונים" />
+                        </Screenshots>
+                      </DarkMode>
+                      <LightMode>
+                        <Screenshots>
+                          <Screenshot Path="ProviderAssets\Screenshot_RecentBooks.png" DisplayAltText="אוצריא · ספרים אחרונים" />
+                        </Screenshots>
+                      </LightMode>
+                    </ThemeResources>
+                  </Definition>
+                  <Definition Id="Bookmarks"
+                              DisplayName="אוצריא · סימניות"
+                              Description="הסימניות שלך באוצריא — מעבר ישיר למקום השמור"
+                              AllowMultiple="true"
+                              IsCustomizable="true">
+                    <Capabilities>
+                      <Capability><Size Name="medium" /></Capability>
+                      <Capability><Size Name="large" /></Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="ProviderAssets\Icon_Bookmarks.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="ProviderAssets\Screenshot_Bookmarks.png" DisplayAltText="אוצריא · סימניות" />
+                      </Screenshots>
+                      <DarkMode>
+                        <Screenshots>
+                          <Screenshot Path="ProviderAssets\Screenshot_Bookmarks_dark.png" DisplayAltText="אוצריא · סימניות" />
+                        </Screenshots>
+                      </DarkMode>
+                      <LightMode>
+                        <Screenshots>
+                          <Screenshot Path="ProviderAssets\Screenshot_Bookmarks.png" DisplayAltText="אוצריא · סימניות" />
+                        </Screenshots>
+                      </LightMode>
+                    </ThemeResources>
+                  </Definition>
+                  <Definition Id="ShamorZachor"
+                              DisplayName="שמור וזכור"
+                              Description="התקדמות הלימוד בספרים שבשמור וזכור, עם פסי התקדמות"
+                              AllowMultiple="true"
+                              IsCustomizable="true">
+                    <Capabilities>
+                      <Capability><Size Name="small" /></Capability>
+                      <Capability><Size Name="medium" /></Capability>
+                      <Capability><Size Name="large" /></Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="ProviderAssets\Icon_ShamorZachor.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="ProviderAssets\Screenshot_ShamorZachor.png" DisplayAltText="שמור וזכור" />
+                      </Screenshots>
+                      <DarkMode>
+                        <Screenshots>
+                          <Screenshot Path="ProviderAssets\Screenshot_ShamorZachor_dark.png" DisplayAltText="שמור וזכור" />
+                        </Screenshots>
+                      </DarkMode>
+                      <LightMode>
+                        <Screenshots>
+                          <Screenshot Path="ProviderAssets\Screenshot_ShamorZachor.png" DisplayAltText="שמור וזכור" />
+                        </Screenshots>
+                      </LightMode>
+                    </ThemeResources>
+                  </Definition>
+                  <Definition Id="Zmanim"
+                              DisplayName="זמני היום"
+                              Description="זמני היום לפי העיר שנבחרה באוצריא, עם הזמן הבא מודגש"
+                              AllowMultiple="true"
+                              IsCustomizable="true">
+                    <Capabilities>
+                      <Capability><Size Name="small" /></Capability>
+                      <Capability><Size Name="medium" /></Capability>
+                      <Capability><Size Name="large" /></Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="ProviderAssets\Icon_Zmanim.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="ProviderAssets\Screenshot_Zmanim.png" DisplayAltText="זמני היום" />
+                      </Screenshots>
+                      <DarkMode>
+                        <Screenshots>
+                          <Screenshot Path="ProviderAssets\Screenshot_Zmanim_dark.png" DisplayAltText="זמני היום" />
+                        </Screenshots>
+                      </DarkMode>
+                      <LightMode>
+                        <Screenshots>
+                          <Screenshot Path="ProviderAssets\Screenshot_Zmanim.png" DisplayAltText="זמני היום" />
+                        </Screenshots>
+                      </LightMode>
+                    </ThemeResources>
+                  </Definition>
+                  <Definition Id="HebrewCalendar"
+                              DisplayName="לוח עברי"
+                              Description="התאריך העברי והלועזי, פרשת השבוע, חגים, דף יומי ועומר"
+                              AllowMultiple="true"
+                              IsCustomizable="true">
+                    <Capabilities>
+                      <Capability><Size Name="small" /></Capability>
+                      <Capability><Size Name="medium" /></Capability>
+                      <Capability><Size Name="large" /></Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="ProviderAssets\Icon_HebrewCalendar.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="ProviderAssets\Screenshot_HebrewCalendar.png" DisplayAltText="לוח עברי" />
+                      </Screenshots>
+                      <DarkMode>
+                        <Screenshots>
+                          <Screenshot Path="ProviderAssets\Screenshot_HebrewCalendar_dark.png" DisplayAltText="לוח עברי" />
+                        </Screenshots>
+                      </DarkMode>
+                      <LightMode>
+                        <Screenshots>
+                          <Screenshot Path="ProviderAssets\Screenshot_HebrewCalendar.png" DisplayAltText="לוח עברי" />
+                        </Screenshots>
+                      </LightMode>
+                    </ThemeResources>
+                  </Definition>
+                  <Definition Id="Dashboard"
+                              DisplayName="אוצריא · לוח אישי"
+                              Description="לוח אישי משולב: תאריך, זמן הבא, המשך קריאה, התקדמות וסימניות"
+                              AllowMultiple="true"
+                              IsCustomizable="true">
+                    <Capabilities>
+                      <Capability><Size Name="medium" /></Capability>
+                      <Capability><Size Name="large" /></Capability>
+                    </Capabilities>
+                    <ThemeResources>
+                      <Icons>
+                        <Icon Path="ProviderAssets\Icon_Dashboard.png" />
+                      </Icons>
+                      <Screenshots>
+                        <Screenshot Path="ProviderAssets\Screenshot_Dashboard.png" DisplayAltText="אוצריא · לוח אישי" />
+                      </Screenshots>
+                      <DarkMode>
+                        <Screenshots>
+                          <Screenshot Path="ProviderAssets\Screenshot_Dashboard_dark.png" DisplayAltText="אוצריא · לוח אישי" />
+                        </Screenshots>
+                      </DarkMode>
+                      <LightMode>
+                        <Screenshots>
+                          <Screenshot Path="ProviderAssets\Screenshot_Dashboard.png" DisplayAltText="אוצריא · לוח אישי" />
+                        </Screenshots>
+                      </LightMode>
+                    </ThemeResources>
+                  </Definition>
+                </Definitions>
+              </WidgetProvider>
+            </uap3:Properties>
+          </uap3:AppExtension>
+        </uap3:Extension>
+
+        <!-- 3) otzaria-widget://settings : lets a card button (Action.OpenUrl) start the settings window even when the
+                host only allows OpenUrl (unauthenticated user context). The exe receives the URI as its first argument.
+             VERIFIED: without the explicit Executable/EntryPoint on this extension the shell activation fails (AppModel-Runtime event 203, 0x80070057,
+             ShellExecute "Access is denied"); with them the exe starts with the argument "otzaria-widget://settings/". -->
+        <uap:Extension Category="windows.protocol" Executable="OtzariaWidget.exe" EntryPoint="Windows.FullTrustApplication">
+          <uap:Protocol Name="otzaria-widget">
+            <uap:DisplayName>ווידג'ט אוצריא</uap:DisplayName>
+          </uap:Protocol>
+        </uap:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

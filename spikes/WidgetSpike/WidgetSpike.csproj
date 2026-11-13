@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.19041.0</TargetPlatformMinVersion>
+    <RootNamespace>WidgetSpike</RootNamespace>
+    <AssemblyName>WidgetSpike</AssemblyName>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Platforms>x64</Platforms>
+    <Platform>x64</Platform>
+    <PlatformTarget>x64</PlatformTarget>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <!-- The exe only ever runs with MSIX package identity (framework dependency in the manifest); no bootstrapper/auto-init. -->
+    <WindowsPackageType>None</WindowsPackageType>
+    <EnableMsixTooling>false</EnableMsixTooling>
+    <UseWinUI>false</UseWinUI>
+    <!-- Framework-dependent Windows App SDK: Microsoft.Windows.Widgets.dll + proxy/stubs come from Microsoft.WindowsAppRuntime.1.8 -->
+    <WindowsAppSDKSelfContained>false</WindowsAppSDKSelfContained>
+    <!-- Keep CsWinRT/ComWrappers path working: no trimming, no AOT, no single-file. -->
+    <PublishTrimmed>false</PublishTrimmed>
+    <PublishAot>false</PublishAot>
+    <PublishSingleFile>false</PublishSingleFile>
+    <DebugType>embedded</DebugType>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <!-- Package.appxmanifest + Templates are handled by build.ps1 -->
+    <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Only the Widgets component (projection + winmd) is needed. -->
+    <PackageReference Include="Microsoft.WindowsAppSDK.Widgets" Version="1.8.251231004" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.Base" Version="1.8.251216001" />
+    <PackageReference Include="Microsoft.WindowsAppSDK.Runtime" Version="1.8.260921001" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Templates\*.json" CopyToOutputDirectory="PreserveNewest" LinkBase="Templates" />
+  </ItemGroup>
+
+</Project>

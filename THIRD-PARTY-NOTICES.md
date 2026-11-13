@@ -1,0 +1,47 @@
+# Third-party notices
+
+Otzaria Widget uses the following third-party components. Each section lists the component, its license, how it is
+used here, and where the license text can be found. Add new entries as new sections (keep this file at the repo root
+and ship it next to the application / inside the MSIX).
+
+---
+
+## Kosher.Zmanim (.NET port of KosherJava) 3.1.1
+
+* Used by: `src/OtzariaWidget.Calendar` (Hebrew calendar, zmanim, daf yomi, molad).
+* Package: <https://www.nuget.org/packages/Kosher.Zmanim/3.1.1>
+* Project: <https://github.com/Elyahu41/Kosher.Zmanim.NET> (port of KosherJava, <https://github.com/KosherJava/zmanim>)
+* Copyright (C) 2004-2026 Eliyahu Hershfeld (KosherJava). .NET port copyright (C) 2026 Elyahu41.
+* License: **GNU Lesser General Public License, version 2.1 only (LGPL-2.1-only)**
+  * Text: <https://licenses.nuget.org/LGPL-2.1-only> / <https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html>
+  * The full text also ships inside the NuGet package (`LICENSE`).
+* How it is used (LGPL compliance):
+  * Referenced as an **unmodified binary NuGet package** (`<PackageReference Include="Kosher.Zmanim" Version="[3.1.1]" />`).
+  * It is shipped as the **separate assembly `Kosher.Zmanim.dll`** next to our own assemblies - it is **dynamically
+    linked**, never merged, embedded, obfuscated, trimmed or bundled into a single file (`PublishSingleFile=false`,
+    `PublishTrimmed=false` in `OtzariaWidget.App.csproj`). A user may replace it with a modified build of the library
+    (same assembly identity/version) and the application will use it.
+  * Our own code extends it only by subclassing in `OtzariaWidget.Calendar` (no changes to the library itself).
+  * The corresponding source of the library is available at the project URL above (tag/commit referenced by the package:
+    `aeb3a4fc413492f48e4fe3f6745538f6826f41b6`).
+* **Do not** change the packaging to single-file / ILMerge / NativeAOT without revisiting this entry (those would
+  make the library part of a combined work).
+
+---
+
+## Data and text derived from Otzaria
+
+* Used by: `src/OtzariaWidget.Calendar/Data/otzaria-cities.json` (city table: names, coordinates, elevations, time zones,
+  candle-lighting minutes), `src/OtzariaWidget.Calendar/Data/zmanim-registry.json` (zman ids, Hebrew titles, short
+  descriptions, display order, defaults) and the Hebrew label/omer spellings in `src/OtzariaWidget.Calendar/Hebrew`.
+  They are copied/ported from Otzaria's source (`lib/tools/calendar/**`) so that the widget matches the app.
+* Source: the Otzaria project. The owner of Otzaria is also the publisher of this widget, so these data files may be
+  distributed together with the widget; there is no redistribution restriction on them.
+
+---
+
+## Time zone data
+
+* The widget resolves IANA zone ids through the operating system (Windows ICU / registry) via `TimeZoneInfo`.
+  No third-party time zone package is bundled. (`OtzariaWidget.Calendar.Cities.TimeZones` contains a small correction for
+  Alberta / British Columbia, whose permanent-time change in tzdata 2026 may not yet be present in every Windows build.)

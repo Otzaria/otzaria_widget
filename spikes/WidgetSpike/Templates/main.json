@@ -1,0 +1,69 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.6",
+  "rtl": true,
+  "body": [
+    {
+      "type": "Container",
+      "rtl": true,
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "${greeting}",
+          "size": "large",
+          "weight": "bolder",
+          "wrap": true
+        },
+        {
+          "type": "TextBlock",
+          "text": "מספר הלחיצות: ${count}",
+          "wrap": true,
+          "spacing": "small"
+        },
+        {
+          "type": "TextBlock",
+          "text": "גודל: ${$host.widgetSize} | ערכת נושא: ${$host.hostTheme}",
+          "isSubtle": true,
+          "size": "small",
+          "wrap": true
+        },
+        {
+          "type": "TextBlock",
+          "text": "Mixed LTR: Otzaria 1.0 - ספר ברכות דף ב׳ ע״א",
+          "size": "small",
+          "wrap": true,
+          "$when": "${$host.widgetSize==\"large\"}"
+        },
+        {
+          "type": "TextBlock",
+          "text": "הווידג׳ט הגדול מציג שורה נוספת. הגדרות: כפתור פתיחה = ${showOpen}",
+          "wrap": true,
+          "size": "small",
+          "isSubtle": true,
+          "$when": "${$host.widgetSize==\"large\"}"
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Execute",
+      "title": "הוסף +1",
+      "verb": "inc",
+      "data": { "step": 1 },
+      "$when": "${$host.isUserContextAuthenticated != false}"
+    },
+    {
+      "type": "Action.OpenUrl",
+      "title": "פתח באוצריא",
+      "url": "otzaria://open?book=berachot&page=2",
+      "$when": "${showOpen == 'true'}"
+    },
+    {
+      "type": "Action.OpenUrl",
+      "title": "אתר (https)",
+      "url": "https://github.com/Otzaria/otzaria"
+    }
+  ]
+}

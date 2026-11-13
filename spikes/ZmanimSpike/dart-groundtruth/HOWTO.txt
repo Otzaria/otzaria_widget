@@ -1,0 +1,15 @@
+Ground-truth harness: runs Otzaria's REAL zmanim code (kosher_dart 2.0.20) outside Flutter.
+Setup (once):
+  mkdir -p lib/tools/calendar/helpers lib/tools/calendar/models lib/utils
+  copy from C:\Users\user\Documents\otzaria_project\lib\tools\calendar\helpers\zmanim_helpers.dart  -> lib/tools/calendar/helpers/
+  copy from ...\tools\calendar\models\zman_definition.dart, calendar_location.dart                  -> lib/tools/calendar/models/
+  copy from ...\utils\calendar_days.dart                                                              -> lib/utils/
+  in zmanim_helpers.dart replace the import  package:otzaria/tools/calendar/helpers/calendar_date_helpers.dart
+  with  package:otzaria/utils/calendar_days.dart
+  dart pub get
+Run:
+  dart run bin/gt.dart "ירושלים,מודיעין עילית" "2026-11-13" > dart_out.txt      (city|date|id|HH:mm:ss)
+  (in ../ ) dotnet run -- dump "ירושלים,מודיעין עילית" 2026-11-13 > cs_out.txt
+  python compare_dumps.py dart_out.txt cs_out.txt
+  dart run bin/heb.dart 2026-09-01 800 israel out.txt  /  dotnet run -- hebrew 2026-09-01 800 israel
+  dart run bin/dump.dart <path>/otzaria-cities.json   (regenerates the city export)

@@ -1,0 +1,51 @@
+<UserControl x:Class="OtzariaWidget.App.SettingsUi.Views.DataLocationsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="32,24,32,24" MaxWidth="820">
+
+            <TextBlock Text="מיקום הנתונים" Style="{StaticResource PageTitle}"/>
+            <TextBlock Style="{StaticResource Secondary}" Margin="0,-8,0,16"
+                       Text="ברוב המקרים אין צורך לשנות דבר: הווידג'ט מזהה את אוצריא אוטומטית. אפשר לציין מיקום ידנית (למשל לגרסה ניידת). שדה ריק = זיהוי אוטומטי."/>
+
+            <ItemsControl ItemsSource="{Binding Items}" Focusable="False">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource Card}">
+                            <StackPanel>
+                                <TextBlock Text="{Binding Title}" Style="{StaticResource SectionTitle}" Margin="0,0,0,2"/>
+                                <TextBlock Text="{Binding Description}" Style="{StaticResource Secondary}" Margin="0,0,0,10"/>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Grid.Column="0" Style="{StaticResource PathBox}"
+                                             Text="{Binding Text, UpdateSourceTrigger=PropertyChanged}"
+                                             AutomationProperties.Name="{Binding Title}"/>
+                                    <Button Grid.Column="1" Content="עיון…" Command="{Binding BrowseCommand}" Margin="8,0,0,0" MinWidth="72" MinHeight="32"/>
+                                    <Button Grid.Column="2" Content="זיהוי אוטומטי" Command="{Binding ResetCommand}" Margin="8,0,0,0" MinHeight="32"/>
+                                </Grid>
+
+                                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                    <TextBlock Style="{StaticResource StateGlyph}" FontSize="14"/>
+                                    <TextBlock Text="{Binding Validation}" Style="{StaticResource StateText}" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,4,0,0"
+                                            Visibility="{Binding HasResolved, Converter={StaticResource BoolToVis}}">
+                                    <TextBlock Text="הנתיב בשימוש:" Style="{StaticResource Secondary}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Resolved}" Style="{StaticResource PathText}" Margin="8,0,0,0" VerticalAlignment="Center"
+                                               HorizontalAlignment="Left"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <Button Content="אפס את כל המיקומים לזיהוי אוטומטי" Command="{Binding ResetAllCommand}" HorizontalAlignment="Left" Margin="0,4,0,0"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

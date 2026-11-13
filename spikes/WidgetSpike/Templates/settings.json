@@ -1,0 +1,39 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.6",
+  "rtl": true,
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "הגדרות הווידג׳ט",
+      "weight": "bolder",
+      "size": "medium",
+      "wrap": true
+    },
+    {
+      "type": "Input.ChoiceSet",
+      "id": "greeting",
+      "label": "טקסט ברכה",
+      "style": "compact",
+      "value": "${greeting}",
+      "choices": [
+        { "title": "שלום עולם", "value": "שלום עולם" },
+        { "title": "בוקר טוב", "value": "בוקר טוב" },
+        { "title": "ברוכים הבאים לאוצריא", "value": "ברוכים הבאים לאוצריא" }
+      ]
+    },
+    {
+      "type": "Input.Toggle",
+      "id": "showOpen",
+      "title": "הצג כפתור פתיחה באוצריא",
+      "value": "${showOpen}",
+      "valueOn": "true",
+      "valueOff": "false"
+    }
+  ],
+  "actions": [
+    { "type": "Action.Execute", "title": "שמור", "verb": "saveSettings" },
+    { "type": "Action.Execute", "title": "ביטול", "verb": "exitCustomization" }
+  ]
+}

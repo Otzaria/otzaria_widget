@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Card tests: the pure card-building code (Provider\Cards) is compiled straight into the test assembly
+       (no reference to the WPF/WinRT exe), and the real Templates\*.json are linked in. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>OtzariaWidget.App.Tests</RootNamespace>
+    <!-- the settings-UI view models / infrastructure (System.Windows.Input, Media, Data) are compiled in too -->
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+    <PackageReference Include="AdaptiveCards.Templating" Version="2.0.6" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+    <Using Include="System.IO" />   <!-- UseWPF removes this implicit using -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\OtzariaWidget.Core\OtzariaWidget.Core.csproj" />
+    <ProjectReference Include="..\..\src\OtzariaWidget.Calendar\OtzariaWidget.Calendar.csproj" />
+    <Compile Include="..\..\src\OtzariaWidget.App\Provider\Cards\**\*.cs" LinkBase="AppCards" />
+    <!-- runtime pieces without WinRT: ProviderServices (+ its log) and the settings UI logic (no Views) -->
+    <Compile Include="..\..\src\OtzariaWidget.App\Composition.cs" LinkBase="AppRuntime" />
+    <Compile Include="..\..\src\OtzariaWidget.App\Provider\ProviderServices.cs" LinkBase="AppRuntime" />
+    <Compile Include="..\..\src\OtzariaWidget.App\Provider\ProviderLog.cs" LinkBase="AppRuntime" />
+    <Compile Include="..\..\src\OtzariaWidget.App\SettingsUi\Infrastructure\*.cs" LinkBase="AppSettingsUi\Infrastructure" />
+    <Compile Include="..\..\src\OtzariaWidget.App\SettingsUi\ViewModels\*.cs" LinkBase="AppSettingsUi\ViewModels" />
+    <Content Include="..\..\src\OtzariaWidget.App\Templates\**\*.json" LinkBase="Templates" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

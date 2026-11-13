@@ -1,0 +1,52 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.6",
+  "rtl": true,
+  "body": [
+    {
+      "type": "TextBlock",
+      "text": "${title}",
+      "weight": "bolder",
+      "wrap": true,
+      "maxLines": 2
+    },
+    {
+      "type": "TextBlock",
+      "text": "${emptyText}",
+      "isSubtle": true,
+      "wrap": true,
+      "maxLines": 4,
+      "spacing": "small"
+    },
+    {
+      "type": "TextBlock",
+      "text": "${notice}",
+      "size": "small",
+      "color": "attention",
+      "wrap": true,
+      "spacing": "small",
+      "$when": "${notice != ''}"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Execute",
+      "title": "פתח הגדרות",
+      "verb": "settings",
+      "$when": "${(state == 'missing' || state == 'error') && $host.isUserContextAuthenticated != false}"
+    },
+    {
+      "type": "Action.OpenUrl",
+      "title": "פתח הגדרות",
+      "url": "otzaria-widget://settings",
+      "$when": "${(state == 'missing' || state == 'error') && $host.isUserContextAuthenticated == false}"
+    },
+    {
+      "type": "Action.Execute",
+      "title": "נסה שוב",
+      "verb": "refresh",
+      "$when": "${state == 'error' && $host.isUserContextAuthenticated != false}"
+    }
+  ]
+}

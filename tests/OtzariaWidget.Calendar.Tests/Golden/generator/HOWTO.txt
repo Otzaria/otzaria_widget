@@ -1,0 +1,22 @@
+Regenerating the golden files (ground truth = Otzaria's REAL Dart code + kosher_dart 2.0.20)
+Setup: the harness in spikes/ZmanimSpike/dart-groundtruth (see its HOWTO.txt: copy zmanim_helpers.dart, zman_definition.dart,
+calendar_location.dart, calendar_days.dart from the Otzaria checkout into lib/, then `dart pub get`), then copy
+golden_zmanim.dart / golden_hebrew.dart from here into its bin/.
+Zmanim (machine zone = Asia/Jerusalem; kidush levana lines depend on it, the tests account for that):
+  dart run bin/golden_zmanim.dart "ירושלים,מודיעין עילית,בני ברק,ניו יורק,לונדון,אילת,טבריה" "<comma separated yyyy-MM-dd>" > zmanim_full.txt   (the test keeps the first 4 columns; strip the 5th with cut -d'|' -f1-4 if you want a smaller file)
+  gzip -9 -n zmanim_full.txt
+Hebrew calendar (one file per mode):
+  dart run bin/golden_hebrew.dart 2023-09-01 2922 israel   hebrew_israel.txt
+  dart run bin/golden_hebrew.dart 2023-09-01 2922 diaspora hebrew_diaspora.txt   (then gzip -9 -n each)
+Registry JSON embedded in src/OtzariaWidget.Calendar/Data/zmanim-registry.json:  python -I extract_registry.py out.json
+City table: spikes/ZmanimSpike/dart-groundtruth/bin/dump.dart regenerates docs/research/otzaria-cities.json
+
+---- QA second-opinion generators (independent of the set above) ----
+Setup: a fresh Dart package with kosher_dart 2.0.20 + timezone ^0.11.2 (see spikes/ZmanimSpike/dart-groundtruth/pubspec.yaml);
+copy Otzaria's zmanim_helpers.dart / zman_definition.dart / calendar_location.dart / utils/calendar_days.dart into lib/ (same layout as above,
+replace the calendar_date_helpers.dart import by package:otzaria/utils/calendar_days.dart), then copy qa_*.dart into bin/.
+  qa_zmanim_all_cities.dart  <cities|ALL> <dates,comma>   -> city|date|id|HH:mm:ss|displayText (Otzaria's calculateDailyTimes + seconds); the test file
+                              Golden/qa_zmanim_all_cities.txt.gz keeps 4 columns, 129 cities x 8 dates, kidush levana rows dropped
+  qa_hebrew.dart <start> <days> israel|diaspora <out>     -> date|top-bar date|dow|events|parasha|daf|omer|yom tov (functions copied verbatim from Otzaria)
+  qa_meta.dart                                            -> meta.json (registry + city table) behind Golden/qa_registry/qa_cities
+Time zone golden (qa_timezones.txt.gz): zone|y-m-d|offsetSeconds at noon local from tz.getLocation(...).

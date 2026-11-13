@@ -1,0 +1,351 @@
+{
+  "type": "AdaptiveCard",
+  "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+  "version": "1.6",
+  "rtl": true,
+  "body": [
+    {
+      "type": "Container",
+      "$when": "${$host.widgetSize != 'small'}",
+      "selectAction": "${if($host.isUserContextAuthenticated == false || action == null, urlAction, action)}",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "stretch",
+              "verticalContentAlignment": "center",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "${title}",
+                  "weight": "bolder",
+                  "wrap": false
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "auto",
+              "verticalContentAlignment": "center",
+              "$when": "${headerEnd != ''}",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "${headerEnd}",
+                  "size": "small",
+                  "isSubtle": true,
+                  "wrap": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "${emptyText}",
+      "size": "small",
+      "isSubtle": true,
+      "wrap": true,
+      "maxLines": 5,
+      "spacing": "small",
+      "horizontalAlignment": "center",
+      "$when": "${state != 'ok' && $host.widgetSize == 'small'}"
+    },
+    {
+      "type": "TextBlock",
+      "text": "${emptyText}",
+      "isSubtle": true,
+      "wrap": true,
+      "maxLines": 4,
+      "spacing": "large",
+      "horizontalAlignment": "center",
+      "$when": "${state != 'ok' && $host.widgetSize != 'small'}"
+    },
+    {
+      "type": "Container",
+      "$when": "${state == 'ok' && $host.widgetSize == 'small'}",
+      "selectAction": "${if($host.isUserContextAuthenticated == false || action == null, urlAction, action)}",
+      "items": [
+        {
+          "type": "TextBlock",
+          "text": "${date.weekday}",
+          "size": "small",
+          "isSubtle": true,
+          "wrap": false
+        },
+        {
+          "type": "TextBlock",
+          "text": "${date.day}",
+          "size": "medium",
+          "weight": "bolder",
+          "wrap": true,
+          "maxLines": 2,
+          "spacing": "none"
+        },
+        {
+          "type": "TextBlock",
+          "text": "${date.gregorian}",
+          "size": "small",
+          "isSubtle": true,
+          "wrap": false,
+          "spacing": "none"
+        },
+        {
+          "type": "Container",
+          "spacing": "small",
+          "$data": "${lines}",
+          "items": [
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "auto",
+                  "verticalContentAlignment": "center",
+                  "$when": "${label != ''}",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "${label}",
+                      "size": "small",
+                      "isSubtle": true,
+                      "wrap": false
+                    }
+                  ]
+                },
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "spacing": "small",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "${text}",
+                      "weight": "${weight}",
+                      "color": "${color}",
+                      "wrap": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "spacing": "small",
+      "$when": "${state == 'ok' && $host.widgetSize == 'medium'}",
+      "selectAction": "${if($host.isUserContextAuthenticated == false || action == null, urlAction, action)}",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": 5,
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "${date.day}",
+                  "size": "large",
+                  "weight": "bolder",
+                  "wrap": false
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "${date.weekday} · ${date.year}",
+                  "size": "small",
+                  "isSubtle": true,
+                  "wrap": false,
+                  "spacing": "none"
+                },
+                {
+                  "type": "TextBlock",
+                  "text": "${date.gregorian}",
+                  "size": "small",
+                  "isSubtle": true,
+                  "wrap": false,
+                  "spacing": "none"
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": 6,
+              "spacing": "medium",
+              "separator": true,
+              "items": [
+                {
+                  "type": "Container",
+                  "spacing": "small",
+                  "$data": "${lines}",
+                  "items": [
+                    {
+                      "type": "ColumnSet",
+                      "columns": [
+                        {
+                          "type": "Column",
+                          "width": "auto",
+                          "verticalContentAlignment": "center",
+                          "$when": "${label != ''}",
+                          "items": [
+                            {
+                              "type": "TextBlock",
+                              "text": "${label}",
+                              "size": "small",
+                              "isSubtle": true,
+                              "wrap": false
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Column",
+                          "width": "stretch",
+                          "spacing": "small",
+                          "items": [
+                            {
+                              "type": "TextBlock",
+                              "text": "${text}",
+                              "weight": "${weight}",
+                              "color": "${color}",
+                              "wrap": false
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Container",
+      "spacing": "default",
+      "$when": "${state == 'ok' && $host.widgetSize == 'large'}",
+      "selectAction": "${if($host.isUserContextAuthenticated == false || action == null, urlAction, action)}",
+      "items": [
+        {
+          "type": "ColumnSet",
+          "columns": [
+            {
+              "type": "Column",
+              "width": "auto",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "${date.day}",
+                  "size": "extraLarge",
+                  "weight": "bolder",
+                  "wrap": false
+                }
+              ]
+            },
+            {
+              "type": "Column",
+              "width": "stretch",
+              "verticalContentAlignment": "center",
+              "spacing": "small",
+              "items": [
+                {
+                  "type": "TextBlock",
+                  "text": "${date.year}",
+                  "size": "small",
+                  "isSubtle": true,
+                  "wrap": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "TextBlock",
+          "text": "${date.weekday} · ${date.gregorian}",
+          "size": "small",
+          "isSubtle": true,
+          "wrap": false,
+          "spacing": "none"
+        },
+        {
+          "type": "Container",
+          "spacing": "default",
+          "$data": "${lines}",
+          "items": [
+            {
+              "type": "ColumnSet",
+              "columns": [
+                {
+                  "type": "Column",
+                  "width": "auto",
+                  "verticalContentAlignment": "center",
+                  "$when": "${label != ''}",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "${label}",
+                      "size": "small",
+                      "isSubtle": true,
+                      "wrap": false
+                    }
+                  ]
+                },
+                {
+                  "type": "Column",
+                  "width": "stretch",
+                  "spacing": "small",
+                  "items": [
+                    {
+                      "type": "TextBlock",
+                      "text": "${text}",
+                      "weight": "${weight}",
+                      "color": "${color}",
+                      "wrap": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "TextBlock",
+      "text": "${notice}",
+      "size": "small",
+      "color": "attention",
+      "wrap": true,
+      "spacing": "small",
+      "$when": "${notice != ''}"
+    }
+  ],
+  "actions": [
+    {
+      "type": "Action.Execute",
+      "title": "פתח הגדרות",
+      "verb": "settings",
+      "$when": "${(state == 'missing' || state == 'error') && $host.isUserContextAuthenticated != false}"
+    },
+    {
+      "type": "Action.OpenUrl",
+      "title": "פתח הגדרות",
+      "url": "otzaria-widget://settings",
+      "$when": "${(state == 'missing' || state == 'error') && $host.isUserContextAuthenticated == false}"
+    },
+    {
+      "type": "Action.Execute",
+      "title": "נסה שוב",
+      "verb": "refresh",
+      "$when": "${state == 'error' && $host.isUserContextAuthenticated != false}"
+    }
+  ]
+}
