@@ -1,3 +1,4 @@
+using OtzariaWidget.App.SettingsUi.Localization;
 using OtzariaWidget.Core.Contracts;
 
 namespace OtzariaWidget.App.SettingsUi.Infrastructure;
@@ -35,7 +36,7 @@ public sealed class SettingsSession : ObservableObject, IDisposable
         {
             SettingsLog.Error("Loading settings failed", ex);
             Settings = new WidgetAppSettings();
-            LoadError = "לא ניתן לטעון את ההגדרות הקיימות (" + ErrorText.From(ex) + "). מוצגות הגדרות ברירת מחדל.";
+            LoadError = Loc.F("לא ניתן לטעון את ההגדרות הקיימות ({0}). מוצגות הגדרות ברירת מחדל.", ErrorText.From(ex));
         }
     }
 
@@ -82,7 +83,7 @@ public sealed class SettingsSession : ObservableObject, IDisposable
         {
             _store.Save(Settings);
             SaveFailed = false;
-            SaveText = "נשמר";
+            SaveText = Loc.T("נשמר");
             SaveVisible = true;
             ScheduleHide();
             Saved?.Invoke(this, EventArgs.Empty);
@@ -91,7 +92,7 @@ public sealed class SettingsSession : ObservableObject, IDisposable
         {
             SettingsLog.Error("Saving settings failed", ex);
             SaveFailed = true;
-            SaveText = "השמירה נכשלה";
+            SaveText = Loc.T("השמירה נכשלה");
             SaveVisible = true;
         }
     }

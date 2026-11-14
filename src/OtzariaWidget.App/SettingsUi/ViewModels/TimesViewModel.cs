@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Input;
 using OtzariaWidget.App.SettingsUi.Infrastructure;
+using OtzariaWidget.App.SettingsUi.Localization;
 using OtzariaWidget.Core.Contracts;
 
 namespace OtzariaWidget.App.SettingsUi.ViewModels;
@@ -46,8 +47,8 @@ public sealed record PreviewRow(string Title, string TimeText, bool IsPast, bool
 public sealed class TimesViewModel : ObservableObject
 {
     private static readonly string?[] DayTransitionValues = [null, "sunset", "tzais", "rabbeinuTam", "midnight"];
-    private static readonly string[] DayTransitionLabels =
-        ["כמו באוצריא", "שקיעה", "צאת הכוכבים", "רבנו תם", "חצות"];
+    private readonly string[] _dayTransitionLabels =
+        [Loc.T("כמו באוצריא"), Loc.T("שקיעה"), Loc.T("צאת הכוכבים"), Loc.T("רבנו תם"), Loc.T("חצות")];
 
     private readonly SettingsSession _session;
     private readonly SettingsServices _svc;
@@ -100,7 +101,7 @@ public sealed class TimesViewModel : ObservableObject
         _ = RefreshPreviewAsync();
     }
 
-    public string Title => "זמנים ולוח שנה";
+    public string Title => Loc.T("זמנים ולוח שנה");
 
     // ------------------------------------------------------------------ data load
 
@@ -136,9 +137,11 @@ public sealed class TimesViewModel : ObservableObject
         }
         Raise(nameof(CalendarError));
         Raise(nameof(HasCalendarError));
+        Raise(nameof(CalendarErrorLine));
     }
 
     public bool HasCalendarError => !string.IsNullOrEmpty(CalendarError);
+    public string CalendarErrorLine => HasCalendarError ? Loc.F("שירות הלוח העברי: {0}", CalendarError) : "";
 
     private bool MatchesFilter(CityInfo c)
     {
@@ -157,7 +160,7 @@ public sealed class TimesViewModel : ObservableObject
             _followCity = s.CityOverride is null;
             _selectedCity = s.CityOverride is null ? null : _allCities.FirstOrDefault(c => c.Name == s.CityOverride);
             _cityWarning = s.CityOverride is not null && _selectedCity is null && _allCities.Count > 0
-                ? $"העיר \"{s.CityOverride}\" אינה ברשימה."
+                ? Loc.F("העיר \"{0}\" אינה ברשימה.", s.CityOverride)
                 : null;
 
             _followZmanim = s.ZmanimOverride is null;
@@ -226,8 +229,8 @@ public sealed class TimesViewModel : ObservableObject
         {
             var c = _hub.Current?.Preferences.SelectedCity;
             return string.IsNullOrEmpty(c)
-                ? (_hub.Error is null ? "העיר שנבחרה באוצריא: לא ידוע" : "העיר שנבחרה באוצריא: לא זמין")
-                : "העיר שנבחרה באוצריא כעת: " + c;
+                ? (_hub.Error is null ? Loc.T("העיר שנבחרה באוצריא: לא ידוע") : Loc.T("העיר שנבחרה באוצריא: לא זמין"))
+                : Loc.F("העיר שנבחרה באוצריא כעת: {0}", c);
         }
     }
 
@@ -334,9 +337,9 @@ public sealed class TimesViewModel : ObservableObject
     {
         get
         {
-            if (_followZmanim) return "הזמנים המוצגים הם אלה שנבחרו באוצריא.";
+            if (_followZmanim) return Loc.T("הזמנים המוצגים הם אלה שנבחרו באוצריא.");
             int n = Zmanim.Count(z => z.IsChecked);
-            return n == 0 ? "לא נבחרו זמנים — הווידג'ט לא יציג זמנים." : $"נבחרו {n} מתוך {Zmanim.Count} זמנים.";
+            return n == 0 ? Loc.T("לא נבחרו זמנים — הווידג'ט לא יציג זמנים.") : Loc.F("נבחרו {0} מתוך {1} זמנים.", n, Zmanim.Count);
         }
     }
 
@@ -368,7 +371,7 @@ public sealed class TimesViewModel : ObservableObject
 
     // ------------------------------------------------------------------ time format & day transition
 
-    public string[] TimeFormatLabels { get; } = ["כמו באוצריא", "24 שעות (13:45)", "12 שעות (1:45 PM)"];
+    public string[] TimeFormatLabels { get; } = [Loc.T("כמו באוצריא"), Loc.T("24 שעות (13:45)"), Loc.T("12 שעות (1:45 PM)")];
 
     public int TimeFormatIndex
     {
@@ -388,11 +391,11 @@ public sealed class TimesViewModel : ObservableObject
         {
             if (_timeFormatIndex != 0) return null;
             var p = _hub.Current?.Preferences;
-            return p is null ? "הערך באוצריא: לא זמין" : "הערך באוצריא כעת: " + (p.TwelveHourClock ? "12 שעות" : "24 שעות");
+            return p is null ? Loc.T("הערך באוצריא: לא זמין") : Loc.F("הערך באוצריא כעת: {0}", p.TwelveHourClock ? Loc.T("12 שעות") : Loc.T("24 שעות"));
         }
     }
 
-    public string[] DayTransitionOptions => DayTransitionLabels;
+    public string[] DayTransitionOptions => _dayTransitionLabels;
 
     public int DayTransitionIndex
     {
@@ -412,9 +415,9 @@ public sealed class TimesViewModel : ObservableObject
         {
             if (_dayTransitionIndex != 0) return null;
             var p = _hub.Current?.Preferences;
-            if (p is null) return "הערך באוצריא: לא זמין";
+            if (p is null) return Loc.T("הערך באוצריא: לא זמין");
             var i = Array.IndexOf(DayTransitionValues, p.DayTransition);
-            return "הערך באוצריא כעת: " + (i > 0 ? DayTransitionLabels[i] : p.DayTransition);
+            return Loc.F("הערך באוצריא כעת: {0}", i > 0 ? _dayTransitionLabels[i] : p.DayTransition);
         }
     }
 
@@ -452,7 +455,7 @@ public sealed class TimesViewModel : ObservableObject
 
         var s = _session.Settings;
         var prefs = _hub.Current?.Preferences;
-        string cityName = s.CityOverride ?? prefs?.SelectedCity ?? "ירושלים";
+        string cityName = s.CityOverride ?? prefs?.SelectedCity ?? "ירושלים"; // l10n: keep (city data)
         bool twelve = s.TwelveHourClockOverride ?? prefs?.TwelveHourClock ?? false;
         string transition = s.DayTransitionOverride ?? prefs?.DayTransition ?? "sunset";
         var ids = s.ZmanimOverride?.ToList()
@@ -477,7 +480,7 @@ public sealed class TimesViewModel : ObservableObject
         Preview.Clear();
         if (result is null)
         {
-            PreviewError = error ?? "לא זמין";
+            PreviewError = error ?? Loc.T("לא זמין");
             PreviewCity = PreviewDate = PreviewGregorian = PreviewExtra = "";
             return;
         }
@@ -493,7 +496,7 @@ public sealed class TimesViewModel : ObservableObject
         bool twelve, string transition, bool showYerushalmi)
     {
         var city = cal.FindCity(cityName) ?? cal.Cities.FirstOrDefault()
-            ?? throw new InvalidOperationException("לא נמצאו ערים");
+            ?? throw new InvalidOperationException(Loc.T("לא נמצאו ערים"));
 
         TimeZoneInfo tz;
         try { tz = TimeZoneInfo.FindSystemTimeZoneById(city.TimeZoneId); }
@@ -504,11 +507,12 @@ public sealed class TimesViewModel : ObservableObject
         var info = cal.GetDayInfo(date, city);
         var times = cal.GetZmanim(date, city, ids);
 
+        // The preview mirrors the card, whose content stays Hebrew in every language.
         var extraParts = new List<string>();
-        if (!string.IsNullOrWhiteSpace(info.Parasha)) extraParts.Add("פרשת " + info.Parasha!.Replace("פרשת ", ""));
+        if (!string.IsNullOrWhiteSpace(info.Parasha)) extraParts.Add("פרשת " + info.Parasha!.Replace("פרשת ", "")); // l10n: keep (card content)
         extraParts.AddRange(info.Holidays.Where(h => !string.IsNullOrWhiteSpace(h)));
-        if (!string.IsNullOrWhiteSpace(info.DafYomiBavli)) extraParts.Add("דף יומי: " + info.DafYomiBavli);
-        if (showYerushalmi && !string.IsNullOrWhiteSpace(info.DafYomiYerushalmi)) extraParts.Add("ירושלמי: " + info.DafYomiYerushalmi);
+        if (!string.IsNullOrWhiteSpace(info.DafYomiBavli)) extraParts.Add("דף יומי: " + info.DafYomiBavli); // l10n: keep (card content)
+        if (showYerushalmi && !string.IsNullOrWhiteSpace(info.DafYomiYerushalmi)) extraParts.Add("ירושלמי: " + info.DafYomiYerushalmi); // l10n: keep (card content)
         if (!string.IsNullOrWhiteSpace(info.Omer)) extraParts.Add(info.Omer!);
 
         // the "next" zman is only meaningful when the preview shows today

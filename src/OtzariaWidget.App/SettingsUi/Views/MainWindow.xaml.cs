@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.Windows;
+using OtzariaWidget.App.SettingsUi.Localization;
 using OtzariaWidget.App.SettingsUi.ViewModels;
 
 namespace OtzariaWidget.App.SettingsUi.Views;
@@ -8,6 +9,8 @@ public partial class MainWindow : Window
 {
     public MainWindow(MainViewModel vm)
     {
+        FlowDirection = Loc.Current.Direction;
+        Language = System.Windows.Markup.XmlLanguage.GetLanguage(Loc.Current.CultureName);
         InitializeComponent();
         DataContext = vm;
         vm.Session.PropertyChanged += (_, e) =>
@@ -44,12 +47,13 @@ public partial class MainWindow : Window
                 bg.Measure(new Size(w, h)); bg.Arrange(new Rect(0, 0, w, h));
                 bmp.Render(bg);
                 // The window's RTL mirroring lives above the content root, so mirror it back when rendering the root alone.
+                bool rtl = FlowDirection == FlowDirection.RightToLeft;
                 var dv = new System.Windows.Media.DrawingVisual();
                 using (var dc = dv.RenderOpen())
                 {
-                    dc.PushTransform(new System.Windows.Media.ScaleTransform(-1, 1, w / 2.0, 0));
+                    if (rtl) dc.PushTransform(new System.Windows.Media.ScaleTransform(-1, 1, w / 2.0, 0));
                     dc.DrawRectangle(new System.Windows.Media.VisualBrush(root), null, new Rect(0, 0, w, h));
-                    dc.Pop();
+                    if (rtl) dc.Pop();
                 }
                 bmp.Render(dv);
                 var enc = new System.Windows.Media.Imaging.PngBitmapEncoder();

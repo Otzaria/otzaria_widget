@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using OtzariaWidget.App.SettingsUi.Infrastructure;
+using OtzariaWidget.App.SettingsUi.Localization;
 
 namespace OtzariaWidget.App.SettingsUi.ViewModels;
 
@@ -19,16 +20,16 @@ public sealed class MainViewModel : ObservableObject
         Status = new StatusViewModel(Session, services, Hub);
         DataLocations = new DataLocationsViewModel(Session, services);
         Times = new TimesViewModel(Session, services, Hub);
-        Display = new DisplayViewModel(Session);
+        Display = new DisplayViewModel(Session, () => LanguageChanged?.Invoke(this, EventArgs.Empty));
         About = new AboutViewModel(services);
 
         Pages =
         [
-            new NavItem("מצב", "", Status),
-            new NavItem("מיקום הנתונים", "", DataLocations),
-            new NavItem("זמנים ולוח שנה", "", Times),
-            new NavItem("תצוגה והתנהגות", "", Display),
-            new NavItem("אודות", "", About),
+            new NavItem(Loc.T("מצב"), "", Status),
+            new NavItem(Loc.T("מיקום הנתונים"), "", DataLocations),
+            new NavItem(Loc.T("זמנים ולוח שנה"), "", Times),
+            new NavItem(Loc.T("תצוגה והתנהגות"), "", Display),
+            new NavItem(Loc.T("אודות"), "", About),
         ];
         _selected = Pages[0];
 
@@ -36,6 +37,9 @@ public sealed class MainViewModel : ObservableObject
         Session.Saved += (_, _) => _ = Hub.RefreshAsync(true);
         _ = Hub.RefreshAsync(false);
     }
+
+    /// <summary>The user picked another settings-window language (already stored in the session).</summary>
+    public event EventHandler? LanguageChanged;
 
     public SettingsServices Services { get; }
     public SettingsSession Session { get; }

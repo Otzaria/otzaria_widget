@@ -35,6 +35,8 @@
     <Compile Include="..\..\src\OtzariaWidget.App\Provider\ProviderLog.cs" LinkBase="AppRuntime" />
     <Compile Include="..\..\src\OtzariaWidget.App\SettingsUi\Infrastructure\*.cs" LinkBase="AppSettingsUi\Infrastructure" />
     <Compile Include="..\..\src\OtzariaWidget.App\SettingsUi\ViewModels\*.cs" LinkBase="AppSettingsUi\ViewModels" />
+    <Compile Include="..\..\src\OtzariaWidget.App\SettingsUi\Localization\*.cs" LinkBase="AppSettingsUi\Localization" />
+    <EmbeddedResource Include="..\..\src\OtzariaWidget.App\SettingsUi\Localization\settings_en.json" LogicalName="OtzariaWidget.SettingsUi.settings_en.json" />
     <Content Include="..\..\src\OtzariaWidget.App\Templates\**\*.json" LinkBase="Templates" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 

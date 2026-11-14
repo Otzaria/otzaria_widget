@@ -1,7 +1,9 @@
 // Settings UI entry point (called on a dedicated STA thread from Program.Main).
+using System.Globalization;
 using System.Windows;
 using System.Windows.Threading;
 using OtzariaWidget.App.SettingsUi.Infrastructure;
+using OtzariaWidget.App.SettingsUi.Localization;
 using OtzariaWidget.App.SettingsUi.ViewModels;
 using OtzariaWidget.App.SettingsUi.Views;
 
@@ -38,15 +40,18 @@ public static class SettingsApplication
             });
 
             var services = SettingsServices.CreateDefault();
+            // "--lang he|en" shows one language for this run only (visual QA); the stored choice is not changed.
+            Loc.Current = UiLanguage.Resolve(ArgValue(args, "--lang") ?? StoredLanguage(services), CultureInfo.CurrentUICulture);
             var vm = new MainViewModel(services);
             SelectPageFromArgs(vm, args);
             var window = new MainWindow(vm);
+            vm.LanguageChanged += OnLanguageChanged;
 
             var shot = ArgValue(args, "--screenshot");
             if (shot is not null)
             {
-                if (double.TryParse(ArgValue(args, "--height"), System.Globalization.NumberStyles.Float,
-                        System.Globalization.CultureInfo.InvariantCulture, out var hgt) && hgt >= 400)
+                if (double.TryParse(ArgValue(args, "--height"), NumberStyles.Float,
+                        CultureInfo.InvariantCulture, out var hgt) && hgt >= 400)
                 {
                     window.WindowStartupLocation = WindowStartupLocation.Manual;
                     window.Top = 0;
@@ -55,15 +60,44 @@ public static class SettingsApplication
                 window.ScheduleScreenshot(shot, TimeSpan.FromSeconds(3));
             }
 
-            guard.Listen(() => app.Dispatcher.BeginInvoke(new Action(window.BringToFront)));
+            guard.Listen(() => app.Dispatcher.BeginInvoke(new Action(() => (app.MainWindow as MainWindow)?.BringToFront())));
             app.MainWindow = window;
-            SettingsLog.Info("Settings window started, version " + AppEnvironment.Version);
+            SettingsLog.Info("Settings window started, version " + AppEnvironment.Version + ", language " + Loc.Current.Code);
 
             int code = app.Run(window);
             vm.Session.Flush();
             vm.Session.Dispose();
             try { services.Data.Dispose(); } catch { }
             return code;
+
+            // The texts are read when the views load, so a new language means a new window (same page, bounds and state).
+            void OnLanguageChanged(object? sender, EventArgs e)
+            {
+                app.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    if (app.MainWindow is not MainWindow old || old.DataContext is not MainViewModel oldVm) return;
+                    oldVm.Session.Flush();
+                    Loc.Current = UiLanguage.Resolve(oldVm.Session.Settings.UiLanguage, CultureInfo.CurrentUICulture);
+
+                    var newVm = new MainViewModel(services);
+                    newVm.SelectedPage = newVm.Pages[Math.Max(0, oldVm.Pages.IndexOf(oldVm.SelectedPage))];
+                    newVm.LanguageChanged += OnLanguageChanged;
+                    var bounds = old.RestoreBounds.IsEmpty ? new Rect(old.Left, old.Top, old.ActualWidth, old.ActualHeight) : old.RestoreBounds;
+                    var next = new MainWindow(newVm)
+                    {
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        Left = bounds.Left, Top = bounds.Top, Width = bounds.Width, Height = bounds.Height,
+                    };
+                    if (old.WindowState == WindowState.Maximized) next.WindowState = WindowState.Maximized;
+
+                    app.MainWindow = next;
+                    next.Show();
+                    old.Close();
+                    oldVm.Session.Dispose();
+                    vm = newVm;
+                    SettingsLog.Info("Settings language changed to " + Loc.Current.Code);
+                }), DispatcherPriority.Background);
+            }
         }
         catch (Exception ex)
         {
@@ -71,6 +105,12 @@ public static class SettingsApplication
             ShowCrashDialog(ex);
             return 1;
         }
+    }
+
+    private static string? StoredLanguage(SettingsServices services)
+    {
+        try { return services.Store.Load()?.UiLanguage; }
+        catch { return null; } // the session reports the load error itself
     }
 
     /// <summary>"--page N" (0-4) opens a specific page; handy for screenshots and for deep links from the widgets.</summary>
@@ -112,12 +152,14 @@ public static class SettingsApplication
         _crashDialogShown = true;
         try
         {
+            var rtl = Loc.Current.Direction == FlowDirection.RightToLeft
+                ? MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign
+                : MessageBoxOptions.None;
             MessageBox.Show(
-                "אירעה שגיאה לא צפויה בחלון ההגדרות.\n\n" + ex.Message +
-                "\n\nפרטים נשמרו בקובץ הלוג בתיקייה " + AppEnvironment.RealDataFolder,
-                "הגדרות ווידג'ט אוצריא",
+                Loc.F("אירעה שגיאה לא צפויה בחלון ההגדרות.\n\n{0}\n\nפרטים נשמרו בקובץ הלוג בתיקייה {1}", ex.Message, AppEnvironment.RealDataFolder),
+                Loc.T("הגדרות ווידג'ט אוצריא"),
                 MessageBoxButton.OK, MessageBoxImage.Warning,
-                MessageBoxResult.OK, MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign);
+                MessageBoxResult.OK, rtl);
         }
         catch { }
         finally { _crashDialogShown = false; }

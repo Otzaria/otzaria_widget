@@ -1,6 +1,7 @@
 using System.IO;
 using System.Windows.Input;
 using OtzariaWidget.App.SettingsUi.Infrastructure;
+using OtzariaWidget.App.SettingsUi.Localization;
 
 namespace OtzariaWidget.App.SettingsUi.ViewModels;
 
@@ -19,7 +20,7 @@ public sealed class AboutViewModel : ObservableObject
         TestLinkCommand = new RelayCommand(TestLink);
     }
 
-    public string Title => "אודות";
+    public string Title => Loc.T("אודות");
     public string Version => AppEnvironment.Version;
     public string LogFolder => AppEnvironment.RealDataFolder;
 
@@ -28,7 +29,7 @@ public sealed class AboutViewModel : ObservableObject
         get
         {
             try { return _svc.Store.SettingsFilePath; }
-            catch { return "לא זמין"; }
+            catch { return Loc.T("לא זמין"); }
         }
     }
 
@@ -49,7 +50,7 @@ public sealed class AboutViewModel : ObservableObject
         catch (Exception ex)
         {
             SettingsLog.Error("Open log folder failed", ex);
-            Message = new StatusMessage("לא ניתן לפתוח את התיקייה: " + ex.Message, StateKind.Error);
+            Message = new StatusMessage(Loc.F("לא ניתן לפתוח את התיקייה: {0}", ex.Message), StateKind.Error);
         }
     }
 
@@ -58,12 +59,12 @@ public sealed class AboutViewModel : ObservableObject
         try
         {
             _svc.Shell.OpenUri(TestLinkUri);
-            Message = new StatusMessage("הקישור נשלח. אם אוצריא נפתחה (בדף ההיסטוריה), הקישורים מהווידג'טים יעבדו.", StateKind.Ok);
+            Message = new StatusMessage(Loc.T("הקישור נשלח. אם אוצריא נפתחה (בדף ההיסטוריה), הקישורים מהווידג'טים יעבדו."), StateKind.Ok);
         }
         catch (Exception ex)
         {
             SettingsLog.Error("Test link failed", ex);
-            Message = new StatusMessage("לא נמצאה תוכנה שמטפלת בקישורי otzaria://. ייתכן שאוצריא אינה מותקנת או לא הופעלה אף פעם.", StateKind.Error);
+            Message = new StatusMessage(Loc.T("לא נמצאה תוכנה שמטפלת בקישורי otzaria://. ייתכן שאוצריא אינה מותקנת או לא הופעלה אף פעם."), StateKind.Error);
         }
     }
 }

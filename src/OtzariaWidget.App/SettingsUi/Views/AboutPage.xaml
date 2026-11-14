@@ -1,20 +1,21 @@
 <UserControl x:Class="OtzariaWidget.App.SettingsUi.Views.AboutPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:OtzariaWidget.App.SettingsUi.Localization">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="32,24,32,24" MaxWidth="820">
-            <TextBlock Text="אודות" Style="{StaticResource PageTitle}"/>
+            <TextBlock Text="{l:T 'אודות'}" Style="{StaticResource PageTitle}"/>
 
             <Border Style="{StaticResource Card}">
                 <StackPanel>
-                    <TextBlock Text="ווידג'ט אוצריא" FontSize="20" FontWeight="SemiBold" Style="{StaticResource Body}"/>
+                    <TextBlock Text="{l:T 'ווידג\'ט אוצריא'}" FontSize="20" FontWeight="SemiBold" Style="{StaticResource Body}"/>
                     <TextBlock Style="{StaticResource Secondary}" Margin="0,2,0,0">
-                        <Run Text="גרסה"/> <Run Text="{Binding Version, Mode=OneWay}"/>
+                        <Run Text="{l:T 'גרסה'}"/> <Run Text="{Binding Version, Mode=OneWay}"/>
                     </TextBlock>
                     <TextBlock Style="{StaticResource Body}" Margin="0,12,0,0" LineHeight="22"
-                               Text="ווידג'טים ללוח הווידג'טים של Windows 11 עבור אוצריא: ספרים אחרונים, סימניות, שמור וזכור, זמני היום, לוח עברי ולוח אישי. הקלקה על פריט פותחת אותו ישירות באוצריא."/>
+                               Text="{l:T 'ווידג\'טים ללוח הווידג\'טים של Windows 11 עבור אוצריא: ספרים אחרונים, סימניות, שמור וזכור, זמני היום, לוח עברי ולוח אישי. הקלקה על פריט פותחת אותו ישירות באוצריא.'}"/>
                     <TextBlock Style="{StaticResource Secondary}" Margin="0,8,0,0"
-                               Text="פרויקט עצמאי, אינו חלק רשמי מאוצריא ואינו משנה אותה."/>
+                               Text="{l:T 'פרויקט עצמאי, אינו חלק רשמי מאוצריא ואינו משנה אותה.'}"/>
                 </StackPanel>
             </Border>
 
@@ -22,28 +23,28 @@
                 <StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="&#xE72E;" Style="{StaticResource IconText}" FontSize="16" Foreground="{StaticResource StateOkBrush}"/>
-                        <TextBlock Text="פרטיות" Style="{StaticResource SectionTitle}" Margin="8,0,0,0"/>
+                        <TextBlock Text="{l:T 'פרטיות'}" Style="{StaticResource SectionTitle}" Margin="8,0,0,0"/>
                     </StackPanel>
                     <TextBlock Style="{StaticResource Body}" LineHeight="22"
-                               Text="הווידג'ט קורא את נתוני אוצריא במצב קריאה בלבד ולעולם אינו כותב או משנה אותם. שום מידע אינו יוצא מהמחשב: אין שליחה לשרתים, אין איסוף נתונים ואין חשבון. מוצגים רק פרטים שאוצריא שומרת מקומית (ספרים אחרונים, סימניות, התקדמות ועיר), ובקובצי הלוג אין תוכן אישי."/>
+                               Text="{l:T 'הווידג\'ט קורא את נתוני אוצריא במצב קריאה בלבד ולעולם אינו כותב או משנה אותם. שום מידע אינו יוצא מהמחשב: אין שליחה לשרתים, אין איסוף נתונים ואין חשבון. מוצגים רק פרטים שאוצריא שומרת מקומית (ספרים אחרונים, סימניות, התקדמות ועיר), ובקובצי הלוג אין תוכן אישי.'}"/>
                 </StackPanel>
             </Border>
 
             <Border Style="{StaticResource Card}">
                 <StackPanel>
-                    <TextBlock Text="כלי אבחון" Style="{StaticResource SectionTitle}"/>
+                    <TextBlock Text="{l:T 'כלי אבחון'}" Style="{StaticResource SectionTitle}"/>
 
-                    <TextBlock Text="תיקיית הלוגים וההגדרות" Style="{StaticResource Body}" FontWeight="SemiBold"/>
+                    <TextBlock Text="{l:T 'תיקיית הלוגים וההגדרות'}" Style="{StaticResource Body}" FontWeight="SemiBold"/>
                     <TextBlock Text="{Binding LogFolder}" Style="{StaticResource PathText}" Margin="0,2,0,8"/>
-                    <Button Content="פתח את תיקיית הלוגים" Command="{Binding OpenLogFolderCommand}" HorizontalAlignment="Left"/>
+                    <Button Content="{l:T 'פתח את תיקיית הלוגים'}" Command="{Binding OpenLogFolderCommand}" HorizontalAlignment="Left"/>
 
-                    <TextBlock Text="קובץ ההגדרות" Style="{StaticResource Body}" FontWeight="SemiBold" Margin="0,18,0,0"/>
+                    <TextBlock Text="{l:T 'קובץ ההגדרות'}" Style="{StaticResource Body}" FontWeight="SemiBold" Margin="0,18,0,0"/>
                     <TextBlock Text="{Binding SettingsFilePath}" Style="{StaticResource PathText}" Margin="0,2,0,0"/>
 
-                    <TextBlock Text="בדיקת קישור לאוצריא" Style="{StaticResource Body}" FontWeight="SemiBold" Margin="0,18,0,0"/>
+                    <TextBlock Text="{l:T 'בדיקת קישור לאוצריא'}" Style="{StaticResource Body}" FontWeight="SemiBold" Margin="0,18,0,0"/>
                     <TextBlock Style="{StaticResource Secondary}" Margin="0,2,0,8"
-                               Text="פותח את otzaria://open/history כדי לוודא שהקישורים מהווידג'טים יעבדו."/>
-                    <Button Content="בדוק קישור" Command="{Binding TestLinkCommand}" HorizontalAlignment="Left"/>
+                               Text="{l:T 'פותח את otzaria://open/history כדי לוודא שהקישורים מהווידג\'טים יעבדו.'}"/>
+                    <Button Content="{l:T 'בדוק קישור'}" Command="{Binding TestLinkCommand}" HorizontalAlignment="Left"/>
 
                     <ContentControl Content="{Binding Message}" Style="{StaticResource MessageHost}"/>
                 </StackPanel>

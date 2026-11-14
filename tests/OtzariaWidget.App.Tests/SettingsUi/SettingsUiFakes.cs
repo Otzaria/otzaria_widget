@@ -39,12 +39,13 @@ internal sealed class FakeDataService : IOtzariaDataService
 {
     public bool Throw;
     public OtzariaPreferences Prefs = new() { SelectedCity = "ירושלים", TwelveHourClock = true };
+    public List<SourceStatus> Status = [new SourceStatus("user_state.db", DataHealth.NotFound, null)];
     public OtzariaSnapshot GetSnapshot() => Throw ? throw new NotImplementedException() : new OtzariaSnapshot
     {
         ReadAt = DateTimeOffset.Now,
         Paths = new OtzariaPaths { DataRoot = @"C:\nope", Diagnostics = ["note 1"] },
         Preferences = Prefs,
-        Status = [new SourceStatus("user_state.db", DataHealth.NotFound, null)],
+        Status = Status,
     };
     public void Invalidate() { }
     public event EventHandler? Changed { add { } remove { } }

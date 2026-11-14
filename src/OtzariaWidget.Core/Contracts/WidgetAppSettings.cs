@@ -43,6 +43,10 @@ public sealed class WidgetAppSettings
     // ---- Privacy ----
     /// <summary>Hide searches from all widgets.</summary>
     public bool HideSearches { get; set; }
+
+    // ---- Settings window ----
+    /// <summary>Language of the settings window: "system" (follow the Windows display language), "he" or "en". Cards are not affected.</summary>
+    public string UiLanguage { get; set; } = "system";
 }
 
 public interface ISettingsStore

@@ -2,7 +2,7 @@
 
   <!-- One exe, two modes (see Program.cs):
          -RegisterProcessAsComServer  => Widgets Board COM provider (MTA, no UI)
-         otherwise                    => WPF settings window (Hebrew, RTL)
+         otherwise                    => WPF settings window (Hebrew RTL / English LTR)
        Based on spikes/WidgetSpike (verified working). See docs/research/widget-platform.md -->
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -44,6 +44,11 @@
 
   <ItemGroup>
     <None Include="Templates\**\*.json" CopyToOutputDirectory="PreserveNewest" LinkBase="Templates" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- settings-window translations, keyed by the Hebrew source text (SettingsUi/Localization/Loc.cs) -->
+    <EmbeddedResource Include="SettingsUi\Localization\settings_en.json" LogicalName="OtzariaWidget.SettingsUi.settings_en.json" />
   </ItemGroup>
 
 </Project>

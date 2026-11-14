@@ -1,6 +1,7 @@
 <UserControl x:Class="OtzariaWidget.App.SettingsUi.Views.TimesPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:l="clr-namespace:OtzariaWidget.App.SettingsUi.Localization"
              Loaded="OnLoaded">
     <UserControl.Resources>
         <Style x:Key="CityItemStyle" TargetType="ListBoxItem" BasedOn="{StaticResource ListItemStyle}">
@@ -16,25 +17,25 @@
         <!-- settings -->
         <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="32,24,16,24" MaxWidth="640" HorizontalAlignment="Stretch">
-                <TextBlock Text="זמנים ולוח שנה" Style="{StaticResource PageTitle}"/>
+                <TextBlock Text="{l:T 'זמנים ולוח שנה'}" Style="{StaticResource PageTitle}"/>
 
                 <Border Style="{StaticResource Banner}" Visibility="{Binding HasCalendarError, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="{Binding CalendarError, StringFormat='שירות הלוח העברי: {0}'}" Style="{StaticResource Secondary}"/>
+                    <TextBlock Text="{Binding CalendarErrorLine}" Style="{StaticResource Secondary}"/>
                 </Border>
 
                 <!-- city -->
                 <Border Style="{StaticResource Card}">
                     <StackPanel>
-                        <TextBlock Text="עיר" Style="{StaticResource SectionTitle}"/>
-                        <RadioButton HorizontalAlignment="Left" GroupName="CityMode" IsChecked="{Binding FollowCity, Mode=TwoWay}" Content="כמו באוצריא"/>
+                        <TextBlock Text="{l:T 'עיר'}" Style="{StaticResource SectionTitle}"/>
+                        <RadioButton HorizontalAlignment="Left" GroupName="CityMode" IsChecked="{Binding FollowCity, Mode=TwoWay}" Content="{l:T 'כמו באוצריא'}"/>
                         <TextBlock Text="{Binding OtzariaCityText}" Style="{StaticResource Secondary}" Margin="28,-4,0,6"/>
-                        <RadioButton HorizontalAlignment="Left" GroupName="CityMode" IsChecked="{Binding CustomCity, Mode=TwoWay}" Content="בחירת עיר ידנית"/>
+                        <RadioButton HorizontalAlignment="Left" GroupName="CityMode" IsChecked="{Binding CustomCity, Mode=TwoWay}" Content="{l:T 'בחירת עיר ידנית'}"/>
 
                         <StackPanel Margin="28,8,0,0"
                                     Visibility="{Binding CustomCity, Converter={StaticResource BoolToVis}}">
                             <TextBox x:Name="CityFilterBox" Text="{Binding CityFilter, UpdateSourceTrigger=PropertyChanged}"
-                                     AutomationProperties.Name="חיפוש עיר" MinHeight="32" VerticalContentAlignment="Center"/>
-                            <TextBlock Text="הקלידו חלק משם העיר או המדינה כדי לסנן" Style="{StaticResource Secondary}" Margin="0,4,0,6"/>
+                                     AutomationProperties.Name="{l:T 'חיפוש עיר'}" MinHeight="32" VerticalContentAlignment="Center"/>
+                            <TextBlock Text="{l:T 'הקלידו חלק משם העיר או המדינה כדי לסנן'}" Style="{StaticResource Secondary}" Margin="0,4,0,6"/>
                             <ListBox x:Name="CityList" ItemsSource="{Binding CitiesView}" SelectedItem="{Binding SelectedCity, Mode=TwoWay}"
                                      Height="230" DisplayMemberPath="Name" Background="Transparent"
                                      BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1"
@@ -52,7 +53,7 @@
                                     </GroupStyle>
                                 </ListBox.GroupStyle>
                             </ListBox>
-                            <TextBlock Text="לא נמצאו ערים מתאימות" Style="{StaticResource Secondary}" Margin="0,6,0,0"
+                            <TextBlock Text="{l:T 'לא נמצאו ערים מתאימות'}" Style="{StaticResource Secondary}" Margin="0,6,0,0"
                                        Visibility="{Binding NoCityMatches, Converter={StaticResource BoolToVis}}"/>
                             <TextBlock Text="{Binding CityWarning}" Style="{StaticResource Secondary}" Foreground="{StaticResource StateWarningBrush}" Margin="0,6,0,0"
                                        Visibility="{Binding CityWarning, Converter={StaticResource NullToCollapsed}}"/>
@@ -63,20 +64,20 @@
                 <!-- zmanim -->
                 <Border Style="{StaticResource Card}">
                     <StackPanel>
-                        <TextBlock Text="הזמנים להצגה" Style="{StaticResource SectionTitle}"/>
-                        <RadioButton HorizontalAlignment="Left" GroupName="ZmanimMode" IsChecked="{Binding FollowZmanim, Mode=TwoWay}" Content="כמו באוצריא"/>
-                        <RadioButton HorizontalAlignment="Left" GroupName="ZmanimMode" IsChecked="{Binding CustomZmanim, Mode=TwoWay}" Content="בחירה ידנית"/>
+                        <TextBlock Text="{l:T 'הזמנים להצגה'}" Style="{StaticResource SectionTitle}"/>
+                        <RadioButton HorizontalAlignment="Left" GroupName="ZmanimMode" IsChecked="{Binding FollowZmanim, Mode=TwoWay}" Content="{l:T 'כמו באוצריא'}"/>
+                        <RadioButton HorizontalAlignment="Left" GroupName="ZmanimMode" IsChecked="{Binding CustomZmanim, Mode=TwoWay}" Content="{l:T 'בחירה ידנית'}"/>
                         <TextBlock Text="{Binding ZmanimSummary}" Style="{StaticResource Secondary}" Margin="0,6,0,0"/>
 
                         <StackPanel Margin="0,10,0,0" Visibility="{Binding CustomZmanim, Converter={StaticResource BoolToVis}}">
                             <WrapPanel Margin="0,0,0,8">
-                                <Button Content="בחר הכול" Command="{Binding SelectAllZmanimCommand}" Margin="0,0,8,0"/>
-                                <Button Content="נקה הכול" Command="{Binding ClearZmanimCommand}" Margin="0,0,8,0"/>
-                                <Button Content="ברירת מחדל" Command="{Binding DefaultZmanimCommand}"/>
+                                <Button Content="{l:T 'בחר הכול'}" Command="{Binding SelectAllZmanimCommand}" Margin="0,0,8,0"/>
+                                <Button Content="{l:T 'נקה הכול'}" Command="{Binding ClearZmanimCommand}" Margin="0,0,8,0"/>
+                                <Button Content="{l:T 'ברירת מחדל'}" Command="{Binding DefaultZmanimCommand}"/>
                             </WrapPanel>
                             <TextBox Text="{Binding ZmanFilter, UpdateSourceTrigger=PropertyChanged}" MinHeight="32"
-                                     VerticalContentAlignment="Center" AutomationProperties.Name="חיפוש זמן" Margin="0,0,0,2"/>
-                            <TextBlock Text="הקלידו חלק משם הזמן כדי לסנן את הרשימה" Style="{StaticResource Secondary}" Margin="0,2,0,8"/>
+                                     VerticalContentAlignment="Center" AutomationProperties.Name="{l:T 'חיפוש זמן'}" Margin="0,0,0,2"/>
+                            <TextBlock Text="{l:T 'הקלידו חלק משם הזמן כדי לסנן את הרשימה'}" Style="{StaticResource Secondary}" Margin="0,2,0,8"/>
                             <Border BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="6">
                                 <ScrollViewer MaxHeight="340" VerticalScrollBarVisibility="Auto" Padding="10,6">
                                     <ItemsControl ItemsSource="{Binding ZmanimView}" Focusable="False">
@@ -96,21 +97,21 @@
                 <!-- format + day transition -->
                 <Border Style="{StaticResource Card}">
                     <StackPanel>
-                        <TextBlock Text="תצוגת שעות ומעבר יום" Style="{StaticResource SectionTitle}"/>
+                        <TextBlock Text="{l:T 'תצוגת שעות ומעבר יום'}" Style="{StaticResource SectionTitle}"/>
 
-                        <TextBlock Text="פורמט שעה" Style="{StaticResource Body}" Margin="0,0,0,4"/>
+                        <TextBlock Text="{l:T 'פורמט שעה'}" Style="{StaticResource Body}" Margin="0,0,0,4"/>
                         <ComboBox ItemsSource="{Binding TimeFormatLabels}" SelectedIndex="{Binding TimeFormatIndex, Mode=TwoWay}"
-                                  MinWidth="240" HorizontalAlignment="Left" AutomationProperties.Name="פורמט שעה"/>
+                                  MinWidth="240" HorizontalAlignment="Left" AutomationProperties.Name="{l:T 'פורמט שעה'}"/>
                         <TextBlock Text="{Binding TimeFormatHint}" Style="{StaticResource Secondary}" Margin="0,4,0,0"
                                    Visibility="{Binding TimeFormatHint, Converter={StaticResource NullToCollapsed}}"/>
 
-                        <TextBlock Text="מעבר היום העברי" Style="{StaticResource Body}" Margin="0,16,0,4"/>
+                        <TextBlock Text="{l:T 'מעבר היום העברי'}" Style="{StaticResource Body}" Margin="0,16,0,4"/>
                         <ComboBox ItemsSource="{Binding DayTransitionOptions}" SelectedIndex="{Binding DayTransitionIndex, Mode=TwoWay}"
-                                  MinWidth="240" HorizontalAlignment="Left" AutomationProperties.Name="מעבר היום העברי"/>
+                                  MinWidth="240" HorizontalAlignment="Left" AutomationProperties.Name="{l:T 'מעבר היום העברי'}"/>
                         <TextBlock Text="{Binding DayTransitionHint}" Style="{StaticResource Secondary}" Margin="0,4,0,0"
                                    Visibility="{Binding DayTransitionHint, Converter={StaticResource NullToCollapsed}}"/>
 
-                        <CheckBox Content="הצג דף יומי ירושלמי" IsChecked="{Binding ShowYerushalmiDaf, Mode=TwoWay}" Margin="0,16,0,0"/>
+                        <CheckBox Content="{l:T 'הצג דף יומי ירושלמי'}" IsChecked="{Binding ShowYerushalmiDaf, Mode=TwoWay}" Margin="0,16,0,0"/>
                     </StackPanel>
                 </Border>
             </StackPanel>
@@ -121,23 +122,26 @@
             <DockPanel>
                 <StackPanel DockPanel.Dock="Top">
                     <Grid>
-                        <TextBlock Text="תצוגה מקדימה להיום" Style="{StaticResource SectionTitle}" Margin="0" VerticalAlignment="Center"/>
-                        <Button HorizontalAlignment="Right" Command="{Binding RefreshPreviewCommand}" Padding="6,4" ToolTip="רענן"
-                                Background="Transparent" BorderThickness="0" AutomationProperties.Name="רענן תצוגה">
+                        <TextBlock Text="{l:T 'תצוגה מקדימה להיום'}" Style="{StaticResource SectionTitle}" Margin="0" VerticalAlignment="Center"/>
+                        <Button HorizontalAlignment="Right" Command="{Binding RefreshPreviewCommand}" Padding="6,4" ToolTip="{l:T 'רענן'}"
+                                Background="Transparent" BorderThickness="0" AutomationProperties.Name="{l:T 'רענן תצוגה'}">
                             <TextBlock Text="&#xE72C;" Style="{StaticResource IconText}" FontSize="13"/>
                         </Button>
                     </Grid>
                     <ProgressBar IsIndeterminate="True" Height="2" Margin="0,6,0,0" Visibility="{Binding PreviewBusy, Converter={StaticResource BoolToVis}}"/>
-                    <TextBlock Text="{Binding PreviewCity}" FontSize="18" FontWeight="SemiBold" Style="{StaticResource Body}" Margin="0,10,0,0"/>
-                    <TextBlock Text="{Binding PreviewDate}" Style="{StaticResource Body}"/>
-                    <TextBlock Text="{Binding PreviewGregorian}" Style="{StaticResource Secondary}"/>
-                    <TextBlock Text="{Binding PreviewExtra}" Style="{StaticResource Secondary}" Margin="0,4,0,0"
-                               Visibility="{Binding HasPreviewExtra, Converter={StaticResource BoolToVis}}"/>
+                    <!-- the preview mirrors the card, which stays Hebrew (RTL) in every language -->
+                    <StackPanel FlowDirection="RightToLeft">
+                        <TextBlock Text="{Binding PreviewCity}" FontSize="18" FontWeight="SemiBold" Style="{StaticResource Body}" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding PreviewDate}" Style="{StaticResource Body}"/>
+                        <TextBlock Text="{Binding PreviewGregorian}" Style="{StaticResource Secondary}"/>
+                        <TextBlock Text="{Binding PreviewExtra}" Style="{StaticResource Secondary}" Margin="0,4,0,0"
+                                   Visibility="{Binding HasPreviewExtra, Converter={StaticResource BoolToVis}}"/>
+                    </StackPanel>
                     <TextBlock Text="{Binding PreviewError}" Style="{StaticResource Secondary}" Foreground="{StaticResource StateWarningBrush}" Margin="0,10,0,0"
                                Visibility="{Binding HasPreviewError, Converter={StaticResource BoolToVis}}"/>
                     <Separator Margin="0,10,0,6"/>
                 </StackPanel>
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" FlowDirection="RightToLeft">
                     <ItemsControl ItemsSource="{Binding Preview}" Focusable="False" Margin="0,0,14,0">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>

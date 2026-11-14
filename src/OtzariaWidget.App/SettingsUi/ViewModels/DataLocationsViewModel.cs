@@ -2,6 +2,7 @@ using System.IO;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using OtzariaWidget.App.SettingsUi.Infrastructure;
+using OtzariaWidget.App.SettingsUi.Localization;
 using OtzariaWidget.Core.Contracts;
 
 namespace OtzariaWidget.App.SettingsUi.ViewModels;
@@ -26,7 +27,7 @@ public sealed class PathOverrideViewModel : ObservableObject
 
     public PathOverrideViewModel(string title, string description, PathKind kind, IShell shell,
         Func<string?> get, Action<string?> set, Action changed,
-        string fileFilter = "כל הקבצים|*.*",
+        string? fileFilter = null,
         Func<string, (StateKind, string)>? extraCheck = null)
     {
         Title = title;
@@ -36,7 +37,7 @@ public sealed class PathOverrideViewModel : ObservableObject
         _get = get;
         _set = set;
         _changed = changed;
-        _fileFilter = fileFilter;
+        _fileFilter = fileFilter ?? Loc.T("כל הקבצים") + "|*.*";
         _extraCheck = extraCheck;
         _text = get() ?? "";
         Validate();
@@ -92,7 +93,7 @@ public sealed class PathOverrideViewModel : ObservableObject
         if (path is null)
         {
             State = StateKind.Neutral;
-            Validation = "זיהוי אוטומטי";
+            Validation = Loc.T("זיהוי אוטומטי");
             return;
         }
 
@@ -103,12 +104,12 @@ public sealed class PathOverrideViewModel : ObservableObject
         if (!exists)
         {
             State = StateKind.Error;
-            Validation = _kind == PathKind.Folder ? "התיקייה לא נמצאה" : "הקובץ לא נמצא";
+            Validation = _kind == PathKind.Folder ? Loc.T("התיקייה לא נמצאה") : Loc.T("הקובץ לא נמצא");
             return;
         }
 
         State = StateKind.Ok;
-        Validation = _kind == PathKind.Folder ? "התיקייה נמצאה" : "הקובץ נמצא";
+        Validation = _kind == PathKind.Folder ? Loc.T("התיקייה נמצאה") : Loc.T("הקובץ נמצא");
         if (_extraCheck is not null)
         {
             try
@@ -138,32 +139,32 @@ public sealed class DataLocationsViewModel : ObservableObject
 
         Items =
         [
-            Add(new PathOverrideViewModel("תיקיית הנתונים של אוצריא",
-                "בדרך כלל %APPDATA%\\otzaria. בגרסה ניידת: otzaria_data ליד otzaria.exe.",
+            Add(new PathOverrideViewModel(Loc.T("תיקיית הנתונים של אוצריא"),
+                Loc.T("בדרך כלל %APPDATA%\\otzaria. בגרסה ניידת: otzaria_data ליד otzaria.exe."),
                 PathOverrideViewModel.PathKind.Folder, svc.Shell, () => s.DataRootOverride, v => s.DataRootOverride = v, Changed,
                 extraCheck: p => File.Exists(Path.Combine(p, "app_preferences.hive")) || Directory.Exists(Path.Combine(p, "databases"))
                     ? (StateKind.Ok, "")
-                    : (StateKind.Warning, "התיקייה קיימת, אך לא נמצא בה app_preferences.hive")),
+                    : (StateKind.Warning, Loc.T("התיקייה קיימת, אך לא נמצא בה app_preferences.hive"))),
                 p => p.DataRoot),
-            Add(new PathOverrideViewModel("תיקיית מסדי הנתונים",
-                "התיקייה שמכילה את user_state.db. ברירת המחדל נגזרת מההעדפות של אוצריא.",
+            Add(new PathOverrideViewModel(Loc.T("תיקיית מסדי הנתונים"),
+                Loc.T("התיקייה שמכילה את user_state.db. ברירת המחדל נגזרת מההעדפות של אוצריא."),
                 PathOverrideViewModel.PathKind.Folder, svc.Shell, () => s.DatabasesDirOverride, v => s.DatabasesDirOverride = v, Changed,
                 extraCheck: p => File.Exists(Path.Combine(p, "user_state.db"))
                     ? (StateKind.Ok, "")
-                    : (StateKind.Warning, "התיקייה קיימת, אך לא נמצא בה user_state.db")),
+                    : (StateKind.Warning, Loc.T("התיקייה קיימת, אך לא נמצא בה user_state.db"))),
                 p => p.UserStateDb is null ? null : Path.GetDirectoryName(p.UserStateDb)),
-            Add(new PathOverrideViewModel("קובץ ספריית הספרים (seforim.db)",
-                "מסד הספרייה הגדול של אוצריא. הווידג'ט קורא ממנו בלבד.",
+            Add(new PathOverrideViewModel(Loc.T("קובץ ספריית הספרים (seforim.db)"),
+                Loc.T("מסד הספרייה הגדול של אוצריא. הווידג'ט קורא ממנו בלבד."),
                 PathOverrideViewModel.PathKind.File, svc.Shell, () => s.LibraryDbOverride, v => s.LibraryDbOverride = v, Changed,
-                fileFilter: "מסד ספרייה (seforim.db)|seforim.db|קבצי SQLite (*.db)|*.db|כל הקבצים|*.*"),
+                fileFilter: Loc.T("מסד ספרייה (seforim.db)") + "|seforim.db|" + Loc.T("קבצי SQLite (*.db)") + "|*.db|" + Loc.T("כל הקבצים") + "|*.*"),
                 p => p.LibraryDb),
-            Add(new PathOverrideViewModel("התוכנה (otzaria.exe)",
-                "משמש לפתיחת אוצריא מהווידג'טים. חשוב במיוחד בגרסה ניידת.",
+            Add(new PathOverrideViewModel(Loc.T("התוכנה (otzaria.exe)"),
+                Loc.T("משמש לפתיחת אוצריא מהווידג'טים. חשוב במיוחד בגרסה ניידת."),
                 PathOverrideViewModel.PathKind.File, svc.Shell, () => s.OtzariaExeOverride, v => s.OtzariaExeOverride = v, Changed,
-                fileFilter: "otzaria.exe|otzaria.exe|קבצי הפעלה (*.exe)|*.exe|כל הקבצים|*.*",
+                fileFilter: "otzaria.exe|otzaria.exe|" + Loc.T("קבצי הפעלה (*.exe)") + "|*.exe|" + Loc.T("כל הקבצים") + "|*.*",
                 extraCheck: p => p.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)
                     ? (StateKind.Ok, "")
-                    : (StateKind.Warning, "הקובץ קיים, אך אינו קובץ הפעלה (.exe)")),
+                    : (StateKind.Warning, Loc.T("הקובץ קיים, אך אינו קובץ הפעלה (.exe)"))),
                 p => p.OtzariaExe),
         ];
 
@@ -174,7 +175,7 @@ public sealed class DataLocationsViewModel : ObservableObject
 
     public ObservableCollection<PathOverrideViewModel> Items { get; }
     public ICommand ResetAllCommand { get; }
-    public string Title => "מיקום הנתונים";
+    public string Title => Loc.T("מיקום הנתונים");
 
     private PathOverrideViewModel Add(PathOverrideViewModel vm, Func<OtzariaPaths, string?> pick)
     {
@@ -206,8 +207,8 @@ public sealed class DataLocationsViewModel : ObservableObject
                 try { value = pick(paths); } catch { }
             }
             vm.Resolved = paths is null
-                ? (error ?? "לא זמין")
-                : (string.IsNullOrWhiteSpace(value) ? "לא נמצא" : value);
+                ? (error ?? Loc.T("לא זמין"))
+                : (string.IsNullOrWhiteSpace(value) ? Loc.T("לא נמצא") : value);
         }
     }
 }
