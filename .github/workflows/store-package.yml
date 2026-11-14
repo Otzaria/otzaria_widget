@@ -1,0 +1,34 @@
+name: Store package (manual)
+
+# בונה חבילת MSIX לחנות להורדה ידנית (למשל להגשה ב-Partner Center), בלי להגיש ובלי release.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build Store MSIX
+        shell: pwsh
+        run: |
+          .\packaging\make-msix.ps1 -Store `
+            -IdentityName 'F8854998.615306A22FAC3' -Publisher 'CN=B3B520D1-500C-4859-986C-448583CC927B' `
+            -PublisherDisplayName 'אוצריא'
+          $msix = @(Get-ChildItem artifacts\store\*.msix)
+          if ($msix.Count -ne 1 -or $msix[0].Name -like '*PLACEHOLDER*') { throw 'Store MSIX was not produced correctly' }
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: store-msix
+          path: artifacts/store/*.msix
+          if-no-files-found: error
