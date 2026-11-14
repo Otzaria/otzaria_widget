@@ -158,7 +158,7 @@ Partner Center מציג שדות Minimum / Recommended. ערכים מוצעים:
 
 כל ווידג'ט ניתן להוספה כמה פעמים, ולכל עותק הגדרות משלו. ההתאמה האישית נעשית מתפריט ה-... של הווידג'ט.
 
-אפליקציית ההגדרות (בעברית, מימין לשמאל) מאפשרת לראות מה זוהה במחשב, לקבוע ידנית את מיקום הנתונים אם צריך, לבחור עיר, זמנים, פורמט שעה ומעבר היום העברי, ולהחליט איך נפתחים קישורים. כל שינוי נשמר אוטומטית.
+אפליקציית ההגדרות (בעברית או באנגלית, לפי שפת Windows; אפשר להחליף בהגדרות) מאפשרת לראות מה זוהה במחשב, לקבוע ידנית את מיקום הנתונים אם צריך, לבחור עיר, זמנים, פורמט שעה ומעבר היום העברי, ולהחליט איך נפתחים קישורים. כל שינוי נשמר אוטומטית.
 
 פרטיות:
 • קריאה בלבד: הווידג'ט קורא את הקבצים המקומיים של אוצריא ולעולם אינו כותב או משנה אותם.
@@ -177,7 +177,7 @@ Partner Center מציג שדות Minimum / Recommended. ערכים מוצעים:
 ### What's new in this version (עד 1,500 תווים)
 
 ```
-גרסה ראשונה: שישה ווידג'טים ללוח הווידג'טים של Windows 11 (ספרים אחרונים, סימניות, שמור וזכור, זמני היום, לוח עברי ולוח אישי), בגדלים קטן, בינוני וגדול, ואפליקציית הגדרות בעברית.
+גרסה ראשונה: שישה ווידג'טים ללוח הווידג'טים של Windows 11 (ספרים אחרונים, סימניות, שמור וזכור, זמני היום, לוח עברי ולוח אישי), בגדלים קטן, בינוני וגדול, ואפליקציית הגדרות בעברית ובאנגלית.
 ```
 
 ### Product features (עד 20 פריטים, עד 200 תווים לכל פריט; מומלצים 5-8)
@@ -186,7 +186,7 @@ Partner Center מציג שדות Minimum / Recommended. ערכים מוצעים:
 2. לחיצה על פריט פותחת אותו ישירות באוצריא, במקום המדויק בספר.
 3. זמני היום עם ספירה לאחור לזמן הבא, ולוח עברי עם חגים, פרשת השבוע, ספירת העומר ודף יומי (בבלי וירושלמי).
 4. התאמה אישית לכל ווידג'ט, והוספה של אותו ווידג'ט כמה פעמים עם הגדרות שונות.
-5. אפליקציית הגדרות בעברית, מימין לשמאל, עם בחירת עיר, זמנים ופורמט שעה.
+5. אפליקציית הגדרות בעברית ובאנגלית (לפי שפת Windows, ואפשר להחליף), עם בחירת עיר, זמנים ופורמט שעה.
 6. קריאה בלבד: לא כותב ולא משנה את קבצי אוצריא, ועובד גם כשאוצריא סגורה.
 7. פרטיות: אין שרתים, אין איסוף נתונים ואין חשבון. אפשר להסתיר חיפושים אחרונים.
 
@@ -239,7 +239,7 @@ SIX WIDGETS
 Every widget can be added more than once, and each copy has its own settings.
 
 CUSTOMIZE
-Use the widget's "..." menu and choose "Customize widget" to set the number of items, show or hide the position in a book, include PDF books, choose a bookmark group, pick a city and the set of times to show, and more. A small settings app (Hebrew, right to left) lets you choose the city, the Zmanim to display, the time format (24-hour or 12-hour), the point at which the Hebrew day changes, and how links are opened. Changes are saved automatically.
+Use the widget's "..." menu and choose "Customize widget" to set the number of items, show or hide the position in a book, include PDF books, choose a bookmark group, pick a city and the set of times to show, and more. A small settings app, available in Hebrew and English (it follows your Windows language and can be switched in its settings), lets you choose the city, the Zmanim to display, the time format (24-hour or 12-hour), the point at which the Hebrew day changes, and how links are opened. Changes are saved automatically.
 
 OPEN IN OTZARIA
 Each item is a link that opens the book at the exact place in Otzaria.
@@ -266,7 +266,7 @@ The widget finds Otzaria's data automatically in most cases, including the porta
 First release.
 - Six widgets for the Windows 11 Widgets Board: Recent books, Bookmarks, Shamor Vezachor, Zmanim, Hebrew calendar and a personal Dashboard.
 - Small, medium and large sizes, with per-widget customization.
-- Settings app for city, Zmanim, time format and data locations.
+- Settings app in Hebrew and English for city, Zmanim, time format and data locations.
 - Opens books directly in Otzaria at the exact position.
 ```
 
@@ -279,7 +279,7 @@ Six widgets: recent books, bookmarks, Shamor Vezachor, Zmanim, Hebrew calendar a
 Small, medium and large sizes, each widget can be added several times with its own settings
 Tap any item to open the book in Otzaria at the exact position
 Daily Zmanim with a countdown, Hebrew date, holidays, Omer count and Daf Yomi (Bavli and Yerushalmi)
-Customize each widget and use the settings app for city, times, time format and data locations
+Customize each widget and use the settings app (Hebrew or English) for city, times, time format and data locations
 Reads Otzaria's local files in read-only mode and works even when Otzaria is closed
 No account, no servers and no data collection: nothing leaves your computer
 Option to hide recent searches from all widgets
