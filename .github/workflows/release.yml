@@ -10,6 +10,8 @@ permissions:
 jobs:
   build:
     runs-on: windows-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
 
     steps:
       - uses: actions/checkout@v7
@@ -161,3 +163,79 @@ jobs:
             After installation, open the Widgets board (`Win+W`) and click `+` to add Otzaria widgets.
           files: artifacts/OtzariaWidget-${{ steps.version.outputs.version }}-x64-setup.exe
           generate_release_notes: true
+
+  # מגיש לחנות את אותה גרסה. לא פעיל עד שמוגדר המשתנה MSSTORE_PRODUCT_ID במאגר.
+  store:
+    needs: build
+    if: vars.MSSTORE_PRODUCT_ID != ''
+    runs-on: windows-latest
+    concurrency:
+      group: microsoft-store
+      cancel-in-progress: false
+    env:
+      MSSTORE_PRODUCT_ID: ${{ vars.MSSTORE_PRODUCT_ID }}
+      AZURE_AD_TENANT_ID: ${{ secrets.AZURE_AD_TENANT_ID }}
+      AZURE_AD_APPLICATION_CLIENT_ID: ${{ secrets.AZURE_AD_APPLICATION_CLIENT_ID }}
+      AZURE_AD_APPLICATION_SECRET: ${{ secrets.AZURE_AD_APPLICATION_SECRET }}
+      SELLER_ID: ${{ secrets.SELLER_ID }}
+    steps:
+      # msstore publish מוחק הגשה שעדיין בבדיקה ופותח חדשה — בדחיפות תכופות הבדיקה לא הייתה מסתיימת.
+      # לכן מדלגים כשיש הגשה בתהליך, וגם לפני הפרסום הראשון (שנעשה ב-Partner Center בלבד).
+      - name: Check Store state
+        id: state
+        shell: pwsh
+        run: |
+          $token = (Invoke-RestMethod -Method Post "https://login.microsoftonline.com/$env:AZURE_AD_TENANT_ID/oauth2/token" -Body @{
+            grant_type = 'client_credentials'; resource = 'https://manage.devcenter.microsoft.com'
+            client_id = $env:AZURE_AD_APPLICATION_CLIENT_ID; client_secret = $env:AZURE_AD_APPLICATION_SECRET
+          }).access_token
+          $headers = @{ Authorization = "Bearer $token" }
+          $api = "https://manage.devcenter.microsoft.com/v1.0/my/applications/$env:MSSTORE_PRODUCT_ID"
+          $app = Invoke-RestMethod $api -Headers $headers
+          $publish = 'true'
+          if (-not $app.lastPublishedApplicationSubmission) {
+            Write-Host '::notice::The app has not been published yet; the first submission is done in Partner Center. Skipping.'
+            $publish = 'false'
+          } elseif ($app.pendingApplicationSubmission) {
+            $pending = Invoke-RestMethod "$api/submissions/$($app.pendingApplicationSubmission.id)" -Headers $headers
+            if ($pending.status -notin 'PendingCommit', 'CommitFailed', 'Canceled') {
+              Write-Host "::notice::Submission $($pending.id) is in '$($pending.status)'; skipping so its certification is not restarted."
+              $publish = 'false'
+            }
+          }
+          "publish=$publish" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - uses: actions/checkout@v7
+        if: steps.state.outputs.publish == 'true'
+
+      - name: Setup .NET 10
+        if: steps.state.outputs.publish == 'true'
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Build Store MSIX
+        if: steps.state.outputs.publish == 'true'
+        shell: pwsh
+        run: |
+          $parts = '${{ needs.build.outputs.version }}'.Split('.')
+          .\packaging\make-msix.ps1 -Store -Version "$($parts[0]).$($parts[1]).$($parts[2]).0" `
+            -IdentityName 'F8854998.615306A22FAC3' -Publisher 'CN=B3B520D1-500C-4859-986C-448583CC927B' `
+            -PublisherDisplayName 'אוצריא'
+          $msix = @(Get-ChildItem artifacts\store\*.msix)
+          if ($msix.Count -ne 1 -or $msix[0].Name -like '*PLACEHOLDER*') { throw 'Store MSIX was not produced correctly' }
+          "MSIX=$($msix[0].FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Install Microsoft Store CLI
+        if: steps.state.outputs.publish == 'true'
+        uses: microsoft/microsoft-store-apppublisher@v1.1
+
+      - name: Submit to Microsoft Store
+        if: steps.state.outputs.publish == 'true'
+        shell: pwsh
+        run: |
+          msstore reconfigure --tenantId $env:AZURE_AD_TENANT_ID --sellerId $env:SELLER_ID `
+            --clientId $env:AZURE_AD_APPLICATION_CLIENT_ID --clientSecret $env:AZURE_AD_APPLICATION_SECRET
+          if ($LASTEXITCODE -ne 0) { throw 'msstore reconfigure failed' }
+          msstore publish $env:MSIX -id $env:MSSTORE_PRODUCT_ID
+          if ($LASTEXITCODE -ne 0) { throw 'msstore publish failed' }
