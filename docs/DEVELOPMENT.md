@@ -188,3 +188,29 @@ Procedure:
 6. `.\packaging\run-hostsim.ps1` (and `-WaitIdle`) completes with all HRESULTs OK; check `provider.log` for exceptions.
 7. `.\packaging\make-msix.ps1`; on a second machine/VM run `install-msix.ps1` as administrator, verify install, widgets, and `.\packaging\uninstall.ps1` (or Remove-AppxPackage) leaves Otzaria untouched.
 8. Commit; the package version is derived from the build time unless `-Version` is passed, so for a tagged release pass an explicit `-Version` to `make-msix.ps1`.
+
+## 10. Publishing to the Microsoft Store
+
+The Store signs the package itself and resolves `Microsoft.WindowsAppRuntime.1.8`, so a Store build is **unsigned**, has no `.cer`/installer, and does not ship the Windows App Runtime packages. In Partner Center reserve the app name first, then open **Product management > Product identity** and copy three values:
+
+| Partner Center field | `make-msix.ps1` parameter | Manifest |
+|---|---|---|
+| Package/Identity/Name | `-IdentityName` | `Identity Name` |
+| Package/Identity/Publisher (`CN=<GUID>`) | `-Publisher` | `Identity Publisher` |
+| Package/Properties/PublisherDisplayName | `-PublisherDisplayName` | `PublisherDisplayName` |
+
+```powershell
+.\packaging\make-msix.ps1 -Store `
+  -IdentityName 'XXXXXPublisher.OtzariaWidget' `
+  -Publisher 'CN=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX' `
+  -PublisherDisplayName 'Publisher Display Name'
+```
+
+Output: `artifacts\store\Otzaria.Widget_<version>_x64.msix` (upload this file as the package in a submission). Notes:
+
+- Version defaults to `yyyy.MMdd.HHmm.0`. The Store requires a non-zero first segment, a 4th segment of `0`, and a version higher than every previously submitted one (the script validates the first two; pass `-Version a.b.c.0` to override).
+- Without all three values the script still runs but uses `REPLACE...` placeholders, prints a loud warning and names the file `*_PLACEHOLDER-IDENTITY.msix`. Partner Center rejects such a package.
+- `-Store` always rebuilds (it cannot be combined with `-SkipBuild`) and overwrites `artifacts\layout`, like `build.ps1`.
+- The manifest placeholders `@IDENTITYNAME@` / `@PUBLISHERDISPLAYNAME@` default to `Otzaria.Widget` / `Otzaria Dev` in `build.ps1`, so the dev flow and the GitHub release workflow are unchanged.
+- Sanity check before uploading: `makeappx unpack /p <msix> /d <tmp> /nv`, then confirm `AppxManifest.xml` has the Partner Center identity and a version ending in `.0`, `resources.pri` exists, and there are no `.pdb` files.
+- The submission needs justification for the restricted capability `runFullTrust`.
