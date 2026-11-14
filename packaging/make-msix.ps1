@@ -60,7 +60,7 @@ if ($Store) {
   if ($IdentityName -notmatch '^[A-Za-z0-9][A-Za-z0-9.\-]{2,49}$') { throw "IdentityName '$IdentityName' is not a valid package identity name (3-50 chars: letters, digits, '.', '-')" }
   if ($Publisher -notmatch '^CN=.+') { throw "Publisher '$Publisher' must be the Partner Center 'Package/Identity/Publisher' value, starting with CN=" }
   if (("$IdentityName$Publisher$PublisherDisplayName") -match '[<>&"]') { throw 'identity values must not contain < > & " (XML special characters)' }
-  if (-not $Version) { $Version = (Get-Date).ToString('yyyy.MMdd.HHmm') + '.0' }
+  if (-not $Version) { $Version = (Get-Date).ToString('yyyy.MMdd.HHmm', [cultureinfo]::InvariantCulture) + '.0' }
   # Store rules: 4 numeric segments <= 65535, first segment non-zero, 4th segment 0 (reserved by the Store)
   if ($Version -notmatch '^\d+\.\d+\.\d+\.\d+$') { throw "Version '$Version' must be a.b.c.d" }
   $seg = @($Version.Split('.') | ForEach-Object { [int64]$_ })
