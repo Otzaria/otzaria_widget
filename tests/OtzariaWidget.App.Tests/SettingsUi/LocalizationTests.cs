@@ -239,6 +239,86 @@ public class EnglishViewModelTests
     }
 }
 
+/// <summary>The path-resolver notes and source-status messages that Core writes in Hebrew, translated in the settings UI.</summary>
+public class CoreTextTests
+{
+    private static readonly string[] CoreFiles =
+    [
+        Path.Combine("Paths", "OtzariaPathResolver.cs"),
+        Path.Combine("Services", "OtzariaDataService.cs"),
+        Path.Combine("UserState", "UserStateReader.cs"),
+    ];
+
+    /// <summary>
+    /// Every Hebrew text in the files that produce notes and statuses must be a catalog key (fixed text) or a template
+    /// (interpolated holes become {0}, {1}...; a literal followed by "+ value" is the template's text before its last {n}).
+    /// </summary>
+    [Fact]
+    public void Every_core_note_and_status_message_has_an_english_translation()
+    {
+        var core = Path.Combine(DisplayViewModelTests.FindRepoRoot(), "src", "OtzariaWidget.Core");
+        var problems = new List<string>();
+        int checkedCount = 0;
+        foreach (var rel in CoreFiles)
+        {
+            foreach (var lit in CSharpLiterals.Find(File.ReadAllText(Path.Combine(core, rel))).Where(l => Loc.ContainsHebrew(l.Value)))
+            {
+                checkedCount++;
+                var text = lit.Value;
+                if (lit.IsInterpolated)
+                {
+                    int n = 0;
+                    text = Regex.Replace(text, @"\{[^}]*\}", _ => "{" + (n++).ToString(CultureInfo.InvariantCulture) + "}");
+                }
+                bool covered = Loc.TryTranslate(text, UiLanguage.English, out _) && (CoreText.Templates.Contains(text) || !Regex.IsMatch(text, @"\{\d+\}"))
+                    || CoreText.Templates.Any(t => Regex.IsMatch(t, "^" + Regex.Escape(text) + @"\{\d+\}$"));
+                if (!covered) problems.Add($"{rel}:{lit.Line + 1}: {text}");
+            }
+        }
+        Assert.True(checkedCount > 30);
+        Assert.True(problems.Count == 0, "Core texts without an English translation (add a catalog entry or a CoreText template):"
+            + Environment.NewLine + string.Join(Environment.NewLine, problems));
+    }
+
+    [Fact]
+    public void Every_template_has_a_translation_with_the_same_placeholders()
+    {
+        foreach (var t in CoreText.Templates)
+            Assert.True(Loc.TryTranslate(t, UiLanguage.English, out _), "missing in catalog: " + t);
+    }
+
+    [Theory]
+    [InlineData("תיקיית הנתונים נקבעה ידנית בהגדרות: D:\\otzaria_data", "Data folder set manually in the settings: D:\\otzaria_data")]
+    [InlineData("user_state.db: C:\\data\\databases\\user_state.db (מקור: <תיקיית נתונים>\\databases)",
+        "user_state.db: C:\\data\\databases\\user_state.db (source: <data folder>\\databases)")]
+    [InlineData("otzaria.exe: C:\\Program Files (x86)\\Otzaria\\otzaria.exe (מקור: תיקיית התקנה סטנדרטית (Program Files))",
+        "otzaria.exe: C:\\Program Files (x86)\\Otzaria\\otzaria.exe (source: standard install folder (Program Files))")]
+    [InlineData("otzaria.exe: C:\\o\\otzaria.exe (מקור: HKCU Uninstall\\InstallLocation)", "otzaria.exe: C:\\o\\otzaria.exe (source: HKCU Uninstall\\InstallLocation)")]
+    [InlineData("מצב נייד: תיקיית הנתונים E:\\o\\otzaria_data (נמצא portable.marker ליד E:\\o\\otzaria.exe, מקור: הגדרות הווידג'ט)",
+        "Portable mode: data folder E:\\o\\otzaria_data (portable.marker found next to E:\\o\\otzaria.exe, source: Widget settings)")]
+    [InlineData("לא נמצא קובץ app_preferences.hive", "app_preferences.hive was not found")]
+    [InlineData("לא נמצא קובץ user_state.db", "user_state.db was not found")]
+    [InlineData("לא ניתן לקרוא את user_state.db: SQLite 11", "Cannot read user_state.db: SQLite 11")]
+    [InlineData("גרסת הסכמה לא מוכרת של user_state.db (7); ייתכן שנדרש עדכון של הווידג'ט", "Unknown user_state.db schema version (7); the widget may need an update")]
+    [InlineData("לא נמצא otzaria.exe", "otzaria.exe was not found")]
+    public void Notes_translate_with_their_variable_parts(string hebrew, string english)
+    {
+        Assert.True(CoreText.TryTranslate(hebrew, UiLanguage.English, out var t));
+        Assert.Equal(english, t);
+        Assert.True(CoreText.TryTranslate(hebrew, UiLanguage.Hebrew, out var same));
+        Assert.Equal(hebrew, same);
+    }
+
+    [Fact]
+    public void A_hebrew_folder_name_inside_a_path_stays_ltr_and_unknown_notes_stay_hebrew()
+    {
+        Assert.True(CoreText.TryTranslate("תיקיית הנתונים: C:\\משתמש\\otzaria (%APPDATA%\\otzaria)", UiLanguage.English, out var t));
+        Assert.Equal("Data folder: \u202AC:\\משתמש\\otzaria\u202C (%APPDATA%\\otzaria)", t);
+        Assert.False(CoreText.TryTranslate("הערה חדשה שעוד לא תורגמה", UiLanguage.English, out var raw));
+        Assert.Equal("הערה חדשה שעוד לא תורגמה", raw);
+    }
+}
+
 public class LanguagePickerTests
 {
     [Fact]
@@ -278,7 +358,7 @@ public class LanguagePickerTests
 /// <summary>A small C# lexer: string literals with their line, skipping comments and char literals.</summary>
 internal static class CSharpLiterals
 {
-    public sealed record Literal(string Value, int Line, bool IsLocKey);
+    public sealed record Literal(string Value, int Line, bool IsLocKey, bool IsInterpolated = false);
 
     public static List<Literal> Find(string src)
     {
@@ -306,6 +386,7 @@ internal static class CSharpLiterals
             if (c == '"')
             {
                 bool verbatim = i > 0 && (src[i - 1] == '@' || (i > 1 && src[i - 1] == '$' && src[i - 2] == '@'));
+                bool interpolated = i > 0 && (src[i - 1] == '$' || (i > 1 && src[i - 1] == '@' && src[i - 2] == '$'));
                 int startLine = line;
                 var prefix = src[Math.Max(0, i - 24)..i].TrimEnd('@', '$').TrimEnd();
                 bool isLocKey = prefix.EndsWith("Loc.T(", StringComparison.Ordinal) || prefix.EndsWith("Loc.F(", StringComparison.Ordinal);
@@ -327,7 +408,7 @@ internal static class CSharpLiterals
                     sb.Append(d);
                     i++;
                 }
-                result.Add(new Literal(sb.ToString(), startLine, isLocKey));
+                result.Add(new Literal(sb.ToString(), startLine, isLocKey, interpolated));
                 continue;
             }
             i++;

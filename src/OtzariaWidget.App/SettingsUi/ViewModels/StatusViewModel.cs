@@ -93,7 +93,7 @@ public sealed class StatusViewModel : ObservableObject
         Rows.Add(Row(Loc.T("התוכנה (otzaria.exe)"), p.OtzariaExe));
         Rows.Add(new StatusRow(Loc.T("גרסה ניידת"), p.IsPortable ? Loc.T("כן") : Loc.T("לא"), StateKind.Neutral));
 
-        foreach (var d in p.Diagnostics) Diagnostics.Add(d);
+        foreach (var d in p.Diagnostics) Diagnostics.Add(CoreText.Translate(d));
         foreach (var s in snap.Status)
         {
             var state = s.Health switch
@@ -112,14 +112,11 @@ public sealed class StatusViewModel : ObservableObject
         LastRead = Loc.F("נקרא לאחרונה: {0}", snap.ReadAt.LocalDateTime.ToString("HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture));
     }
 
-    /// <summary>
-    /// The data service writes Hebrew messages (cards show them too). Known ones are in the catalog; a message with
-    /// variable parts falls back to the generic health text rather than showing Hebrew in another language.
-    /// </summary>
+    /// <summary>The data service writes Hebrew messages (cards show them too); an unrecognised one shows the generic health text.</summary>
     private static string SourceMessage(SourceStatus s)
     {
         if (string.IsNullOrWhiteSpace(s.Message)) return HealthText(s.Health);
-        return Loc.TryTranslate(s.Message, Loc.Current, out var text) ? text : HealthText(s.Health);
+        return CoreText.TryTranslate(s.Message, Loc.Current, out var text) ? text : HealthText(s.Health);
     }
 
     private static string HealthText(DataHealth h) => h switch
