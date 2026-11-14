@@ -362,7 +362,7 @@ Widgets board
 השדה "Notes for certification" ב-Partner Center (שלב Properties/Submission options) מיועד לבודקי מיקרוסופט בלבד ואינו מוצג לציבור. הטקסט הבא מוכן להדבקה כפי שהוא. הוא מסביר איך בודקים ווידג'ט בלוח הווידג'טים, מה רואים כשאוצריא אינה מותקנת, ושאין צורך בחשבון או בהתחברות.
 
 ```text
-Otzaria Widget is a Windows 11 Widgets Board provider (plus a small settings window) for Otzaria, a free Hebrew library app. It adds six widgets to the Widgets Board: Recent books, Bookmarks, Shamor Vezachor (study progress), Daily times (zmanim), Hebrew calendar, and a combined personal Dashboard. UI text is in Hebrew (he-IL) with en-US as a secondary resource language, and the widgets are laid out right-to-left.
+Otzaria Widget is a Windows 11 Widgets Board provider (plus a small settings window) for Otzaria, a free Hebrew library app. It adds six widgets to the Widgets Board: Recent books, Bookmarks, Shamor Vezachor (study progress), Daily times (zmanim), Hebrew calendar, and a combined personal Dashboard. Widget content is in Hebrew (he-IL) and laid out right-to-left. The settings window follows the Windows display language (Hebrew on Hebrew Windows, English otherwise) and can be switched in its Display and behavior page.
 
 NO ACCOUNT / NO SIGN-IN
 The app needs no account, no sign-in, no license key and no network connection. It has no servers, collects no data and sends nothing off the device. There are no in-app purchases or ads.
