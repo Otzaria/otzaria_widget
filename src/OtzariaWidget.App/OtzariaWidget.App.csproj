@@ -27,6 +27,7 @@
     <PublishSingleFile>false</PublishSingleFile>
     <DebugType>embedded</DebugType>
     <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
     <ApplicationIcon Condition="Exists('Assets\app.ico')">Assets\app.ico</ApplicationIcon>
   </PropertyGroup>
 
