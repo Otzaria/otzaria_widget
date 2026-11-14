@@ -70,8 +70,18 @@ Key points:
 2. Privacy: Hive **whitelist only** (`PreferencesReader.IsWhitelisted`: `sz:*`, `key-selected-city`, `key-calendar-*`, dark mode / swatch colors, library/database path keys). Never read or log Google-calendar, email, password or credential keys. Logs carry no notes text or search queries.
 3. Defensive parsing: unknown fields ignored; one broken entry is skipped, never the whole list; an unknown schema yields `DataHealth.UnknownSchema` with a Hebrew message, never an exception to callers.
 4. Always `CultureInfo.InvariantCulture` for machine data (the dev machine is he-IL with the Hebrew calendar active); Gregorian dates are formatted explicitly.
-5. All user-visible text is Hebrew, RTL. Cards: Adaptive Cards 1.6 maximum, `rtl: true`, no `ProgressBar` element (bars are built from text segments / column weights).
+5. Card text is Hebrew, RTL. The settings window is Hebrew (RTL) or English (LTR), see "Settings window language" below. Cards: Adaptive Cards 1.6 maximum, `rtl: true`, no `ProgressBar` element (bars are built from text segments / column weights).
 6. Do not change packaging to single-file / trimmed / AOT / ILMerge (LGPL, see THIRD-PARTY-NOTICES.md).
+
+### Settings window language
+
+Hebrew is the source language and English is a catalog, mirroring Otzaria's own settings screen (`lib/settings/l10n`):
+
+- Text stays Hebrew in the code and is the catalog key: XAML `Text="{l:T 'מצב'}"` (escape an apostrophe as `\'`), C# `Loc.T("...")` / `Loc.F("... {0}", value)`. The English values are in `SettingsUi/Localization/settings_en.json`, embedded in the exe. A key may carry a context after `|` when the same Hebrew text needs two translations. A JSON catalog was chosen over `.resx` because the keys are the Hebrew text and `build.ps1` strips satellite-assembly folders from the layout.
+- `WidgetAppSettings.UiLanguage`: `system` (default; Hebrew Windows display language -> Hebrew, anything else -> English), `he` or `en`. `UiLanguage.Resolve` decides; the window's `FlowDirection` and `Language` follow the result.
+- Changing the language on the Display page rebuilds the window at once (same page and bounds). `--lang he|en` forces a language for one run without saving it (with `--screenshot` for visual QA).
+- Messages that `OtzariaDataService` writes (Hebrew, shared with the cards) are translated on the Status page when their exact text is in the catalog; messages with variable parts fall back to the generic health text. The path-resolver notes under "Detection details" and the Times preview (card content: zman names, Hebrew date, parasha) stay Hebrew.
+- `LocalizationTests` fails on a Hebrew literal outside the catalog, a missing or unused key, or a placeholder mismatch. A Hebrew literal that is card content is marked `// l10n: keep`.
 
 ## 4. Widgets and cards
 
