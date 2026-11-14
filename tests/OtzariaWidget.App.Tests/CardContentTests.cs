@@ -438,7 +438,8 @@ public class CardContentTests
     {
         var path = FindUp("packaging", "Package.appxmanifest");
         var text = File.ReadAllText(path);
-        var doc = XDocument.Parse(text.Replace("@VERSION@", "1.0.0.0").Replace("@PUBLISHER@", "CN=Test"));
+        var doc = XDocument.Parse(text.Replace("@VERSION@", "1.0.0.0").Replace("@PUBLISHER@", "CN=Test")
+            .Replace("@IDENTITYNAME@", ProviderIds.PackageName).Replace("@PUBLISHERDISPLAYNAME@", "Test Publisher"));
 
         // CLSID: 3 places in the manifest + the code constant
         var clsid = ProviderIds.Clsid.ToString().ToUpperInvariant();

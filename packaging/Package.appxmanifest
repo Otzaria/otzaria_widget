@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   MSIX manifest for "Otzaria Widget" (ווידג'ט אוצריא): Windows 11 Widgets Board provider + settings app, one package.
-  build.ps1 copies this file to <layout>\AppxManifest.xml and substitutes @VERSION@ / @PUBLISHER@.
+  build.ps1 copies this file to <layout>\AppxManifest.xml and substitutes @VERSION@ / @PUBLISHER@ / @IDENTITYNAME@ /
+  @PUBLISHERDISPLAYNAME@ (dev defaults: Otzaria.Widget / CN=OtzariaDev / Otzaria Dev; the Store build passes the Partner Center values).
 
   KEEP IN SYNC (a unit test checks all of this):
     * CLSID EB0AF4C1-58BE-4FA6-9F1B-88F8188C6326 appears three times below (com:Class Id, CreateInstance ClassId) and in
@@ -17,11 +18,11 @@
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   IgnorableNamespaces="uap uap3 com rescap">
 
-  <Identity Name="Otzaria.Widget" Publisher="@PUBLISHER@" Version="@VERSION@" ProcessorArchitecture="x64" />
+  <Identity Name="@IDENTITYNAME@" Publisher="@PUBLISHER@" Version="@VERSION@" ProcessorArchitecture="x64" />
 
   <Properties>
     <DisplayName>ווידג'ט אוצריא</DisplayName>
-    <PublisherDisplayName>Otzaria Dev</PublisherDisplayName>
+    <PublisherDisplayName>@PUBLISHERDISPLAYNAME@</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 

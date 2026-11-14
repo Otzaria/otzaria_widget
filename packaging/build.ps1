@@ -25,6 +25,8 @@ param(
   [string]$Configuration = 'Release',
   [string]$Version = '',
   [string]$Publisher = 'CN=OtzariaDev',
+  [string]$IdentityName = 'Otzaria.Widget',
+  [string]$PublisherDisplayName = 'Otzaria Dev',
   [switch]$Register,
   [switch]$SkipPublish
 )
@@ -44,7 +46,7 @@ if (-not $Version) {
   $n = Get-Date
   $Version = '1.0.{0}.{1}' -f [int]($n - [datetime]'2026-01-01').TotalDays, [int]($n.TimeOfDay.TotalMinutes)
   # two builds inside the same minute (or a clock that went backwards) must still be an UPGRADE of the registered package
-  $installed = Get-AppxPackage 'Otzaria.Widget' -ErrorAction SilentlyContinue | Select-Object -First 1
+  $installed = Get-AppxPackage $IdentityName -ErrorAction SilentlyContinue | Select-Object -First 1
   if ($installed -and ([version]$Version) -le ([version]$installed.Version)) {
     $iv = [version]$installed.Version
     $Version = '{0}.{1}.{2}.{3}' -f $iv.Major, $iv.Minor, $iv.Build, ($iv.Revision + 1)
@@ -97,9 +99,12 @@ Copy-Item (Join-Path $tplSrc '*.json') $tplDst -Force
 Copy-Item (Join-Path $root 'THIRD-PARTY-NOTICES.md') (Join-Path $layout 'THIRD-PARTY-NOTICES.md') -Force
 
 $manifestOut = Join-Path $layout 'AppxManifest.xml'
-(Get-Content (Join-Path $pkgDir 'Package.appxmanifest') -Raw -Encoding UTF8).Replace('@VERSION@', $Version).Replace('@PUBLISHER@', $Publisher) |
+(Get-Content (Join-Path $pkgDir 'Package.appxmanifest') -Raw -Encoding UTF8).Replace('@VERSION@', $Version).Replace('@PUBLISHER@', $Publisher).
+  Replace('@IDENTITYNAME@', $IdentityName).Replace('@PUBLISHERDISPLAYNAME@', $PublisherDisplayName) |
   Set-Content $manifestOut -Encoding UTF8
-[xml]$null = Get-Content $manifestOut -Raw -Encoding UTF8   # well-formedness check
+$manifestText = Get-Content $manifestOut -Raw -Encoding UTF8
+if ($manifestText -match '@[A-Z]+@') { throw "AppxManifest.xml still contains an unreplaced placeholder: $($Matches[0])" }
+[xml]$null = $manifestText   # well-formedness check
 
 # layout hygiene: no debug symbols, no crash-dump helper, no WPF localisation folders (cs, de, ...: only *.resources.dll inside; the UI is
 # Hebrew/English and the neutral resources are in the main assemblies). Do this BEFORE makepri so resources.pri does not index them.

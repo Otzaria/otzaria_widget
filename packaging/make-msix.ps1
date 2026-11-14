@@ -1,6 +1,7 @@
 <#
 .SYNOPSIS
-  Builds a distributable, signed MSIX (artifacts\Otzaria.Widget_<version>_x64.msix) + the test certificate + installer script.
+  Builds a distributable, signed MSIX (artifacts\Otzaria.Widget_<version>_x64.msix) + the test certificate + installer script,
+  or (-Store) an UNSIGNED MSIX for upload to Microsoft Partner Center (artifacts\store\).
 
 .DESCRIPTION
   1. runs build.ps1 (publish + layout + makepri; no registration) unless -SkipBuild
@@ -13,11 +14,27 @@
   .cer must be imported into LocalMachine\TrustedPeople (CurrentUser is NOT enough - verified, error 0x800B0109).
   Testers: right-click artifacts\install-msix.ps1 > Run with PowerShell as Administrator (it self-elevates).
   A real code-signing certificate (or the Microsoft Store) removes this step.
+
+  -Store: Microsoft Store package. Needs the three values from Partner Center > the app > Product management > Product identity:
+    -IdentityName          Package/Identity/Name                    e.g. 12345Publisher.OtzariaWidget
+    -Publisher             Package/Identity/Publisher               e.g. CN=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+    -PublisherDisplayName  Package/Properties/PublisherDisplayName  e.g. Your Publisher Name
+  Differences from the dev flow: no signtool, no self-signed certificate, no .cer / install-msix.ps1 / dependencies\ (the Store signs the
+  package and resolves Microsoft.WindowsAppRuntime.1.8 itself). Version must have a non-zero first segment and a 4th segment of 0 (Store
+  rule) and be higher than every version already submitted; the default is yyyy.MMdd.HHmm.0 (same scheme as the GitHub release workflow).
+  Without all three identity values the script still runs, with clearly marked PLACEHOLDER values, a loud warning and a
+  *_PLACEHOLDER-IDENTITY.msix file name: such a package is rejected by Partner Center.
+
+.EXAMPLE
+  .\packaging\make-msix.ps1 -Store -IdentityName 12345Publisher.OtzariaWidget -Publisher 'CN=XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX' -PublisherDisplayName 'Your Publisher Name'
 #>
 [CmdletBinding()]
 param(
   [string]$Version = '',
-  [string]$Publisher = 'CN=OtzariaDev',
+  [string]$Publisher = '',
+  [string]$IdentityName = '',
+  [string]$PublisherDisplayName = '',
+  [switch]$Store,
   [switch]$SkipBuild
 )
 $ErrorActionPreference = 'Stop'
@@ -31,12 +48,68 @@ if (-not $kits) { throw 'Windows SDK (makepri.exe / makeappx.exe / signtool.exe)
 $artifacts = Join-Path $root 'artifacts'
 $layout = Join-Path $artifacts 'layout'   # build.ps1 may fall back to another folder if this one is locked (see artifacts\layout.txt)
 
+# ---- identity values ----------------------------------------------------------------------------------------------------------
+$placeholderStore = $false
+$missing = @()
+if ($Store) {
+  if ($SkipBuild) { throw '-Store cannot be combined with -SkipBuild: the manifest in the existing layout carries the dev identity' }
+  if (-not $IdentityName)         { $missing += 'IdentityName';         $IdentityName         = 'REPLACE.WithPartnerCenterIdentityName' }
+  if (-not $Publisher)            { $missing += 'Publisher';            $Publisher            = 'CN=REPLACE-WITH-PARTNER-CENTER-PUBLISHER-ID' }
+  if (-not $PublisherDisplayName) { $missing += 'PublisherDisplayName'; $PublisherDisplayName = 'REPLACE WITH PARTNER CENTER PUBLISHER DISPLAY NAME' }
+  $placeholderStore = $missing.Count -gt 0
+  if ($IdentityName -notmatch '^[A-Za-z0-9][A-Za-z0-9.\-]{2,49}$') { throw "IdentityName '$IdentityName' is not a valid package identity name (3-50 chars: letters, digits, '.', '-')" }
+  if ($Publisher -notmatch '^CN=.+') { throw "Publisher '$Publisher' must be the Partner Center 'Package/Identity/Publisher' value, starting with CN=" }
+  if (("$IdentityName$Publisher$PublisherDisplayName") -match '[<>&"]') { throw 'identity values must not contain < > & " (XML special characters)' }
+  if (-not $Version) { $Version = (Get-Date).ToString('yyyy.MMdd.HHmm') + '.0' }
+  # Store rules: 4 numeric segments <= 65535, first segment non-zero, 4th segment 0 (reserved by the Store)
+  if ($Version -notmatch '^\d+\.\d+\.\d+\.\d+$') { throw "Version '$Version' must be a.b.c.d" }
+  $seg = @($Version.Split('.') | ForEach-Object { [int64]$_ })
+  if ($seg | Where-Object { $_ -gt 65535 }) { throw "Version '$Version': every segment must be <= 65535" }
+  if ($seg[0] -eq 0) { throw "Version '$Version': the first segment must not be 0 (Store rule)" }
+  if ($seg[3] -ne 0) { throw "Version '$Version': the 4th segment must be 0 (reserved for the Store)" }
+} else {
+  if (-not $Publisher)            { $Publisher = 'CN=OtzariaDev' }
+  if (-not $IdentityName)         { $IdentityName = 'Otzaria.Widget' }
+  if (-not $PublisherDisplayName) { $PublisherDisplayName = 'Otzaria Dev' }
+}
+
 if (-not $SkipBuild) {
-  if ($Version) { & (Join-Path $pkgDir 'build.ps1') -Version $Version -Publisher $Publisher }
-  else { & (Join-Path $pkgDir 'build.ps1') -Publisher $Publisher }
+  $bargs = @{ Publisher = $Publisher; IdentityName = $IdentityName; PublisherDisplayName = $PublisherDisplayName }
+  if ($Version) { $bargs.Version = $Version }
+  & (Join-Path $pkgDir 'build.ps1') @bargs
 }
 $Version = (Get-Content (Join-Path $artifacts 'version.txt') -Raw).Trim()
 $layout = (Get-Content (Join-Path $artifacts 'layout.txt') -Raw).Trim()
+
+if ($Store) {
+  # Store package: pack only. No signing (Partner Center signs it), no certificate, no installer, no dependency packages.
+  $storeDir = Join-Path $artifacts 'store'
+  New-Item -ItemType Directory -Force $storeDir | Out-Null
+  Get-ChildItem $storeDir -Filter '*_PLACEHOLDER-IDENTITY.msix' -ErrorAction SilentlyContinue | Remove-Item -Force
+  $suffix = if ($placeholderStore) { '_PLACEHOLDER-IDENTITY' } else { '' }
+  $msix = Join-Path $storeDir "Otzaria.Widget_${Version}_x64$suffix.msix"
+  Write-Host '== makeappx pack (Store, unsigned)' -ForegroundColor Cyan
+  & "$kits\makeappx.exe" pack /d $layout /p $msix /o /nv | Out-Null
+  if ($LASTEXITCODE) { throw 'makeappx failed' }
+  Write-Host ('MSIX size: {0:N1} MB' -f ((Get-Item $msix).Length / 1MB)) -ForegroundColor DarkGray
+  Write-Host ''
+  Write-Host "Store MSIX (UNSIGNED): $msix" -ForegroundColor Green
+  Write-Host "  Identity Name:        $IdentityName"
+  Write-Host "  Identity Publisher:   $Publisher"
+  Write-Host "  PublisherDisplayName: $PublisherDisplayName"
+  Write-Host "  Version:              $Version  (must be higher than every version already submitted)"
+  if ($placeholderStore) {
+    Write-Host ''
+    Write-Warning ('PLACEHOLDER IDENTITY, not supplied: ' + ($missing -join ', '))
+    Write-Host '*****************************************************************************************' -ForegroundColor Yellow
+    Write-Host '* THIS PACKAGE CANNOT BE UPLOADED TO PARTNER CENTER: its identity is a placeholder.     *' -ForegroundColor Yellow
+    Write-Host '* Re-run with the values from Partner Center > Product management > Product identity:  *' -ForegroundColor Yellow
+    Write-Host '*   -IdentityName <Identity/Name> -Publisher <Identity/Publisher>                        *' -ForegroundColor Yellow
+    Write-Host '*   -PublisherDisplayName <PublisherDisplayName>                                         *' -ForegroundColor Yellow
+    Write-Host '*****************************************************************************************' -ForegroundColor Yellow
+  }
+  return
+}
 
 $msix = Join-Path $artifacts "Otzaria.Widget_${Version}_x64.msix"
 $cer  = Join-Path $artifacts 'OtzariaDev.cer'
