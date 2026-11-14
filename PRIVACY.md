@@ -26,7 +26,7 @@
 
 ## יצירת קשר
 
-שאלות על הפרטיות: [פתיחת Issue במאגר](https://github.com/Y-PLONI/otzaria_widget/issues).
+שאלות על הפרטיות: [פתיחת Issue במאגר](https://github.com/Otzaria/otzaria_widget/issues).
 
 ---
 
@@ -58,4 +58,4 @@ Nothing. The widget has no servers, no account, no data collection and no ads, a
 
 ## Contact
 
-Privacy questions: [open an issue in the repository](https://github.com/Y-PLONI/otzaria_widget/issues).
+Privacy questions: [open an issue in the repository](https://github.com/Otzaria/otzaria_widget/issues).
