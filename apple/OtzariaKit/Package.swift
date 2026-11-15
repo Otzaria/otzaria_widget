@@ -20,6 +20,10 @@ let package = Package(
             dependencies: [.product(name: "KosherSwift", package: "KosherSwift")]
         ),
         .testTarget(name: "OtzariaCoreTests", dependencies: ["OtzariaCore"]),
-        .testTarget(name: "OtzariaCalendarTests", dependencies: ["OtzariaCalendar"]),
+        .testTarget(
+            name: "OtzariaCalendarTests",
+            dependencies: ["OtzariaCalendar"],
+            resources: [.copy("Golden")]
+        ),
     ]
 )
