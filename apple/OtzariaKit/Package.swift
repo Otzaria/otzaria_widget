@@ -9,6 +9,7 @@ let package = Package(
         .library(name: "OtzariaCore", targets: ["OtzariaCore"]),
         // Dynamic so the LGPL KosherSwift code ships as a separately replaceable framework.
         .library(name: "OtzariaCalendar", type: .dynamic, targets: ["OtzariaCalendar"]),
+        .library(name: "OtzariaWidgetsUI", targets: ["OtzariaWidgetsUI"]),
     ],
     dependencies: [
         .package(url: "https://github.com/Elyahu41/KosherSwift.git", .upToNextMinor(from: "3.1.1")),
@@ -19,6 +20,7 @@ let package = Package(
             name: "OtzariaCalendar",
             dependencies: [.product(name: "KosherSwift", package: "KosherSwift")]
         ),
+        .target(name: "OtzariaWidgetsUI", dependencies: ["OtzariaCore", "OtzariaCalendar"]),
         .testTarget(name: "OtzariaCoreTests", dependencies: ["OtzariaCore"]),
         .testTarget(
             name: "OtzariaCalendarTests",
