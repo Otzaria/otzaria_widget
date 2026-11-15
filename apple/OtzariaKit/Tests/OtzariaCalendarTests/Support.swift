@@ -11,7 +11,7 @@ enum Golden {
         guard let url = Bundle.module.url(forResource: name, withExtension: nil, subdirectory: "Golden") else { throw GoldenError.missing(name) }
         let data = try Data(contentsOf: url)
         let text = String(decoding: try gunzip(data, name), as: UTF8.self)
-        return text.split(separator: "\n", omittingEmptySubsequences: true)
+        return text.components(separatedBy: .newlines)
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
     }
