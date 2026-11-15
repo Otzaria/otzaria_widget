@@ -56,3 +56,8 @@ extension CalendarService {
 
     func hhmm(_ t: Date, _ city: CityInfo) -> String { plainTime(t, city: city, twelveHour: false) }
 }
+
+/// An instant from a wall-clock reading with a fixed UTC offset (hours).
+func at(_ y: Int, _ mo: Int, _ d: Int, _ h: Int, _ mi: Int, _ s: Int = 0, offset: Double) -> Date {
+    Date(timeIntervalSince1970: Double(CivilDate(year: y, month: mo, day: d).epochDay) * 86400 + Double(h * 3600 + mi * 60 + s) - offset * 3600)
+}
