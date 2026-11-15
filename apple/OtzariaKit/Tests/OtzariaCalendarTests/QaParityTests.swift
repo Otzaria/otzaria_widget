@@ -20,11 +20,11 @@ final class QaParityTests: XCTestCase {
         let groups = Dictionary(grouping: rows) { Key(city: $0[0], date: $0[1]) }
         var failures: [String] = []
         var garbageCells = 0, nearDegenerate = 0, compared = 0, driftCells = 0
-        // The OS tzdata can be older than the tzdata 2026e behind the golden; cells of such zones are not comparable (see testZoneOffsets...).
+        // The OS tzdata can be older than the tzdata 2026e behind the golden (see testZoneOffsets...).
         let drift = Set(try ZoneGolden.driftZones().keys)
         for (key, group) in groups.sorted(by: { ($0.key.city, $0.key.date) < ($1.key.city, $1.key.date) }) {
             let city = try XCTUnwrap(svc.findCity(key.city), key.city)
-            if drift.contains(city.timeZoneId) { driftCells += group.count; continue }
+            let drifting = drift.contains(city.timeZoneId)
             let date = D(key.date)
             let ours = Dictionary(uniqueKeysWithValues: svc.zmanim(for: date, city: city, ids: allIds)
                 .filter { !$0.id.contains("KidushLevana") }.map { ($0.id, $0) })
@@ -36,9 +36,16 @@ final class QaParityTests: XCTestCase {
                     failures.append("\(p[0]) \(p[1]) \(id): missing (Otzaria \(p[3]))")
                     continue
                 }
-                compared += 1
                 let c = svc.clock(t, city)
                 let mine = String(format: "%02d:%02d:%02d", c.h, c.m, c.s)
+                if drifting {
+                    // stale OS zone data shifts the wall clock by whole hours only: the instant must still agree to the second
+                    driftCells += 1
+                    let delta = ((secondsOfDay(mine) - secondsOfDay(p[3])) % 86400 + 86400) % 86400
+                    if delta % 3600 != 0 { failures.append("\(p[0]) \(p[1]) \(id): \(mine) vs Otzaria \(p[3]) (not a whole-hour shift)") }
+                    continue
+                }
+                compared += 1
                 if mine == p[3] { continue }
                 // alos/plag 26 degrees at Warsaw on 21 April: the sun barely reaches -26 degrees, acos is ill-conditioned
                 let diff = abs(secondsOfDay(mine) - secondsOfDay(p[3]))
@@ -49,14 +56,14 @@ final class QaParityTests: XCTestCase {
                 failures.append("\(city.name) \(key.date) \(extra.id): we return a time Otzaria does not (\(extra.displayText ?? ""))")
             }
         }
-        print("\(driftCells) cells skipped for OS tzdata drift in zones \(drift.sorted())")
+        print("\(driftCells) cells compared modulo whole hours for OS tzdata drift in zones \(drift.sorted())")
         print("\(compared) cells identical to the second, \(garbageCells) high-latitude cells where kosher_dart returns garbage and we return nil, \(nearDegenerate) ill-conditioned cells")
         XCTAssertTrue(failures.isEmpty, "\(failures.count) mismatches:\n" + failures.prefix(40).joined(separator: "\n"))
         XCTAssertTrue((0...800).contains(garbageCells), "\(garbageCells)")
         XCTAssertTrue((0...5).contains(nearDegenerate), "\(nearDegenerate)")
         XCTAssertGreaterThan(compared, 79000, "only \(compared) cells compared")
         XCTAssertTrue(drift.isSubset(of: ["Africa/Casablanca"]), "unexpected tzdata drift: \(drift)")
-        XCTAssertLessThanOrEqual(driftCells, 700, "\(driftCells) cells skipped")
+        XCTAssertLessThanOrEqual(driftCells, 700, "\(driftCells) drift cells")
     }
 
     /// Offsets of every zone at 13 sample dates from tzdata 2026e. Only Africa/Casablanca is a known exception: Foundation inside
