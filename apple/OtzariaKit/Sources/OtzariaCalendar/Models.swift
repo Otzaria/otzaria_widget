@@ -41,7 +41,7 @@ public struct ZmanTime: Hashable, Sendable {
 
 public struct DayInfo: Hashable, Sendable {
     public let date: CivilDate
-    /// e.g. "כ״ב בחשון תשפ״ז" style: "ג׳ כסלו תשפ״ז".
+    /// Otzaria header spelling, e.g. "ג׳ כסלו תשפ״ז".
     public let hebrewDate: String
     public let hebrewDayOfWeek: String
     /// "dd/MM/yyyy".

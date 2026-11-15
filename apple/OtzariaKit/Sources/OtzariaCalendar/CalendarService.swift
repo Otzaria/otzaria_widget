@@ -62,7 +62,7 @@ public final class CalendarService: Sendable {
             gregorianDate: HebrewDateText.gregorian(date),
             parasha: HolidayLabels.parasha(jc, date: date),
             holidays: HolidayLabels.calc(jc),
-            dafYomiBavli: DafYomiText.bavli(jc),
+            dafYomiBavli: DafYomiText.bavli(date: date),
             dafYomiYerushalmi: DafYomiText.yerushalmi(jc),
             omer: omerDay == -1 ? nil : OmerText.build(omerDay),
             candleLighting: candle,
