@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "kosherswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Elyahu41/KosherSwift.git",
+      "state" : {
+        "revision" : "6b12b4089f2a8b198971b793e6d29e171c3f1b37",
+        "version" : "3.1.2"
+      }
+    }
+  ],
+  "version" : 2
+}
