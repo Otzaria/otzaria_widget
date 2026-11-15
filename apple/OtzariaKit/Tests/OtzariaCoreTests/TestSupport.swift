@@ -200,3 +200,13 @@ final class UserStateFixture {
         ["ref": ref, "book": book(nil, query), "index": 0, "isSearch": true, "searchMode": mode, "targetKind": "book"]
     }
 }
+
+/// Real file system with a fake home directory.
+struct TempHomeEnv: ResolverEnvironment {
+    let homeDirectory: String
+    private let system = SystemResolverEnvironment()
+    func fileExists(_ path: String) -> Bool { system.fileExists(path) }
+    func directoryExists(_ path: String) -> Bool { system.directoryExists(path) }
+    func readText(_ path: String) -> String? { system.readText(path) }
+    func environmentVariable(_ name: String) -> String? { nil }
+}
