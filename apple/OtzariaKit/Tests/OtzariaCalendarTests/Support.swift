@@ -61,3 +61,31 @@ extension CalendarService {
 func at(_ y: Int, _ mo: Int, _ d: Int, _ h: Int, _ mi: Int, _ s: Int = 0, offset: Double) -> Date {
     Date(timeIntervalSince1970: Double(CivilDate(year: y, month: mo, day: d).epochDay) * 86400 + Double(h * 3600 + mi * 60 + s) - offset * 3600)
 }
+
+/// Time zone ground truth: offsets of every city zone at noon local on sample dates, from the Dart `timezone` package (tzdata 2026e).
+enum ZoneGolden {
+    struct Row { let iana: String; let date: CivilDate; let offset: Int }
+
+    static func rows() throws -> [Row] {
+        try Golden.lines("qa_timezones.txt.gz").map { l in
+            let p = l.split(separator: "|").map(String.init)
+            let ymd = p[1].split(separator: "-").map { Int($0)! }
+            return Row(iana: p[0], date: CivilDate(year: ymd[0], month: ymd[1], day: ymd[2]), offset: Int(p[2])!)
+        }
+    }
+
+    /// Our offset at noon local of the row's date.
+    static func ours(_ r: Row) -> Int {
+        let zone = CityZone.resolve(r.iana)
+        return zone.offsetSeconds(atMs: zone.startOfDayMs(r.date) + 12 * 3_600_000)
+    }
+
+    /// Zones whose offsets from this process's OS tzdata differ from the golden (the OS data can be older than tzdata 2026e).
+    static func driftZones() throws -> [String: [String]] {
+        var drift: [String: [String]] = [:]
+        for r in try rows() where ours(r) != r.offset {
+            drift[r.iana, default: []].append("\(r.date): \(ours(r)) vs tzdata \(r.offset)")
+        }
+        return drift
+    }
+}
