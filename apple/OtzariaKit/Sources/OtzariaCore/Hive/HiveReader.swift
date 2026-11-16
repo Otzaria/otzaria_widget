@@ -1,8 +1,7 @@
 import Foundation
 
-/// Read-only hive_ce box reader. Loads the whole file with a plain read-only descriptor (no locks taken),
-/// retrying on transient errors because Hive compaction renames `.hivec` over `.hive`, then parses in memory.
-/// Never writes and never throws for corrupt content (stops at the first bad frame).
+/// Read-only hive_ce box reader: reads the whole file without locks, retrying while Hive compaction renames `.hivec`
+/// over `.hive`. Never writes and never throws for corrupt content (stops at the first bad frame).
 public struct HiveReader: Sendable {
     /// Sanity cap: a real app_preferences.hive is KBs to a few MB.
     static let maxFileBytes = 256 * 1024 * 1024

@@ -62,16 +62,8 @@ public struct WidgetPreferences: Codable, Sendable, Equatable {
     }
 }
 
-/// The contract between whoever reads Otzaria's data (the macOS host app today, Otzaria itself on iOS in the future) and the
-/// widget extensions. Plain JSON in `widget-snapshot.json` inside the App Group container.
-///
-/// - Keys are camelCase exactly as the property names below; dates are ISO-8601 strings (UTC; fractional seconds accepted).
-/// - Enums (`health`, `linkMode`, `theme`) are their string names. Unknown keys are ignored when decoding.
-/// - Only `schemaVersion` and `generatedAt` are required at the top level; every list may be omitted and then reads as empty.
-/// - `recentBooks`, `bookmarks` and `bookmarkGroups[].items` hold `ReadingEntry` values: `book` is required, `deepLink` is
-///   the ready-made `otzaria://open/...` URL (nil when the entry cannot be linked).
-/// - `currentTab` is the active tab of Otzaria's main window ("continue reading"), when it holds a book.
-/// - `recentSearches` is already empty when the user chose to hide searches.
+/// App Group JSON contract (`widget-snapshot.json`) between the Otzaria data reader and the widgets: camelCase keys,
+/// ISO-8601 UTC dates, enums as names; only `schemaVersion` and `generatedAt` are required, missing lists read as empty.
 public struct WidgetSnapshot: Codable, Sendable, Equatable {
     public static let currentSchemaVersion = 1
     public static let fileName = "widget-snapshot.json"
@@ -84,9 +76,11 @@ public struct WidgetSnapshot: Codable, Sendable, Equatable {
     public var healthMessage: String?
     public var sources: [SourceStatus]
     public var recentBooks: [ReadingEntry]
+    /// Active tab of Otzaria's main window when it holds a book ("continue reading").
     public var currentTab: OpenTabInfo?
     public var bookmarks: [ReadingEntry]
     public var bookmarkGroups: [BookmarkGroup]
+    /// Already empty when the user chose to hide searches.
     public var recentSearches: [RecentSearch]
     public var shamorZachor: [BookProgress]
     public var preferences: WidgetPreferences

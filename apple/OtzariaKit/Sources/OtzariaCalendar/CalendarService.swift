@@ -104,9 +104,8 @@ public final class CalendarService: Sendable {
 
     // MARK: effective date
 
-    /// Port of `resolveCalendarDayForTransition`: the civil day of `now` in the city's zone, advanced by one day once the
-    /// transition instant of that civil day has passed (sunset = elevation-adjusted sunset, tzais = 8.5 degrees,
-    /// rabbeinuTam = sunset + 72 min, midnight = never). Unknown values behave as "sunset".
+    /// Port of `resolveCalendarDayForTransition`: the civil day of `now` in the city's zone, plus one day once that day's
+    /// transition (sunset, tzais 8.5°, sunset + 72 min; never for midnight) has passed. Unknown values act as "sunset".
     public func effectiveDate(now: Date, city: CityInfo, dayTransition: String) -> CivilDate {
         let nowMs = ZmanTimeFormatter.ms(now)
         let civilToday = zone(for: city).local(atMs: nowMs).date

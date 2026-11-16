@@ -10,9 +10,7 @@ public struct OtzariaPathResolver: Sendable {
     private let env: ResolverEnvironment
     private let readPreferences: @Sendable (String) -> OtzariaPreferences?
 
-    /// - Parameters:
-    ///   - environment: file system / environment abstraction (fakes in tests).
-    ///   - preferencesReader: reads the Hive preferences; nil means "no prefs". Default: `PreferencesReader`.
+    /// `preferencesReader` defaults to `PreferencesReader`; returning nil means "no prefs".
     public init(
         environment: ResolverEnvironment = SystemResolverEnvironment(),
         preferencesReader: (@Sendable (String) -> OtzariaPreferences?)? = nil

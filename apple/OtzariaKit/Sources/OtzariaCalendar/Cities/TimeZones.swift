@@ -1,8 +1,7 @@
 import Foundation
 
-/// A city's time zone as used by every calculation: the system zone for the IANA id, plus a correction for tzdata 2026
-/// (Alberta permanent UTC-6, British Columbia permanent UTC-7 from 2026-11-01) while the OS tzdata is older.
-/// Unknown ids fall back to a fixed offset derived from the longitude (never fails).
+/// The system zone for a city's IANA id, corrected for tzdata 2026 (Alberta UTC-6 / British Columbia UTC-7 permanent from
+/// 2026-11-01) on older OS tzdata. Unknown ids fall back to a fixed offset from the longitude.
 public struct CityZone: Sendable {
     public let timeZone: TimeZone
     private let permanentFrom: Int64? // epoch ms of 2026-11-01 00:00 at the permanent offset

@@ -1,10 +1,8 @@
 import Foundation
 import KosherSwift
 
-/// Kidush levana zmanim exactly as Otzaria shows them (formatKidushLevanaNight).
-/// Quirk reproduced on purpose: kosher_dart's `getMoladAsDateTime()` forgets to subtract the 20m56.5s local-mean-time
-/// offset, so the "raw" instant is the naive molad wall-clock fields + offset read as UTC+2. The library's own
-/// LMT-corrected kidush levana methods are NOT used. The label is "ליל <weekday> <day> לחודש <time>".
+/// Kidush levana as Otzaria shows it ("ליל <weekday> <day> לחודש <time>"). Reproduces kosher_dart's molad without the
+/// 20m56.5s LMT correction (wall-clock fields read as UTC+2), so the library's own kidush levana methods are not used.
 enum KidushLevana {
     private static let nightNames = ["", "ליל ראשון", "ליל שני", "ליל שלישי", "ליל רביעי", "ליל חמישי", "ליל שישי", "ליל שבת"]
 

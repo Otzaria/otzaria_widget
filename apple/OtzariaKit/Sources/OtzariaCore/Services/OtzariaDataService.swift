@@ -1,10 +1,7 @@
 import Foundation
 
-/// The aggregate the host app consumes: resolves paths, reads user_state.db / Hive preferences / Shamor Vezachor progress
-/// (each source isolated, with a Hebrew `SourceStatus`) and caches one immutable `OtzariaSnapshot`. Thread-safe.
-///
-/// Change detection is driven by the host: call `refreshIfChanged()` from a timer, or `changeToken()` to compare yourself.
-/// (File events on the -wal of a database that Otzaria holds open are unreliable.)
+/// Reads every Otzaria source (each isolated, with a Hebrew `SourceStatus`) into one cached `OtzariaSnapshot`. Thread-safe.
+/// The host polls `refreshIfChanged()`: file events on the -wal of a database Otzaria holds open are unreliable.
 public final class OtzariaDataService: @unchecked Sendable {
     public static let maxRecentBooks = 30
     public static let maxRecentSearches = 20

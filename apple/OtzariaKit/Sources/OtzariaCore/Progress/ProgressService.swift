@@ -1,9 +1,7 @@
 import Foundation
 
-/// Shamor Vezachor computation (hive-and-progress.md section 2.4). Pure: works on the raw sz:* JSON strings from
-/// `OtzariaPreferences.shamorZachorRaw` plus an optional catalog for titles and denominators. Malformed JSON or entries are
-/// skipped. Ordering: in-progress books first (real progress before merely tracked, most recently tracked first), then other
-/// books, then completed books (most recently completed first).
+/// Shamor Vezachor progress from the raw sz:* JSON (hive-and-progress.md 2.4); malformed entries are skipped.
+/// Order: in progress (real progress first, then newest tracked), other books, then completed (newest first).
 public struct ProgressService: Sendable {
     public static let trackedKey = "sz:tracked_books"
     public static let progressKey = "sz:progress_by_id"

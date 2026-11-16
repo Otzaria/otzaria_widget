@@ -50,7 +50,6 @@ extension CalendarService {
 
     /// The next `count` moments (strictly after `now`, ascending, de-duplicated) at which a widget's content can change:
     /// each selected zman, the Hebrew-day switch, the civil midnight in the city, and (optionally) the "אור ל" boundary.
-    /// Intended for building a WidgetKit timeline.
     public func refreshMoments(after now: Date, count: Int, city: CityInfo, ids: [String], dayTransition: String,
                                includeOhrPrefixBoundary: Bool = false) -> [Date] {
         guard count > 0 else { return [] }

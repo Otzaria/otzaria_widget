@@ -1,8 +1,7 @@
 import Foundation
 
-/// Otzaria's zman display format (formatZmanTime): minutes are TRUNCATED, followed by a seconds marker
-/// ('.' for seconds 0-29, ':' for 30-59), and the whole token is wrapped in a LEFT-TO-RIGHT ISOLATE so the marker
-/// stays on the correct side in RTL text.
+/// Otzaria's formatZmanTime: truncated minutes plus a seconds marker ('.' for 0-29, ':' for 30-59), wrapped in an
+/// LTR isolate so the marker stays on the correct side in RTL text.
 public enum ZmanTimeFormatter {
     public static let ltrIsolateStart: Character = "\u{2066}"
     public static let ltrIsolateEnd: Character = "\u{2069}"
