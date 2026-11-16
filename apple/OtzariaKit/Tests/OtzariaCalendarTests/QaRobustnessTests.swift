@@ -78,7 +78,9 @@ final class QaRobustnessTests: XCTestCase {
         let dates = (0..<12).map { D("2026-09-01").addingDays($0 * 29) }
         func key(_ c: CityInfo, _ d: CivilDate) -> String {
             let i = svc.dayInfo(for: d, city: c)
-            var s = i.hebrewDate + (i.parasha ?? "") + i.holidays.joined(separator: ";") + (i.dafYomiBavli ?? "") + (i.omer ?? "") + ms(i.candleLighting) + ms(i.havdalah)
+            let parts: [String] = [i.hebrewDate, i.parasha ?? "", i.holidays.joined(separator: ";"), i.dafYomiBavli ?? "",
+                                   i.omer ?? "", ms(i.candleLighting), ms(i.havdalah)]
+            var s = parts.joined()
             for z in svc.zmanim(for: d, city: c, ids: allIds) { s += z.id + ms(z.time) + (z.displayText ?? "") }
             s += "\(svc.effectiveDate(now: at(d.year, d.month, d.day, 15, 0, offset: 0), city: c, dayTransition: "tzais"))"
             return s
