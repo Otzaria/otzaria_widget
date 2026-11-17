@@ -9,7 +9,9 @@ import OtzariaCore
 /// Renders every widget in every family and color scheme to PNG (for eyeballing) and checks an image comes out.
 @MainActor
 final class RenderTests: XCTestCase {
-    static let outDir = URL(fileURLWithPath: "/Volumes/T7/Development Projects/.apple-build/widget-renders")
+    /// `OTZARIA_WIDGET_RENDER_DIR` keeps the PNGs somewhere to look at; otherwise they go to the temp folder.
+    static let outDir = ProcessInfo.processInfo.environment["OTZARIA_WIDGET_RENDER_DIR"].map { URL(fileURLWithPath: $0) }
+        ?? FileManager.default.temporaryDirectory.appendingPathComponent("otzaria-widget-renders")
 
     static let sizes: [(WidgetFamily, String, CGSize)] = [
         (.systemSmall, "small", CGSize(width: 158, height: 158)),
