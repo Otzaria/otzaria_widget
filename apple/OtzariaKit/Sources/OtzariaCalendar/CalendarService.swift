@@ -37,7 +37,7 @@ public final class CalendarService: Sendable {
                            holidays: [], dafYomiBavli: nil, dafYomiYerushalmi: nil, omer: nil, candleLighting: nil, havdalah: nil,
                            isShabbat: false, isYomTov: false)
         }
-        let jc = JewishCalendar(localDate: LocalDate(year: date.year, month: date.month, day: date.day), inIsrael: city.isInIsrael)
+        let jc = HebrewCalendarArithmetic.jewishCalendar(for: date, inIsrael: city.isInIsrael)
         let dow = date.dayOfWeek
 
         var candle: Date?
@@ -54,7 +54,7 @@ public final class CalendarService: Sendable {
         }
 
         let omerDay = jc.getDayOfOmer()
-        let parts = HebrewDateText.Parts(jc)
+        let parts = HebrewDateText.Parts(date)
         return DayInfo(
             date: date,
             hebrewDate: HebrewDateText.format(parts),
@@ -63,7 +63,7 @@ public final class CalendarService: Sendable {
             parasha: HolidayLabels.parasha(jc, date: date),
             holidays: HolidayLabels.calc(jc),
             dafYomiBavli: DafYomiText.bavli(date: date),
-            dafYomiYerushalmi: DafYomiText.yerushalmi(jc),
+            dafYomiYerushalmi: DafYomiText.yerushalmi(date: date),
             omer: omerDay == -1 ? nil : OmerText.build(omerDay),
             candleLighting: candle,
             havdalah: havdalah,
@@ -74,8 +74,7 @@ public final class CalendarService: Sendable {
     /// The Hebrew date chip in Otzaria's calendar-header style ("ג כסלו ה׳תשפ״ז").
     public func calendarHeaderDate(for date: CivilDate, city: CityInfo) -> String {
         guard ZmanimEngine.supportedYears.contains(date.year) else { return "" }
-        let jc = JewishCalendar(localDate: LocalDate(year: date.year, month: date.month, day: date.day), inIsrael: city.isInIsrael)
-        return HebrewDateText.formatCalendarHeader(HebrewDateText.Parts(jc))
+        return HebrewDateText.formatCalendarHeader(HebrewDateText.Parts(date))
     }
 
     // MARK: zmanim

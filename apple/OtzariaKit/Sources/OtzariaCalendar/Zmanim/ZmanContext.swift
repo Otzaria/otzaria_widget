@@ -14,8 +14,7 @@ final class ZmanContext {
     let zone: CityZone
     let calendar: ComprehensiveZmanimCalendar
 
-    private(set) lazy var jewish = JewishCalendar(localDate: LocalDate(year: date.year, month: date.month, day: date.day),
-                                                  inIsrael: city.isInIsrael)
+    private(set) lazy var jewish = HebrewCalendarArithmetic.jewishCalendar(for: date, inIsrael: city.isInIsrael)
     /// The same city for date + 1 (chatzos layla needs tomorrow's sunrise).
     private(set) lazy var tomorrow = ZmanContext(city: city, date: date.addingDays(1))
 
