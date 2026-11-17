@@ -99,6 +99,24 @@ enum ZmanimSetChoice: String, AppEnum {
     ]
 }
 
+/// Tri-state like the Windows card: until chosen, the widget follows the global setting.
+enum YerushalmiChoice: String, AppEnum {
+    case follow, show, hide
+
+    static let typeDisplayRepresentation: TypeDisplayRepresentation = "דף יומי ירושלמי"
+    static let caseDisplayRepresentations: [YerushalmiChoice: DisplayRepresentation] = [
+        .follow: "לפי ההגדרות הכלליות", .show: "הצג", .hide: "הסתר",
+    ]
+
+    var value: Bool? {
+        switch self {
+        case .follow: return nil
+        case .show: return true
+        case .hide: return false
+        }
+    }
+}
+
 // MARK: Intents
 
 struct RecentBooksIntent: OptionsIntent {
@@ -165,12 +183,12 @@ struct HebrewCalendarIntent: OptionsIntent {
     static let description = IntentDescription("התאמה אישית של הלוח העברי")
 
     @Parameter(title: "הצג דף יומי (בבלי)", default: true) var showDaf: Bool
-    @Parameter(title: "הצג דף יומי ירושלמי", default: false) var showYerushalmi: Bool
+    @Parameter(title: "הצג דף יומי ירושלמי", default: .follow) var yerushalmi: YerushalmiChoice
     @Parameter(title: "הצג ספירת העומר", default: true) var showOmer: Bool
     @Parameter(title: "הצג הדלקת נרות והבדלה", default: true) var showCandle: Bool
 
     var options: CalendarOptions {
-        CalendarOptions(showDaf: showDaf, showYerushalmi: showYerushalmi ? true : nil, showOmer: showOmer, showCandle: showCandle)
+        CalendarOptions(showDaf: showDaf, showYerushalmi: yerushalmi.value, showOmer: showOmer, showCandle: showCandle)
     }
     static var defaultOptions: CalendarOptions { CalendarOptions() }
 

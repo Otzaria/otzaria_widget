@@ -64,8 +64,9 @@ enum WidgetLinks {
     static let shamorZachor = "otzaria://open/shamor_zachor"
     static let settings = "otzaria-widget://settings"
 
+    /// Links from the snapshot are used only when they pass the otzaria:// whitelist.
     static func url(_ text: String?, fallback: String = library) -> URL {
-        if let text, !text.isEmpty, let url = URL(string: text) { return url }
+        if let text, text == settings || OtzariaLinks.isSafeOtzariaUri(text), let url = URL(string: text) { return url }
         return URL(string: fallback)!
     }
 }

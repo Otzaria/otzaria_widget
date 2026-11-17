@@ -75,13 +75,24 @@ final class MiscTests: XCTestCase {
 
         let cal = HebrewCalendarIntent()
         XCTAssertNil(cal.options.showYerushalmi)
-        cal.showYerushalmi = true
+        cal.yerushalmi = .show
         XCTAssertEqual(cal.options.showYerushalmi, true)
+        cal.yerushalmi = .hide
+        XCTAssertEqual(cal.options.showYerushalmi, false)
 
         let dash = DashboardIntent()
         XCTAssertEqual(dash.options.sections, DashboardSection.allCases)
         dash.posDate = 0; dash.posBookmarks = 1
         XCTAssertEqual(dash.options.sections, [.bookmarks, .zman, .reading, .progress])
+    }
+
+    func testSnapshotLinksMustPassTheWhitelist() {
+        XCTAssertEqual(WidgetLinks.url("otzaria://open/book/12?index=3").absoluteString, "otzaria://open/book/12?index=3")
+        XCTAssertEqual(WidgetLinks.url(WidgetLinks.settings).absoluteString, WidgetLinks.settings)
+        for bad in ["https://example.com", "file:///etc/passwd", "otzaria://plugin/install", "otzaria://open/../x", ""] {
+            XCTAssertEqual(WidgetLinks.url(bad).absoluteString, WidgetLinks.library, bad)
+        }
+        XCTAssertEqual(WidgetLinks.url("https://example.com", fallback: WidgetLinks.shamorZachor).absoluteString, WidgetLinks.shamorZachor)
     }
 
     func testDynamicOptionEntities() async throws {
