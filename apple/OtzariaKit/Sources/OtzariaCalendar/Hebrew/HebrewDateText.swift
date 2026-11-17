@@ -21,11 +21,12 @@ public enum HebrewDateText {
         let day: Int
         let leap: Bool
 
-        init(_ jc: JewishCalendar) {
-            year = jc.getJewishYear()
-            month = jc.getNissanStartingJewishMonth()
-            day = jc.getJewishDayOfMonth()
-            leap = jc.isJewishLeapYear()
+        init(_ date: CivilDate) {
+            let h = HebrewDate(epochDay: date.epochDay)
+            year = h.year
+            month = h.month
+            day = h.day
+            leap = h.isLeapYear
         }
     }
 
