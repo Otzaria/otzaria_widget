@@ -1,0 +1,766 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5121BBEF22773B59D22869B0 /* OtzariaWidgetsUI in Frameworks */ = {isa = PBXBuildFile; productRef = 486A342FFB5C9930FC44D256 /* OtzariaWidgetsUI */; };
+		BEFF998F15D843D5C3B27A2C /* OtzariaWidgetMacExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 660CA9ADAF44F3A85F17FB9C /* OtzariaWidgetMacExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		2113BF3CC4ABFBF820CB87B6 /* OtzariaWidgetsUI in Embed Frameworks */ = {isa = PBXBuildFile; productRef = 486A342FFB5C9930FC44D256 /* OtzariaWidgetsUI */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		55F580C9C55EA6115572463F /* OtzariaWidgetsUI in Frameworks */ = {isa = PBXBuildFile; productRef = D2FDA090E1B384384BDFC405 /* OtzariaWidgetsUI */; };
+		13233B8674806663491EBDE8 /* OtzariaWidgetsUI in Frameworks */ = {isa = PBXBuildFile; productRef = FA6039674B4C12CF9018534F /* OtzariaWidgetsUI */; };
+		F5C8E92540426296077AEFE9 /* OtzariaWidgetiOSExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 71B5D59A60EE724E550F1AF5 /* OtzariaWidgetiOSExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		FED28F569CE31515C77C9370 /* OtzariaWidgetsUI in Embed Frameworks */ = {isa = PBXBuildFile; productRef = FA6039674B4C12CF9018534F /* OtzariaWidgetsUI */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		1E20DAEFDEC9FA68E91880FC /* OtzariaWidgetsUI in Frameworks */ = {isa = PBXBuildFile; productRef = 7933F79D04D447DF0B1B5A63 /* OtzariaWidgetsUI */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		825ADAED0EA82731BBA99AA1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F6AAC0C3DAA5DF19DC006493 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EBE12B70C8547A3D5351A997;
+			remoteInfo = OtzariaWidgetMacExtension;
+		};
+		6AD99860B6EF13DBC3F01EDF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F6AAC0C3DAA5DF19DC006493 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 047DAD2C96B4F64DB0455C6E;
+			remoteInfo = OtzariaWidgetiOSExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		4B894CA7F5B88851688BED5E /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				BEFF998F15D843D5C3B27A2C /* OtzariaWidgetMacExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C412DB7512DD8A65B1870E00 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				2113BF3CC4ABFBF820CB87B6 /* OtzariaWidgetsUI in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2970F22A64C126F7DE014AEE /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				F5C8E92540426296077AEFE9 /* OtzariaWidgetiOSExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F938B809479949A88A533958 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				FED28F569CE31515C77C9370 /* OtzariaWidgetsUI in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		5E94B5A79A173E9C8094F89D /* OtzariaWidget.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OtzariaWidget.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		660CA9ADAF44F3A85F17FB9C /* OtzariaWidgetMacExtension.appex */ = {isa = PBXFileReference; explicitFileType = wrapper.app-extension; includeInIndex = 0; path = OtzariaWidgetMacExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		B2FE35AC2F91242BA2CCBB9B /* OtzariaWidget.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OtzariaWidget.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		71B5D59A60EE724E550F1AF5 /* OtzariaWidgetiOSExtension.appex */ = {isa = PBXFileReference; explicitFileType = wrapper.app-extension; includeInIndex = 0; path = OtzariaWidgetiOSExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		14EBF0A1A713E7CE2E910B8E /* MacApp-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MacApp-Info.plist"; sourceTree = "<group>"; };
+		8BA0EACB3FA8016DCB5440CF /* MacApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MacApp.entitlements; sourceTree = "<group>"; };
+		EFE51AA0925A314E435C35EF /* MacExtension-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MacExtension-Info.plist"; sourceTree = "<group>"; };
+		11F20C9FBD19F1FBB5CD7776 /* MacExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MacExtension.entitlements; sourceTree = "<group>"; };
+		5468F86224F3238EC1DD3128 /* iOSApp-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "iOSApp-Info.plist"; sourceTree = "<group>"; };
+		A122E88D9988E4CF35CE6F97 /* iOSApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOSApp.entitlements; sourceTree = "<group>"; };
+		A5128E5863134B1082B69E81 /* iOSExtension-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "iOSExtension-Info.plist"; sourceTree = "<group>"; };
+		D415E4C0296A70E0069DAB29 /* iOSExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = iOSExtension.entitlements; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		D4F7AF2500391CD2134E94DF /* AppShared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = AppShared;
+			sourceTree = "<group>";
+		};
+		4616DE461032F869FA37884C /* MacApp */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MacApp;
+			sourceTree = "<group>";
+		};
+		06D311A55FD3AC493547E59A /* iOSApp */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = iOSApp;
+			sourceTree = "<group>";
+		};
+		16AD6BAE4C8D4375D41500D6 /* WidgetExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = WidgetExtension;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A15C1AD1B88812AE738D10F0 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5121BBEF22773B59D22869B0 /* OtzariaWidgetsUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B5232706D3CEBAEAD7509FAE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				55F580C9C55EA6115572463F /* OtzariaWidgetsUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6CDF088F3CF0DA9BFD0D822B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				13233B8674806663491EBDE8 /* OtzariaWidgetsUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E7E323FD564D81A51A87879D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1E20DAEFDEC9FA68E91880FC /* OtzariaWidgetsUI in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B352351A3E81F02A694BD57A = {
+			isa = PBXGroup;
+			children = (
+				D4F7AF2500391CD2134E94DF /* AppShared */,
+				4616DE461032F869FA37884C /* MacApp */,
+				06D311A55FD3AC493547E59A /* iOSApp */,
+				16AD6BAE4C8D4375D41500D6 /* WidgetExtension */,
+				5FC01727D7EB4709C1BA17BF /* Config */,
+				19C3B311278B51C017368758 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		5FC01727D7EB4709C1BA17BF /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				14EBF0A1A713E7CE2E910B8E /* MacApp-Info.plist */,
+				8BA0EACB3FA8016DCB5440CF /* MacApp.entitlements */,
+				EFE51AA0925A314E435C35EF /* MacExtension-Info.plist */,
+				11F20C9FBD19F1FBB5CD7776 /* MacExtension.entitlements */,
+				5468F86224F3238EC1DD3128 /* iOSApp-Info.plist */,
+				A122E88D9988E4CF35CE6F97 /* iOSApp.entitlements */,
+				A5128E5863134B1082B69E81 /* iOSExtension-Info.plist */,
+				D415E4C0296A70E0069DAB29 /* iOSExtension.entitlements */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		19C3B311278B51C017368758 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5E94B5A79A173E9C8094F89D /* OtzariaWidget.app */,
+				660CA9ADAF44F3A85F17FB9C /* OtzariaWidgetMacExtension.appex */,
+				B2FE35AC2F91242BA2CCBB9B /* OtzariaWidget.app */,
+				71B5D59A60EE724E550F1AF5 /* OtzariaWidgetiOSExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B5FA7D971BF6EA365B326246 /* OtzariaWidgetMac */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BDE1DF956C34D91618E7CBE0 /* Build configuration list for PBXNativeTarget "OtzariaWidgetMac" */;
+			buildPhases = (
+				661A3E454D2B20D18F279E60 /* Sources */,
+				A15C1AD1B88812AE738D10F0 /* Frameworks */,
+				E027638984350A75A4BA88BA /* Resources */,
+				4B894CA7F5B88851688BED5E /* Embed Foundation Extensions */,
+				C412DB7512DD8A65B1870E00 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C2F86964AC99739043209DA3 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				4616DE461032F869FA37884C /* MacApp */,
+				D4F7AF2500391CD2134E94DF /* AppShared */,
+			);
+			name = OtzariaWidgetMac;
+			packageProductDependencies = (
+				486A342FFB5C9930FC44D256 /* OtzariaWidgetsUI */,
+			);
+			productName = OtzariaWidgetMac;
+			productReference = 5E94B5A79A173E9C8094F89D /* OtzariaWidget.app */;
+			productType = "com.apple.product-type.application";
+		};
+		EBE12B70C8547A3D5351A997 /* OtzariaWidgetMacExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F643F6A8C90C8F88E60B5343 /* Build configuration list for PBXNativeTarget "OtzariaWidgetMacExtension" */;
+			buildPhases = (
+				2C1F29CD241B1B9314EF567F /* Sources */,
+				B5232706D3CEBAEAD7509FAE /* Frameworks */,
+				9B3F3A4FEF10397BFCF5AA14 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				16AD6BAE4C8D4375D41500D6 /* WidgetExtension */,
+			);
+			name = OtzariaWidgetMacExtension;
+			packageProductDependencies = (
+				D2FDA090E1B384384BDFC405 /* OtzariaWidgetsUI */,
+			);
+			productName = OtzariaWidgetMacExtension;
+			productReference = 660CA9ADAF44F3A85F17FB9C /* OtzariaWidgetMacExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		CE02FAB1ED5360DE3CD89813 /* OtzariaWidgetiOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F78A9551FA08F40C84395D46 /* Build configuration list for PBXNativeTarget "OtzariaWidgetiOS" */;
+			buildPhases = (
+				C3FC375F928DDF865EDCB240 /* Sources */,
+				6CDF088F3CF0DA9BFD0D822B /* Frameworks */,
+				CEF087B029EA3C378282FECA /* Resources */,
+				2970F22A64C126F7DE014AEE /* Embed Foundation Extensions */,
+				F938B809479949A88A533958 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D6DF6E0094B90F87845C51C5 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				06D311A55FD3AC493547E59A /* iOSApp */,
+				D4F7AF2500391CD2134E94DF /* AppShared */,
+			);
+			name = OtzariaWidgetiOS;
+			packageProductDependencies = (
+				FA6039674B4C12CF9018534F /* OtzariaWidgetsUI */,
+			);
+			productName = OtzariaWidgetiOS;
+			productReference = B2FE35AC2F91242BA2CCBB9B /* OtzariaWidget.app */;
+			productType = "com.apple.product-type.application";
+		};
+		047DAD2C96B4F64DB0455C6E /* OtzariaWidgetiOSExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 3A3289E96E158321E139B0AA /* Build configuration list for PBXNativeTarget "OtzariaWidgetiOSExtension" */;
+			buildPhases = (
+				D33651DC7680F155788FB0F7 /* Sources */,
+				E7E323FD564D81A51A87879D /* Frameworks */,
+				D443E728C2AD5D4B7CD1D6DD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				16AD6BAE4C8D4375D41500D6 /* WidgetExtension */,
+			);
+			name = OtzariaWidgetiOSExtension;
+			packageProductDependencies = (
+				7933F79D04D447DF0B1B5A63 /* OtzariaWidgetsUI */,
+			);
+			productName = OtzariaWidgetiOSExtension;
+			productReference = 71B5D59A60EE724E550F1AF5 /* OtzariaWidgetiOSExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F6AAC0C3DAA5DF19DC006493 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+			};
+			buildConfigurationList = 37D5B1E0AB076059F89C528B /* Build configuration list for PBXProject "OtzariaWidget" */;
+			developmentRegion = he;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				he,
+				en,
+				Base,
+			);
+			mainGroup = B352351A3E81F02A694BD57A;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				3ECB62DCFF2BD3E5715A49D6 /* XCLocalSwiftPackageReference "../OtzariaKit" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 19C3B311278B51C017368758 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B5FA7D971BF6EA365B326246 /* OtzariaWidgetMac */,
+				EBE12B70C8547A3D5351A997 /* OtzariaWidgetMacExtension */,
+				CE02FAB1ED5360DE3CD89813 /* OtzariaWidgetiOS */,
+				047DAD2C96B4F64DB0455C6E /* OtzariaWidgetiOSExtension */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E027638984350A75A4BA88BA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9B3F3A4FEF10397BFCF5AA14 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CEF087B029EA3C378282FECA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D443E728C2AD5D4B7CD1D6DD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		661A3E454D2B20D18F279E60 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2C1F29CD241B1B9314EF567F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C3FC375F928DDF865EDCB240 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D33651DC7680F155788FB0F7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		C2F86964AC99739043209DA3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EBE12B70C8547A3D5351A997 /* OtzariaWidgetMacExtension */;
+			targetProxy = 825ADAED0EA82731BBA99AA1 /* PBXContainerItemProxy */;
+		};
+		D6DF6E0094B90F87845C51C5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 047DAD2C96B4F64DB0455C6E /* OtzariaWidgetiOSExtension */;
+			targetProxy = 6AD99860B6EF13DBC3F01EDF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		FE69D33480BF4827B2DE9A53 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.1.0;
+				SWIFT_VERSION = 5.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+			};
+			name = Debug;
+		};
+		B2AC8B03C2813DF9304E2358 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MARKETING_VERSION = 0.1.0;
+				SWIFT_VERSION = 5.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		7D0F129B1CD4DB9907964A5E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Config/MacApp.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/MacApp-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "ווידג'ט אוצריא";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				PRODUCT_BUNDLE_IDENTIFIER = org.otzaria.widget;
+				PRODUCT_NAME = OtzariaWidget;
+				SKIP_INSTALL = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_KEY_LSMinimumSystemVersion = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+			};
+			name = Debug;
+		};
+		669C6E1AF8D284B278EA7545 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Config/MacApp.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/MacApp-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "ווידג'ט אוצריא";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				PRODUCT_BUNDLE_IDENTIFIER = org.otzaria.widget;
+				PRODUCT_NAME = OtzariaWidget;
+				SKIP_INSTALL = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_KEY_LSMinimumSystemVersion = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+			};
+			name = Release;
+		};
+		F64DC3B1570472F50FE26865 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Config/MacExtension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/MacExtension-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "ווידג'טים של אוצריא";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				PRODUCT_BUNDLE_IDENTIFIER = org.otzaria.widget.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_KEY_LSMinimumSystemVersion = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+			};
+			name = Debug;
+		};
+		1690EE8169D224B89B799CCC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Config/MacExtension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/MacExtension-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "ווידג'טים של אוצריא";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				PRODUCT_BUNDLE_IDENTIFIER = org.otzaria.widget.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				SDKROOT = macosx;
+				SUPPORTED_PLATFORMS = macosx;
+				COMBINE_HIDPI_IMAGES = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				INFOPLIST_KEY_LSMinimumSystemVersion = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+			};
+			name = Release;
+		};
+		79E02453543E0F2C86C1CED8 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Config/iOSApp.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/iOSApp-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "ווידג'ט אוצריא";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				PRODUCT_BUNDLE_IDENTIFIER = org.otzaria.widget;
+				PRODUCT_NAME = OtzariaWidget;
+				SKIP_INSTALL = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+			};
+			name = Debug;
+		};
+		E5C101C7659E701474C1BC39 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Config/iOSApp.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/iOSApp-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "ווידג'ט אוצריא";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				PRODUCT_BUNDLE_IDENTIFIER = org.otzaria.widget;
+				PRODUCT_NAME = OtzariaWidget;
+				SKIP_INSTALL = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+			};
+			name = Release;
+		};
+		83E74E0B56A0171613CEB6B5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Config/iOSExtension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/iOSExtension-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "ווידג'טים של אוצריא";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				PRODUCT_BUNDLE_IDENTIFIER = org.otzaria.widget.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+			};
+			name = Debug;
+		};
+		E4D643DB7370F3288D772AED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "Config/iOSExtension.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "Config/iOSExtension-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "ווידג'טים של אוצריא";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				PRODUCT_BUNDLE_IDENTIFIER = org.otzaria.widget.widgets;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = NO;
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		37D5B1E0AB076059F89C528B /* Build configuration list for PBXProject "OtzariaWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FE69D33480BF4827B2DE9A53 /* Debug */,
+				B2AC8B03C2813DF9304E2358 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BDE1DF956C34D91618E7CBE0 /* Build configuration list for PBXNativeTarget "OtzariaWidgetMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7D0F129B1CD4DB9907964A5E /* Debug */,
+				669C6E1AF8D284B278EA7545 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F643F6A8C90C8F88E60B5343 /* Build configuration list for PBXNativeTarget "OtzariaWidgetMacExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F64DC3B1570472F50FE26865 /* Debug */,
+				1690EE8169D224B89B799CCC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F78A9551FA08F40C84395D46 /* Build configuration list for PBXNativeTarget "OtzariaWidgetiOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				79E02453543E0F2C86C1CED8 /* Debug */,
+				E5C101C7659E701474C1BC39 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		3A3289E96E158321E139B0AA /* Build configuration list for PBXNativeTarget "OtzariaWidgetiOSExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				83E74E0B56A0171613CEB6B5 /* Debug */,
+				E4D643DB7370F3288D772AED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		3ECB62DCFF2BD3E5715A49D6 /* XCLocalSwiftPackageReference "../OtzariaKit" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../OtzariaKit;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		486A342FFB5C9930FC44D256 /* OtzariaWidgetsUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OtzariaWidgetsUI;
+		};
+		D2FDA090E1B384384BDFC405 /* OtzariaWidgetsUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OtzariaWidgetsUI;
+		};
+		FA6039674B4C12CF9018534F /* OtzariaWidgetsUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OtzariaWidgetsUI;
+		};
+		7933F79D04D447DF0B1B5A63 /* OtzariaWidgetsUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OtzariaWidgetsUI;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = F6AAC0C3DAA5DF19DC006493 /* Project object */;
+}
