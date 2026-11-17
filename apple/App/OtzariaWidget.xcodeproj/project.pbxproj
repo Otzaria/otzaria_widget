@@ -15,6 +15,10 @@
 		F5C8E92540426296077AEFE9 /* OtzariaWidgetiOSExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 71B5D59A60EE724E550F1AF5 /* OtzariaWidgetiOSExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		FED28F569CE31515C77C9370 /* OtzariaWidgetsUI in Embed Frameworks */ = {isa = PBXBuildFile; productRef = FA6039674B4C12CF9018534F /* OtzariaWidgetsUI */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		1E20DAEFDEC9FA68E91880FC /* OtzariaWidgetsUI in Frameworks */ = {isa = PBXBuildFile; productRef = 7933F79D04D447DF0B1B5A63 /* OtzariaWidgetsUI */; };
+		43E61C8848F8EF6797A2A90F /* OtzariaCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = 2D19CB7B30A531499D1DB0DC /* OtzariaCalendar */; };
+		EF144B37A1781A5CA5F90311 /* OtzariaCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = A8427B7BD32605E21EA07CA8 /* OtzariaCalendar */; };
+		384B9277C8A7EF4F40D56791 /* OtzariaCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = FE8CFA873A2AB15E30E67AB3 /* OtzariaCalendar */; };
+		A63528FBF5A58F2CDD0929F2 /* OtzariaCalendar in Frameworks */ = {isa = PBXBuildFile; productRef = 7DFF8B44ABF5EBD1A239C40B /* OtzariaCalendar */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -124,6 +128,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				43E61C8848F8EF6797A2A90F /* OtzariaCalendar in Frameworks */,
 				5121BBEF22773B59D22869B0 /* OtzariaWidgetsUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -132,6 +137,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF144B37A1781A5CA5F90311 /* OtzariaCalendar in Frameworks */,
 				55F580C9C55EA6115572463F /* OtzariaWidgetsUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -140,6 +146,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				384B9277C8A7EF4F40D56791 /* OtzariaCalendar in Frameworks */,
 				13233B8674806663491EBDE8 /* OtzariaWidgetsUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -148,6 +155,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A63528FBF5A58F2CDD0929F2 /* OtzariaCalendar in Frameworks */,
 				1E20DAEFDEC9FA68E91880FC /* OtzariaWidgetsUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -217,6 +225,7 @@
 			);
 			name = OtzariaWidgetMac;
 			packageProductDependencies = (
+				2D19CB7B30A531499D1DB0DC /* OtzariaCalendar */,
 				486A342FFB5C9930FC44D256 /* OtzariaWidgetsUI */,
 			);
 			productName = OtzariaWidgetMac;
@@ -240,6 +249,7 @@
 			);
 			name = OtzariaWidgetMacExtension;
 			packageProductDependencies = (
+				A8427B7BD32605E21EA07CA8 /* OtzariaCalendar */,
 				D2FDA090E1B384384BDFC405 /* OtzariaWidgetsUI */,
 			);
 			productName = OtzariaWidgetMacExtension;
@@ -267,6 +277,7 @@
 			);
 			name = OtzariaWidgetiOS;
 			packageProductDependencies = (
+				FE8CFA873A2AB15E30E67AB3 /* OtzariaCalendar */,
 				FA6039674B4C12CF9018534F /* OtzariaWidgetsUI */,
 			);
 			productName = OtzariaWidgetiOS;
@@ -290,6 +301,7 @@
 			);
 			name = OtzariaWidgetiOSExtension;
 			packageProductDependencies = (
+				7DFF8B44ABF5EBD1A239C40B /* OtzariaCalendar */,
 				7933F79D04D447DF0B1B5A63 /* OtzariaWidgetsUI */,
 			);
 			productName = OtzariaWidgetiOSExtension;
@@ -759,6 +771,22 @@
 		7933F79D04D447DF0B1B5A63 /* OtzariaWidgetsUI */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = OtzariaWidgetsUI;
+		};
+		2D19CB7B30A531499D1DB0DC /* OtzariaCalendar */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OtzariaCalendar;
+		};
+		A8427B7BD32605E21EA07CA8 /* OtzariaCalendar */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OtzariaCalendar;
+		};
+		FE8CFA873A2AB15E30E67AB3 /* OtzariaCalendar */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OtzariaCalendar;
+		};
+		7DFF8B44ABF5EBD1A239C40B /* OtzariaCalendar */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OtzariaCalendar;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
