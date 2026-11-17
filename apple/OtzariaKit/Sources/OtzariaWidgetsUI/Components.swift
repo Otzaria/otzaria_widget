@@ -99,7 +99,7 @@ struct WidgetBody<Content: View>: View {
         if size == .small { Text(title).font(.caption.weight(.bold)) }
         Text(text).font(size == .small ? .caption : .subheadline).foregroundStyle(.secondary).lineLimit(size == .small ? 6 : 4)
         if button, size != .small {
-            Link(destination: WidgetLinks.url(WidgetLinks.settings)) {
+            RowLink(destination: WidgetLinks.url(WidgetLinks.settings)) {
                 Text("פתח הגדרות").font(.caption.weight(.semibold)).padding(.horizontal, 10).padding(.vertical, 4)
                     .background(tint.opacity(0.15), in: Capsule()).foregroundStyle(tint)
             }
@@ -135,5 +135,35 @@ struct ReadingRowView: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct FamilyOverrideKey: EnvironmentKey { static let defaultValue: WidgetFamily? = nil }
+
+extension EnvironmentValues {
+    /// `widgetFamily` is read-only; renders outside WidgetKit (tests, previews) set the size through this.
+    var familyOverride: WidgetFamily? {
+        get { self[FamilyOverrideKey.self] }
+        set { self[FamilyOverrideKey.self] = newValue }
+    }
+}
+
+private struct PlainLinksKey: EnvironmentKey { static let defaultValue = false }
+
+extension EnvironmentValues {
+    /// ImageRenderer cannot draw `Link`; renders outside WidgetKit turn links into plain content.
+    var plainLinks: Bool {
+        get { self[PlainLinksKey.self] }
+        set { self[PlainLinksKey.self] = newValue }
+    }
+}
+
+struct RowLink<Content: View>: View {
+    var destination: URL
+    @ViewBuilder var content: () -> Content
+    @Environment(\.plainLinks) private var plain
+
+    var body: some View {
+        if plain { content() } else { Link(destination: destination, label: content) }
     }
 }

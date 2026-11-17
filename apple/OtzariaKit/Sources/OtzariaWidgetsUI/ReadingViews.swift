@@ -3,7 +3,9 @@ import WidgetKit
 
 struct RecentBooksView: View {
     let entry: OtzariaEntry<RecentBooksOptions>
-    @Environment(\.widgetFamily) private var family
+    @Environment(\.widgetFamily) private var widgetFamily
+    @Environment(\.familyOverride) private var familyOverride
+    private var family: WidgetFamily { familyOverride ?? widgetFamily }
     @Environment(\.colorScheme) private var scheme
 
     var body: some View {
@@ -32,7 +34,7 @@ struct RecentBooksView: View {
 
     @ViewBuilder private func listContent(_ model: RecentBooksModel, _ hero: ReadingRow, _ size: WidgetSize, _ tint: Color) -> some View {
         let dense = size == .medium ? model.slots > 3 : model.slots > 6
-        Link(destination: hero.url) {
+        RowLink(destination: hero.url) {
             VStack(alignment: .leading, spacing: 1) {
                 Text(model.heroLabel).font(.caption2.weight(.semibold)).foregroundStyle(tint)
                 HStack(alignment: .firstTextBaseline) {
@@ -45,11 +47,11 @@ struct RecentBooksView: View {
         }
         if !model.rows.isEmpty { Divider() }
         ForEach(model.rows.indices, id: \.self) { i in
-            Link(destination: model.rows[i].url) { ReadingRowView(row: model.rows[i], dense: dense) }
+            RowLink(destination: model.rows[i].url) { ReadingRowView(row: model.rows[i], dense: dense) }
         }
         ForEach(model.searches.indices, id: \.self) { i in
             let s = model.searches[i]
-            Link(destination: s.url) {
+            RowLink(destination: s.url) {
                 HStack(spacing: 5) {
                     Image(systemName: "magnifyingglass").font(.caption2).foregroundStyle(tint)
                     Text(s.text).font(.caption).lineLimit(1)
@@ -63,7 +65,9 @@ struct RecentBooksView: View {
 
 struct BookmarksView: View {
     let entry: OtzariaEntry<BookmarksOptions>
-    @Environment(\.widgetFamily) private var family
+    @Environment(\.widgetFamily) private var widgetFamily
+    @Environment(\.familyOverride) private var familyOverride
+    private var family: WidgetFamily { familyOverride ?? widgetFamily }
     @Environment(\.colorScheme) private var scheme
 
     var body: some View {
@@ -73,7 +77,7 @@ struct BookmarksView: View {
         let dense = size == .medium ? model.rows.count > 3 : model.rows.count > 6
         WidgetBody(title: "סימניות", headerEnd: model.groupName, size: size, state: model.state, url: model.url, tint: tint) {
             ForEach(model.rows.indices, id: \.self) { i in
-                Link(destination: model.rows[i].url) {
+                RowLink(destination: model.rows[i].url) {
                     HStack(spacing: 6) {
                         Image(systemName: "bookmark.fill").font(.caption2).foregroundStyle(tint)
                         ReadingRowView(row: model.rows[i], dense: dense && size == .large, trailingShort: size == .medium)
@@ -86,7 +90,9 @@ struct BookmarksView: View {
 
 struct ShamorZachorView: View {
     let entry: OtzariaEntry<ShamorZachorOptions>
-    @Environment(\.widgetFamily) private var family
+    @Environment(\.widgetFamily) private var widgetFamily
+    @Environment(\.familyOverride) private var familyOverride
+    private var family: WidgetFamily { familyOverride ?? widgetFamily }
     @Environment(\.colorScheme) private var scheme
 
     var body: some View {
@@ -101,7 +107,7 @@ struct ShamorZachorView: View {
             case .medium:
                 ForEach(model.rows.indices, id: \.self) { i in
                     let r = model.rows[i]
-                    Link(destination: r.url) {
+                    RowLink(destination: r.url) {
                         HStack(spacing: 8) {
                             Text(r.title).font(.subheadline).lineLimit(1)
                             Spacer(minLength: 2)
@@ -127,7 +133,7 @@ struct ShamorZachorView: View {
     }
 
     private func large(_ r: ProgressRow, _ tint: Color) -> some View {
-        Link(destination: r.url) {
+        RowLink(destination: r.url) {
             VStack(alignment: .leading, spacing: 2) {
                 HStack {
                     Text(r.title).font(.subheadline.weight(.medium)).lineLimit(1)

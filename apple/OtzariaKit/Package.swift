@@ -22,6 +22,7 @@ let package = Package(
         ),
         .target(name: "OtzariaWidgetsUI", dependencies: ["OtzariaCore", "OtzariaCalendar"]),
         .testTarget(name: "OtzariaCoreTests", dependencies: ["OtzariaCore"]),
+        .testTarget(name: "OtzariaWidgetsUITests", dependencies: ["OtzariaWidgetsUI", "OtzariaCore", "OtzariaCalendar"]),
         .testTarget(
             name: "OtzariaCalendarTests",
             dependencies: ["OtzariaCalendar"],

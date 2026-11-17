@@ -26,7 +26,9 @@ private struct ZmanLine: View {
 
 struct ZmanimView: View {
     let entry: OtzariaEntry<ZmanimOptions>
-    @Environment(\.widgetFamily) private var family
+    @Environment(\.widgetFamily) private var widgetFamily
+    @Environment(\.familyOverride) private var familyOverride
+    private var family: WidgetFamily { familyOverride ?? widgetFamily }
     @Environment(\.colorScheme) private var scheme
 
     var body: some View {
@@ -85,7 +87,9 @@ struct ZmanimView: View {
 
 struct HebrewCalendarView: View {
     let entry: OtzariaEntry<CalendarOptions>
-    @Environment(\.widgetFamily) private var family
+    @Environment(\.widgetFamily) private var widgetFamily
+    @Environment(\.familyOverride) private var familyOverride
+    private var family: WidgetFamily { familyOverride ?? widgetFamily }
     @Environment(\.colorScheme) private var scheme
 
     var body: some View {
@@ -141,7 +145,9 @@ struct HebrewCalendarView: View {
 
 struct DashboardView: View {
     let entry: OtzariaEntry<DashboardOptions>
-    @Environment(\.widgetFamily) private var family
+    @Environment(\.widgetFamily) private var widgetFamily
+    @Environment(\.familyOverride) private var familyOverride
+    private var family: WidgetFamily { familyOverride ?? widgetFamily }
     @Environment(\.colorScheme) private var scheme
 
     var body: some View {
@@ -162,7 +168,7 @@ struct DashboardView: View {
     }
 
     private func lineView(_ line: DashLine, _ tint: Color) -> some View {
-        Link(destination: line.url) {
+        RowLink(destination: line.url) {
             VStack(alignment: .leading, spacing: 1) {
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
                     Text(line.text).font(.subheadline.weight(line.emphasize ? .bold : .regular))
