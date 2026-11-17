@@ -41,12 +41,15 @@ and ship it next to the application / inside the MSIX).
 * How it is used (LGPL compliance):
   * Referenced as an **unmodified Swift Package Manager dependency** (`.upToNextMinor(from: "3.1.1")`); no file of the
     library is copied into this repository or changed.
-  * It is linked only into the **dynamic framework `OtzariaCalendar.framework`** (`type: .dynamic` in
-    `apple/OtzariaKit/Package.swift`), shipped as a separate framework inside the app bundle. The complete source of that
-    framework is in this repository, so a user can rebuild it against a modified KosherSwift and replace it.
+  * In the macOS and iOS apps it ships as its **own dynamic framework** (`KosherSwift_…_PackageProduct.framework`,
+    built by Xcode from the unmodified package), embedded once in the app bundle and loaded by the widget extension from
+    there. Our calendar code is the separate `OtzariaCalendar.framework`; no app, extension or other framework binary
+    contains KosherSwift code (checked with `nm` in CI). A user can rebuild KosherSwift from modified source and replace
+    that framework.
   * Our code only calls its public API; a Daf Yomi Bavli calculation is reimplemented in `DafYomiText.swift` because the
     library derives day numbers from the device time zone.
-* **Do not** link KosherSwift into a static library or directly into an app / extension binary without revisiting this entry.
+* **Do not** change the product types in `apple/OtzariaKit/Package.swift` or the package products linked by the Xcode
+  targets without revisiting this entry (see `apple/README.md`).
 
 ---
 
