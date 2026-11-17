@@ -126,7 +126,7 @@ final class QaParityTests: XCTestCase {
             var skipped = 0
             for r in rows {
                 let p = r.split(separator: "|", omittingEmptySubsequences: false).map(String.init) // date|header|dow|events|parasha|daf|omer|yom tov
-                if osSkipsYear5806 && p[1].hasSuffix("ה׳תת״ו") { skipped += 1; continue }
+                if osSkipsYear5806 && (p[1].hasSuffix("ה׳תת״ו") || p[1].hasSuffix("ה׳תת״ז")) { skipped += 1; continue }
                 let date = D(p[0])
                 let info = svc.dayInfo(for: date, city: city)
                 let dow = date.dayOfWeek
@@ -149,12 +149,12 @@ final class QaParityTests: XCTestCase {
                 if info.isYomTov != (p[7] == "1") { failures.append("\(p[0]) yom tov") }
             }
             XCTAssertTrue(failures.isEmpty, "\(israel ? "Israel" : "diaspora"): \(failures.count) mismatches:\n" + failures.prefix(30).joined(separator: "\n"))
-            XCTAssertLessThanOrEqual(skipped, 40)
+            XCTAssertLessThanOrEqual(skipped, 70)
         }
     }
 
-    /// KosherSwift converts through Foundation's Hebrew calendar; older OS ICU (seen on macOS 15) gives 5806 (2045-46) a 30-day
-    /// Cheshvan where Otzaria has 1 Kislev. Where the OS is correct the full check runs.
+    /// KosherSwift converts through Foundation's Hebrew calendar; older OS ICU (seen on macOS 15) starts 5807 a day late, so
+    /// 5806-5807 (2045-47) are skipped there. Where the OS is correct the full check runs.
     private static func osHebrewCalendarHasBrokenYear5806() -> Bool {
         var gregorian = Calendar(identifier: .gregorian)
         gregorian.timeZone = TimeZone(identifier: "UTC")!
