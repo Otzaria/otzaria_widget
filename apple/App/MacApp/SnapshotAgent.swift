@@ -17,6 +17,8 @@ final class SnapshotAgent: ObservableObject {
     private var lastWritten: WidgetSnapshot?
     private var timer: Timer?
     private var busy = false
+    /// A forced refresh asked for while busy (e.g. a settings change) runs right after the current one.
+    private var pendingForce = false
 
     init(model: SettingsModel) {
         self.model = model
@@ -40,7 +42,10 @@ final class SnapshotAgent: ObservableObject {
 
     /// `force` re-reads everything (first run, settings change, manual refresh); otherwise only when Otzaria's files changed.
     func refresh(force: Bool) {
-        guard !busy else { return }
+        guard !busy else {
+            pendingForce = pendingForce || force
+            return
+        }
         busy = true
         let service = service
         Task.detached(priority: .utility) { [weak self] in
@@ -52,6 +57,10 @@ final class SnapshotAgent: ObservableObject {
 
     private func finish(fresh: OtzariaSnapshot?, widget: WidgetSnapshot?) {
         busy = false
+        if pendingForce {
+            pendingForce = false
+            refresh(force: true)
+        }
         guard let fresh, let widget else { return }
         snapshot = fresh
         var comparable = widget
