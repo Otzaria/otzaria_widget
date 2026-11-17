@@ -42,9 +42,8 @@ struct HebrewDate: Equatable {
     }
 }
 
-/// The Hebrew calendar by pure arithmetic (mean molad and the four dechiyos), so results never depend on the OS's ICU.
-/// KosherSwift converts dates through Foundation's Hebrew calendar, which is wrong for Rosh Hashana 5807 on older systems
-/// (macOS 14/15, iOS 17/18). It is still used for the holiday and parsha rules, but only on a date this file has confirmed it converts correctly.
+/// The Hebrew calendar by pure arithmetic (molad and dechiyos). KosherSwift converts through the OS's ICU, which older systems
+/// (macOS 14/15, iOS 17/18) get wrong for Rosh Hashana 5807, so its rules only run on dates verified here.
 enum HebrewCalendarArithmetic {
     private static let chalakimPerDay = 25_920
     private static let chalakimPerMonth = 765_433
@@ -121,13 +120,11 @@ enum HebrewCalendarArithmetic {
     /// Whether Foundation's Hebrew calendar is trusted for this Gregorian day. Tests replace it to simulate a faulty OS.
     static var osCalendarIsCorrect: (CivilDate) -> Bool = { _ in true }
 
-    /// A `JewishCalendar` whose holiday, parsha and omer rules answer for `date`. KosherSwift reads the date through the
-    /// OS's calendar; when that disagrees with the arithmetic (on `date` or the next day) the rules are run on the same day of
-    /// another year with the same Rosh Hashana weekday and length, where the OS is verified to be right. Every rule used
-    /// depends only on that shape and the day, never on the year number.
+    /// A `JewishCalendar` whose holiday, parsha and omer rules answer for `date`. Where the OS converts it wrongly, the same day of
+    /// a year with the same Rosh Hashana weekday and length stands in: every rule used depends on that shape only, not the year number.
     static func jewishCalendar(for date: CivilDate, inIsrael: Bool) -> JewishCalendar {
-        let target = HebrewDate(epochDay: date.epochDay)
         if let calendar = verifiedCalendar(epochDay: date.epochDay, inIsrael: inIsrael) { return calendar }
+        let target = HebrewDate(epochDay: date.epochDay)
         let rosh = roshHashana(target.year)
         let offset = date.epochDay - rosh
         let shape = (CivilDate(epochDay: rosh).dayOfWeek, daysInYear(target.year))
