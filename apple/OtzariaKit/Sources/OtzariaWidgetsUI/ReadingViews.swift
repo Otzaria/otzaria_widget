@@ -12,7 +12,9 @@ struct RecentBooksView: View {
         let size = WidgetSize(family)
         let model = RecentBooksModel.make(entry.context(size: size), entry.options)
         let tint = Accent.color(entry.snapshot, scheme: scheme)
-        WidgetBody(title: "ספרים אחרונים", size: size, state: model.state, url: model.url, tint: tint) {
+        // Small widgets have no links, so the whole widget opens the item (as on Windows).
+        let url = size == .small ? model.hero?.url ?? model.url : model.url
+        WidgetBody(title: "ספרים אחרונים", size: size, state: model.state, url: url, tint: tint) {
             if let hero = model.hero {
                 if size == .small {
                     small(model, hero, tint)
@@ -99,8 +101,9 @@ struct ShamorZachorView: View {
         let size = WidgetSize(family)
         let model = ShamorZachorModel.make(entry.context(size: size), entry.options)
         let tint = Accent.color(entry.snapshot, scheme: scheme)
+        let url = size == .small ? model.rows.first?.url ?? model.url : model.url
         WidgetBody(title: "שמור וזכור", headerEnd: size == .large ? model.headerEnd : model.subtitle, size: size,
-                   state: model.state, url: model.url, tint: tint) {
+                   state: model.state, url: url, tint: tint) {
             switch size {
             case .small:
                 if let r = model.rows.first { small(r, tint) }
