@@ -170,15 +170,30 @@ final class HebrewArithmeticTests: XCTestCase {
         }
     }
 
-    func testYerushalmiDoesNotUseTheOSCalendar() throws {
+    /// The Yerushalmi port answers like KosherSwift's calculator up to 2044, before the years an older OS ICU gets wrong.
+    /// Every day of Av and Tishrei (the skipped days), every third day otherwise: an error in the cycle shifts all later dafs.
+    func testYerushalmiMatchesKosherSwift1980To2044() {
+        var failures: [String] = []
+        for day in D("1980-01-25").epochDay...D("2044-12-31").epochDay where day % 3 == 0 || [5, 7].contains(HebrewDate(epochDay: day).month) {
+            let date = CivilDate(epochDay: day)
+            let jc = JewishCalendar(localDate: LocalDate(year: date.year, month: date.month, day: date.day))
+            let expected = jc.getDafYomiYerushalmi().map { "\($0.getYerushalmiMasechta()) \(HebrewNumbers.letters($0.getDaf()))" }
+            if DafYomiText.yerushalmi(date: date) != expected { failures.append("\(date)") }
+        }
+        XCTAssertTrue(failures.isEmpty, "\(failures.count) mismatches: " + failures.prefix(20).joined(separator: ", "))
+        XCTAssertNil(DafYomiText.yerushalmi(date: D("2046-10-10"))) // Yom Kippur 5807
+        XCTAssertNotNil(DafYomiText.yerushalmi(date: D("2046-10-11")))
+    }
+
+    /// Runs only on an OS whose ICU has the 5806 error (e.g. the macos-15 CI runner): the real OS takes the stand-in path.
+    func testRealFaultyOSCalendarIsBypassed() throws {
+        let direct = JewishCalendar(localDate: LocalDate(year: 2045, month: 11, day: 10))
+        guard direct.getJewishDayOfMonth() == 30 else { throw XCTSkip("this OS converts 5806 correctly") }
+        XCTAssertNotEqual(Arithmetic.jewishCalendar(for: D("2045-11-10"), inIsrael: true).getJewishYear(), 5806)
         let svc = CalendarService()
         let jerusalem = try XCTUnwrap(svc.findCity("ירושלים"))
-        let days = (D("2045-10-01").epochDay...D("2047-12-31").epochDay).map { CivilDate(epochDay: $0) }
-        let reference = days.map { svc.dayInfo(for: $0, city: jerusalem).dafYomiYerushalmi }
-        simulateFaultyOS()
-        XCTAssertEqual(days.map { svc.dayInfo(for: $0, city: jerusalem).dafYomiYerushalmi }, reference)
-        XCTAssertNil(svc.dayInfo(for: D("2046-10-10"), city: jerusalem).dafYomiYerushalmi) // Yom Kippur 5807
-        XCTAssertNotNil(svc.dayInfo(for: D("2046-10-11"), city: jerusalem).dafYomiYerushalmi)
+        XCTAssertEqual(svc.calendarHeaderDate(for: D("2045-11-10"), city: jerusalem), "א כסלו ה׳תת״ו")
+        XCTAssertEqual(svc.dayInfo(for: D("2046-10-01"), city: jerusalem).holidays, ["ראש השנה"])
     }
 }
 
