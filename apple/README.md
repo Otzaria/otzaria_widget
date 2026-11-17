@@ -57,5 +57,13 @@ xcodebuild -project apple/App/OtzariaWidget.xcodeproj -scheme OtzariaWidgetiOS \
 
 ## רישיון ו-LGPL
 
-חישובי הלוח והזמנים מבוססים על KosherSwift (LGPL-2.1). הספרייה נכללת רק בתוך `OtzariaWidgetsUI.framework` דינמי, בעותק אחד, שמוטמע באפליקציה. אפליקציות ההרחבות אינן מכילות אותה, וההרחבות טוענות את ה-framework מתיקיית ה-Frameworks של האפליקציה.
-זה דורש ב-`OtzariaKit/Package.swift`: המוצר `OtzariaWidgetsUI` מסוג `.dynamic`, והמוצר `OtzariaCalendar` בלי `type: .dynamic`. אין לשנות את הקישור לסטטי בלי לבדוק מחדש את הציות לרישיון.
+חישובי הלוח והזמנים מבוססים על KosherSwift (LGPL-2.1). באפליקציה יש שלושה frameworks דינמיים נפרדים, כל אחד בעותק אחד בתיקיית `Frameworks` של האפליקציה:
+
+- `KosherSwift_…_PackageProduct.framework` - הספרייה עצמה, בלי שינוי.
+- `OtzariaCalendar.framework` - הלוח והזמנים שלנו.
+- `OtzariaWidgetsUI.framework` - הווידג'טים (כולל `OtzariaCore`).
+
+הקבצים הראשיים של האפליקציה ושל ההרחבות אינם מכילים קוד של KosherSwift, וההרחבות טוענות את ה-frameworks מתיקיית האפליקציה. אפשר לבנות את KosherSwift מחדש ולהחליף את ה-framework שלה בלי לגעת בשאר.
+
+החלוקה הזאת נוצרת כך: ב-`OtzariaKit/Package.swift` המוצר `OtzariaWidgetsUI` מסוג `.dynamic`, והמוצר `OtzariaCalendar` בלי סוג. ארבעת היעדים בפרויקט מקשרים את שני המוצרים, ולכן Xcode בונה את `OtzariaCalendar` ואת KosherSwift כ-frameworks נפרדים. מוצר דינמי בשם `OtzariaCalendar` מונע את זה (Xcode מסרב לבנות את היעד באופן דינמי), ובלי הקישור הישיר שלו הכול נכנס ל-`OtzariaWidgetsUI.framework`.
+ה-CI בודק אחרי הבנייה שאין קוד של KosherSwift מחוץ ל-framework שלה. אין לשנות את הקישור בלי לבדוק מחדש את הציות לרישיון.
