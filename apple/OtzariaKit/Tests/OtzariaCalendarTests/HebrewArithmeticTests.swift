@@ -107,16 +107,16 @@ final class HebrewArithmeticTests: XCTestCase {
         Arithmetic.osCalendarIsCorrect = { !range.contains($0.epochDay) }
     }
 
-    /// Where this machine's OS is right, the stand-in (another year of the same shape) answers like the real date does.
+    /// The stand-in (another year of the same shape) answers like the real date, over 2023-2025 where every OS ICU is right.
     func testStandInAnswersLikeTheRealDate() {
-        let days = D("2045-11-01").epochDay...D("2047-10-15").epochDay
+        let days = D("2023-09-01").epochDay...D("2025-08-15").epochDay
         for israel in [true, false] {
             var checked = 0
             for day in days {
                 let date = CivilDate(epochDay: day)
                 let direct = JewishCalendar(localDate: LocalDate(year: date.year, month: date.month, day: date.day), inIsrael: israel)
                 guard agreesWithOS(direct, day) else { continue }
-                simulateFaultyOS(from: "2045-11-01", to: "2047-10-15")
+                simulateFaultyOS(from: "2023-09-01", to: "2025-08-15")
                 let standIn = Arithmetic.jewishCalendar(for: date, inIsrael: israel)
                 Arithmetic.osCalendarIsCorrect = { _ in true }
                 checked += 1
