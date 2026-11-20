@@ -96,14 +96,12 @@ final class CityTests: XCTestCase {
         }
     }
 
-    /// Validates the embedded table against Otzaria's own Dart source when a checkout is available.
+    /// Validates the embedded table against Otzaria's Dart source when OTZARIA_SOURCE_DIR points to a checkout.
     func testEmbeddedTableMatchesOtzariaCalendarLocationDartWhenAvailable() throws {
-        let candidates = [
-            ProcessInfo.processInfo.environment["OTZARIA_SOURCE_DIR"].map { $0 + "/lib/tools/calendar/models/calendar_location.dart" },
-            "/Volumes/T7/Development Projects/otzaria/lib/tools/calendar/models/calendar_location.dart",
-        ].compactMap { $0 }
-        guard let path = candidates.first(where: { FileManager.default.fileExists(atPath: $0) }) else {
-            throw XCTSkip("no Otzaria source checkout available")
+        guard let dir = ProcessInfo.processInfo.environment["OTZARIA_SOURCE_DIR"],
+              case let path = dir + "/lib/tools/calendar/models/calendar_location.dart",
+              FileManager.default.fileExists(atPath: path) else {
+            throw XCTSkip("set OTZARIA_SOURCE_DIR to an Otzaria source checkout")
         }
         let text = try String(contentsOfFile: path, encoding: .utf8)
         func unescape(_ s: String) -> String { s.replacingOccurrences(of: "\\'", with: "'") }
