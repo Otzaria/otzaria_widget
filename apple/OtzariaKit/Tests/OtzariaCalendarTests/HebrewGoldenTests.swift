@@ -3,7 +3,7 @@ import XCTest
 
 /// Day-by-day parity with Otzaria for 2023-09-01 ... 2031-08-31 (2,922 days), Israel (Jerusalem) and diaspora (New York):
 /// Hebrew date, holiday labels, upcoming parsha, daf yomi, omer, Yom Tov flag and the day-dependent zmanim shown.
-final class HebrewGoldenTests: XCTestCase {
+class HebrewGoldenTests: XCTestCase {
     private let svc = CalendarService()
 
     private struct Line {

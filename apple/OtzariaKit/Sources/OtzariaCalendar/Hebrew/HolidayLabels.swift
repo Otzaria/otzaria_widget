@@ -85,13 +85,8 @@ enum HolidayLabels {
     static func parasha(_ jc: JewishCalendar, date: CivilDate) -> String? {
         let dow = date.dayOfWeek
         let daysUntilShabbat = dow == 7 ? 0 : 7 - dow
-        let shabbat: JewishCalendar
-        if daysUntilShabbat == 0 {
-            shabbat = jc
-        } else {
-            let d = date.addingDays(daysUntilShabbat)
-            shabbat = JewishCalendar(localDate: LocalDate(year: d.year, month: d.month, day: d.day), inIsrael: jc.inIsrael)
-        }
+        let shabbat = daysUntilShabbat == 0
+            ? jc : HebrewCalendarArithmetic.jewishCalendar(for: date.addingDays(daysUntilShabbat), inIsrael: jc.inIsrael)
         let p = parashaOfShabbat(shabbat)
         return p.isEmpty ? nil : p
     }

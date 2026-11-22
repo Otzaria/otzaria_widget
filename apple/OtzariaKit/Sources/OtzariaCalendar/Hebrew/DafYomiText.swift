@@ -44,8 +44,64 @@ enum DafYomiText {
         return nil
     }
 
-    static func yerushalmi(_ jc: JewishCalendar) -> String? {
-        guard let daf = jc.getDafYomiYerushalmi() else { return nil }
-        return "\(daf.getYerushalmiMasechta()) \(HebrewNumbers.letters(daf.getDaf()))"
+    private static let yerushalmiStart = CivilDate(year: 1980, month: 2, day: 2).epochDay
+    private static let yerushalmiShasDafs = 1554
+    private static let yerushalmiBlatt = [
+        68, 37, 34, 44, 31, 59, 26, 33, 28, 20, 13, 92, 65, 71, 22, 22, 42, 26, 26, 33, 34, 22,
+        19, 85, 72, 47, 40, 47, 54, 48, 44, 37, 34, 44, 9, 57, 37, 19, 13,
+    ]
+
+    /// The library's Yerushalmi cycle arithmetic, with Yom Kippur / Tisha B'Av taken from `HebrewDate` instead of the OS calendar.
+    static func yerushalmi(date: CivilDate) -> String? {
+        let day = date.epochDay
+        if day < yerushalmiStart || isYomKippurOrTishaBav(day) { return nil }
+        var cycleStart = yerushalmiStart
+        var nextCycle = nextYerushalmiCycle(after: cycleStart)
+        while day >= nextCycle {
+            cycleStart = nextCycle
+            nextCycle = nextYerushalmiCycle(after: cycleStart)
+        }
+        var total = day - cycleStart - specialDays(from: cycleStart, to: day)
+        for (masechta, blatt) in yerushalmiBlatt.enumerated() {
+            if total < blatt {
+                let daf = Daf(masechtaNumber: masechta, daf: total + 1)
+                return "\(daf.getYerushalmiMasechta()) \(HebrewNumbers.letters(daf.getDaf()))"
+            }
+            total -= blatt
+        }
+        return nil
+    }
+
+    private static func isYomKippurOrTishaBav(_ day: Int) -> Bool {
+        let h = HebrewDate(epochDay: day)
+        let dow = CivilDate(epochDay: day).dayOfWeek
+        return (h.month == 7 && h.day == 10) || (h.month == 5 && ((dow == 1 && h.day == 10) || (dow != 7 && h.day == 9)))
+    }
+
+    private static func nextYerushalmiCycle(after start: Int) -> Int {
+        var end = start + yerushalmiShasDafs - 1
+        var special = specialDays(from: start, to: end)
+        while special > 0 {
+            let newStart = end + 1
+            end += special
+            special = specialDays(from: newStart, to: end)
+        }
+        return end + 1
+    }
+
+    /// Days without a daf (Yom Kippur, Tisha B'Av; pushed to Sunday when on Shabbat) from `start` to `end`, both included.
+    private static func specialDays(from start: Int, to end: Int) -> Int {
+        let firstYear = HebrewDate(epochDay: start).year
+        let lastYear = HebrewDate(epochDay: end).year
+        guard firstYear <= lastYear else { return 0 }
+        var count = 0
+        for year in firstYear...lastYear {
+            var tishaBav = HebrewDate(year: year, month: 5, day: 9).epochDay
+            if CivilDate(epochDay: tishaBav).dayOfWeek == 7 { tishaBav += 1 }
+            for special in [HebrewDate(year: year, month: 7, day: 10).epochDay, tishaBav] where (start...end).contains(special) {
+                count += 1
+            }
+        }
+        return count
     }
 }

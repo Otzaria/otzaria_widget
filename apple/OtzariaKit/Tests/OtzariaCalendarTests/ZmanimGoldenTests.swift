@@ -98,8 +98,8 @@ final class ZmanimGoldenTests: XCTestCase {
     private func crossesIsraelDst(date: CivilDate, city: CityInfo, id: String) -> Bool {
         let ctx = ZmanContext(city: city, date: date)
         // rawInstant carries the -2h reading; add it back to get the naive wall clock as a UTC value
-        let start = KidushLevana.rawInstant(ctx.jewish, offsetMs: 0) + 7_200_000
-        let end = KidushLevana.rawInstant(ctx.jewish, offsetMs: levanaOffsetMs(id)) + 7_200_000
+        let start = KidushLevana.rawInstant(ctx.date, offsetMs: 0) + 7_200_000
+        let end = KidushLevana.rawInstant(ctx.date, offsetMs: levanaOffsetMs(id)) + 7_200_000
         return jerusalemZone.offsetSeconds(atMs: start - 7_200_000) != jerusalemZone.offsetSeconds(atMs: end - 7_200_000)
     }
 

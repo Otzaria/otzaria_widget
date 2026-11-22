@@ -115,54 +115,7 @@ final class QaParityTests: XCTestCase {
         }
     }
 
-    func testHebrewCalendar1924To2100SampledMatchesOtzaria() throws {
-        let dows = ["", "ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"]
-        let osSkipsYear5806 = Self.osHebrewCalendarHasBrokenYear5806()
-        for israel in [true, false] {
-            let city = try XCTUnwrap(svc.findCity(israel ? "ירושלים" : "ניו יורק"))
-            var failures: [String] = []
-            let rows = try Golden.lines(israel ? "qa_hebrew_israel.txt.gz" : "qa_hebrew_diaspora.txt.gz")
-            XCTAssertGreaterThan(rows.count, 5000)
-            var skipped = 0
-            for r in rows {
-                let p = r.split(separator: "|", omittingEmptySubsequences: false).map(String.init) // date|header|dow|events|parasha|daf|omer|yom tov
-                if osSkipsYear5806 && (p[1].hasSuffix("ה׳תת״ו") || p[1].hasSuffix("ה׳תת״ז")) { skipped += 1; continue }
-                let date = D(p[0])
-                let info = svc.dayInfo(for: date, city: city)
-                let dow = date.dayOfWeek
-
-                let header = svc.calendarHeaderDate(for: date, city: city)
-                if header != p[1] { failures.append("\(p[0]) header '\(header)' != '\(p[1])'") }
-                if dows[dow] != p[2] { failures.append("\(p[0]) dow") }
-                if info.hebrewDayOfWeek != (dow == 7 ? "שבת קודש" : "יום " + p[2]) { failures.append("\(p[0]) dow name \(info.hebrewDayOfWeek)") }
-
-                var events = p[3].isEmpty ? [] : p[3].components(separatedBy: ";")
-                if dow == 7 && !p[4].isEmpty, let i = events.firstIndex(of: p[4]) { events.remove(at: i) } // parsha is kept in DayInfo.parasha
-                let isFast: (String) -> Bool = { $0 == "שבעה עשר בתמוז" || $0 == "תשעה באב" }
-                let fastOnShabbat = dow == 7 && events.contains(where: isFast) && !info.holidays.contains(where: isFast)
-                if fastOnShabbat { events.removeAll(where: isFast) } // documented kosher_dart bug
-                if info.holidays != events { failures.append("\(p[0]) holidays \(info.holidays) != \(events)") }
-
-                if (info.parasha ?? "") != p[4] { failures.append("\(p[0]) parasha '\(info.parasha ?? "")' != '\(p[4])'") }
-                if (info.dafYomiBavli ?? "") != p[5] { failures.append("\(p[0]) daf '\(info.dafYomiBavli ?? "")' != '\(p[5])'") }
-                if (info.omer ?? "") != p[6] { failures.append("\(p[0]) omer '\(info.omer ?? "")' != '\(p[6])'") }
-                if info.isYomTov != (p[7] == "1") { failures.append("\(p[0]) yom tov") }
-            }
-            XCTAssertTrue(failures.isEmpty, "\(israel ? "Israel" : "diaspora"): \(failures.count) mismatches:\n" + failures.prefix(30).joined(separator: "\n"))
-            XCTAssertLessThanOrEqual(skipped, 70)
-        }
-    }
-
-    /// KosherSwift converts through Foundation's Hebrew calendar; older OS ICU (seen on macOS 15) starts 5807 a day late, so
-    /// 5806-5807 (2045-47) are skipped there. Where the OS is correct the full check runs.
-    private static func osHebrewCalendarHasBrokenYear5806() -> Bool {
-        var gregorian = Calendar(identifier: .gregorian)
-        gregorian.timeZone = TimeZone(identifier: "UTC")!
-        var hebrew = Calendar(identifier: .hebrew)
-        hebrew.timeZone = gregorian.timeZone
-        let date = gregorian.date(from: DateComponents(year: 2045, month: 11, day: 10, hour: 12))!
-        return hebrew.component(.day, from: date) == 30
-    }
+    func testHebrewCalendar1924To2100SampledMatchesOtzaria() throws { try checkQaHebrewCalendar(svc) }
 
     /// First day of each masechta of the 14th Bavli cycle (started 2020-01-05): two-word names, the Shekalim / Meilah / Kinnim /
     /// Tamid / Midos special cases and no geresh/gershayim in the daf number.
@@ -207,5 +160,40 @@ final class QaParityTests: XCTestCase {
         XCTAssertNil(svc.dayInfo(for: D("2026-09-21"), city: jer).dafYomiYerushalmi) // Yom Kippur 5787
         XCTAssertNil(svc.dayInfo(for: D("2026-07-23"), city: jer).dafYomiYerushalmi) // Tisha B'Av 5786
         XCTAssertNotNil(svc.dayInfo(for: D("2026-11-13"), city: jer).dafYomiYerushalmi)
+    }
+}
+
+/// Hebrew date, holidays, parsha, daf and omer for the QA's sampled days of 1924-2100, Israel and diaspora.
+func checkQaHebrewCalendar(_ svc: CalendarService) throws {
+    let dows = ["", "ראשון", "שני", "שלישי", "רביעי", "חמישי", "שישי", "שבת"]
+    for israel in [true, false] {
+        let city = try XCTUnwrap(svc.findCity(israel ? "ירושלים" : "ניו יורק"))
+        var failures: [String] = []
+        let rows = try Golden.lines(israel ? "qa_hebrew_israel.txt.gz" : "qa_hebrew_diaspora.txt.gz")
+        XCTAssertGreaterThan(rows.count, 5000)
+        for r in rows {
+            let p = r.split(separator: "|", omittingEmptySubsequences: false).map(String.init) // date|header|dow|events|parasha|daf|omer|yom tov
+            let date = D(p[0])
+            let info = svc.dayInfo(for: date, city: city)
+            let dow = date.dayOfWeek
+
+            let header = svc.calendarHeaderDate(for: date, city: city)
+            if header != p[1] { failures.append("\(p[0]) header '\(header)' != '\(p[1])'") }
+            if dows[dow] != p[2] { failures.append("\(p[0]) dow") }
+            if info.hebrewDayOfWeek != (dow == 7 ? "שבת קודש" : "יום " + p[2]) { failures.append("\(p[0]) dow name \(info.hebrewDayOfWeek)") }
+
+            var events = p[3].isEmpty ? [] : p[3].components(separatedBy: ";")
+            if dow == 7 && !p[4].isEmpty, let i = events.firstIndex(of: p[4]) { events.remove(at: i) } // parsha is kept in DayInfo.parasha
+            let isFast: (String) -> Bool = { $0 == "שבעה עשר בתמוז" || $0 == "תשעה באב" }
+            let fastOnShabbat = dow == 7 && events.contains(where: isFast) && !info.holidays.contains(where: isFast)
+            if fastOnShabbat { events.removeAll(where: isFast) } // documented kosher_dart bug
+            if info.holidays != events { failures.append("\(p[0]) holidays \(info.holidays) != \(events)") }
+
+            if (info.parasha ?? "") != p[4] { failures.append("\(p[0]) parasha '\(info.parasha ?? "")' != '\(p[4])'") }
+            if (info.dafYomiBavli ?? "") != p[5] { failures.append("\(p[0]) daf '\(info.dafYomiBavli ?? "")' != '\(p[5])'") }
+            if (info.omer ?? "") != p[6] { failures.append("\(p[0]) omer '\(info.omer ?? "")' != '\(p[6])'") }
+            if info.isYomTov != (p[7] == "1") { failures.append("\(p[0]) yom tov") }
+        }
+        XCTAssertTrue(failures.isEmpty, "\(israel ? "Israel" : "diaspora"): \(failures.count) mismatches:\n" + failures.prefix(30).joined(separator: "\n"))
     }
 }
