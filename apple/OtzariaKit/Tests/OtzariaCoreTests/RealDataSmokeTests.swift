@@ -18,6 +18,10 @@ final class RealDataSmokeTests: XCTestCase {
               + "groups=\(s.bookmarkGroups.count) workspaces=\(s.workspaces.count) tabs=\(s.openTabs.count) progress=\(s.progress.count)")
 
         XCTAssertEqual(s.status.first { $0.name == SourceNames.preferences }?.health, .ok)
+        // A found but unreadable user_state.db is a failure, not something to print and pass.
+        if s.paths.userStateDb != nil {
+            XCTAssertEqual(s.status.first { $0.name == SourceNames.userState }?.health, .ok)
+        }
         XCTAssertFalse(s.preferences.selectedCity.isEmpty)
         for entry in s.recentBooks + s.bookmarks {
             XCTAssertFalse(entry.book.title.isEmpty)

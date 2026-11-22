@@ -13,7 +13,7 @@ let package = Package(
         .library(name: "OtzariaWidgetsUI", type: .dynamic, targets: ["OtzariaWidgetsUI"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/Elyahu41/KosherSwift.git", .upToNextMinor(from: "3.1.1")),
+        .package(url: "https://github.com/Elyahu41/KosherSwift.git", exact: "3.1.2"),
     ],
     targets: [
         .target(name: "OtzariaCore"),

@@ -13,7 +13,6 @@ public final class OtzariaDataService: @unchecked Sendable {
     private let settingsProvider: @Sendable () -> WidgetSettings
     private let pathResolver: OtzariaPathResolver
     private let userStateReader: UserStateReader
-    private let preferencesReader: PreferencesReader
     private let progressService: ProgressService
     private let catalogFactory: @Sendable (String) -> LibraryCatalog
     private let clock: @Sendable () -> Date
@@ -28,7 +27,6 @@ public final class OtzariaDataService: @unchecked Sendable {
         settingsProvider: @escaping @Sendable () -> WidgetSettings = { WidgetSettings() },
         pathResolver: OtzariaPathResolver = OtzariaPathResolver(),
         userStateReader: UserStateReader = UserStateReader(),
-        preferencesReader: PreferencesReader = PreferencesReader(),
         progressService: ProgressService = ProgressService(),
         catalogFactory: @escaping @Sendable (String) -> LibraryCatalog = { LibraryCatalog(databasePath: $0) },
         clock: @escaping @Sendable () -> Date = { Date() }
@@ -36,7 +34,6 @@ public final class OtzariaDataService: @unchecked Sendable {
         self.settingsProvider = settingsProvider
         self.pathResolver = pathResolver
         self.userStateReader = userStateReader
-        self.preferencesReader = preferencesReader
         self.progressService = progressService
         self.catalogFactory = catalogFactory
         self.clock = clock
@@ -74,6 +71,10 @@ public final class OtzariaDataService: @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         guard let c = cached else { return buildLocked() }
+        // Files missing at the last build are looked for again, so data created later (install, first run) is noticed.
+        if hasMissingFiles(c.snapshot.paths), filesOf(pathResolver.resolve(settings: settingsProvider())) != filesOf(c.snapshot.paths) {
+            return buildLocked()
+        }
         guard let token = computeToken(c.snapshot.paths), token != lastToken else { return nil }
         return buildLocked()
     }
@@ -184,6 +185,15 @@ public final class OtzariaDataService: @unchecked Sendable {
         catalog = fresh
         catalogKey = key
         return fresh
+    }
+
+    private func hasMissingFiles(_ paths: OtzariaPaths) -> Bool {
+        paths.userStateDb == nil || paths.preferencesHive == nil || paths.libraryDb == nil
+    }
+
+    /// The located files a snapshot is read from (diagnostics excluded).
+    private func filesOf(_ paths: OtzariaPaths) -> [String?] {
+        [paths.dataRoot, paths.userStateDb, paths.preferencesHive, paths.libraryDb, paths.otzariaApp]
     }
 
     private func computeToken(_ paths: OtzariaPaths) -> String? {

@@ -1,4 +1,7 @@
 import Foundation
+#if os(macOS)
+import Security
+#endif
 
 /// Effective preferences the widgets need: Otzaria's own values with the widget's overrides already applied.
 public struct WidgetPreferences: Codable, Sendable, Equatable {
@@ -190,9 +193,31 @@ public struct WidgetSnapshotStore: Sendable {
     public var fileURL: URL { directory.appendingPathComponent(WidgetSnapshot.fileName) }
 
     /// The shared container of `groupID`, or nil when the entitlement is missing.
+    /// macOS answers even without a real entitlement; `isTeamSignedGroup` tells whether the widgets can share it.
     public static func appGroupDirectory(groupID: String) -> URL? {
         FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupID)
     }
+
+    /// macOS: the group is really shared only when the code is signed by a team and `groupID` carries that team's
+    /// prefix. Ad-hoc and unsigned builds have no team (their `$(TeamIdentifierPrefix)` expands to nothing).
+    public static func isTeamSignedGroup(_ groupID: String, signingTeamID: String?) -> Bool {
+        guard let team = signingTeamID, !team.isEmpty else { return false }
+        return groupID.hasPrefix(team + ".") && groupID.count > team.count + 1
+    }
+
+    #if os(macOS)
+    /// Team identifier of the running code's signature; nil for ad-hoc signed, unsigned or unreadable code.
+    public static func currentSigningTeamID() -> String? {
+        var code: SecCode?
+        var staticCode: SecStaticCode?
+        var info: CFDictionary?
+        guard SecCodeCopySelf([], &code) == errSecSuccess, let code,
+              SecCodeCopyStaticCode(code, [], &staticCode) == errSecSuccess, let staticCode,
+              SecCodeCopySigningInformation(staticCode, SecCSFlags(rawValue: kSecCSSigningInformation), &info) == errSecSuccess,
+              let dict = info as? [String: Any] else { return nil }
+        return dict[kSecCodeInfoTeamIdentifier as String] as? String
+    }
+    #endif
 
     /// Nil when the file is missing or unreadable (the widgets then show their empty state).
     public func read() -> WidgetSnapshot? {

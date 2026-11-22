@@ -101,9 +101,9 @@ enum HebrewCalendarArithmetic {
     }
 
     /// The molad of the month as KosherJava's `getMolad()` reports it: the civil day, and the hour (Jerusalem mean time
-    /// as a 24-hour clock whose day starts at 18:00 the evening before), minute and chalakim.
+    /// as a 24-hour clock whose day starts at 18:00 the evening before), minute and chalakim. `month` must be in the year.
     static func molad(year: Int, month: Int) -> (day: CivilDate, hours: Int, minutes: Int, chalakim: Int) {
-        let index = monthOrder(year).firstIndex(of: month) ?? 0
+        guard let index = monthOrder(year).firstIndex(of: month) else { preconditionFailure("month \(month) is not in year \(year)") }
         let total = chalakimAtMoladTohu + chalakimPerMonth * (monthsBeforeYear(year) + index)
         var parts = total % chalakimPerDay
         var hours = parts / 1080
@@ -118,10 +118,17 @@ enum HebrewCalendarArithmetic {
     // MARK: KosherSwift stand-in
 
     /// Whether Foundation's Hebrew calendar is trusted for this Gregorian day. Tests replace it to simulate a faulty OS.
-    static var osCalendarIsCorrect: (CivilDate) -> Bool = { _ in true }
+    static var osCalendarIsCorrect: @Sendable (CivilDate) -> Bool {
+        get { osCheckLock.withLock { osCheck } }
+        set { osCheckLock.withLock { osCheck = newValue } }
+    }
+
+    private static let osCheckLock = NSLock()
+    nonisolated(unsafe) private static var osCheck: @Sendable (CivilDate) -> Bool = { _ in true }
 
     /// A `JewishCalendar` whose holiday, parsha and omer rules answer for `date`. Where the OS converts it wrongly, the same day of
     /// a year with the same Rosh Hashana weekday and length stands in: every rule used depends on that shape only, not the year number.
+    /// Ask it Hebrew-rule questions only (holidays, parsha, omer, day of week): its Gregorian date and Hebrew year may be another year's.
     static func jewishCalendar(for date: CivilDate, inIsrael: Bool) -> JewishCalendar {
         if let calendar = verifiedCalendar(epochDay: date.epochDay, inIsrael: inIsrael) { return calendar }
         let target = HebrewDate(epochDay: date.epochDay)

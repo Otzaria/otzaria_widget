@@ -43,6 +43,8 @@ public final class LibraryCatalog: LibraryCatalogProviding, @unchecked Sendable 
         if roots.isEmpty {
             guard let totalLines = try conn.query("SELECT totalLines FROM book WHERE id = ?", [.int(Int64(bookId))],
                                                   { $0.int(0) }).first, let lines = totalLines else { return nil }
+            // A corrupt, out-of-range count gives no count instead of trapping (C# Convert.ToInt32 throws there too).
+            guard lines <= Int64(Int32.max) else { return nil }
             var n = max(Int(lines), 1)
             if try isDafContent(conn, bookId: bookId) { n *= 2 }
             return n

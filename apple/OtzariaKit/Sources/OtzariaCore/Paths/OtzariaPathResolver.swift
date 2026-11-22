@@ -269,11 +269,14 @@ public struct OtzariaPathResolver: Sendable {
 
     private func bundlePath(of path: String) -> String { bundleRoot(of: path) ?? path }
 
+    /// An `otzaria*.app` / `אוצריא*.app` bundle or the executable in its Contents/MacOS (the macOS form of C#'s
+    /// otzaria*.exe rule), so a tampered data file cannot point at an arbitrary program or script.
     private func looksLikeOtzaria(_ path: String) -> Bool {
-        func named(_ c: String) -> Bool { c.hasPrefix("otzaria") || c.hasPrefix("אוצריא") }
         let components = path.split(separator: "/").map { $0.lowercased() }
-        guard let last = components.last else { return false }
-        return named(last) || components.contains { $0.hasSuffix(".app") && named($0) }
+        guard let app = components.lastIndex(where: { $0.hasSuffix(".app") }),
+              components[app].hasPrefix("otzaria") || components[app].hasPrefix("אוצריא") else { return false }
+        let inside = components[(app + 1)...]
+        return inside.isEmpty || (inside.count == 3 && inside.starts(with: ["contents", "macos"]))
     }
 
     // MARK: Files

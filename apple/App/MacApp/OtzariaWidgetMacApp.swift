@@ -34,6 +34,16 @@ struct OtzariaWidgetMacApp: App {
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // "פתח הגדרות" shows a Dock icon (.regular); once the last window closes the app is menu-bar only again.
+        NotificationCenter.default.addObserver(forName: NSWindow.willCloseNotification, object: nil, queue: .main) { note in
+            guard let closing = note.object as? NSWindow, closing.styleMask.contains(.titled) else { return }
+            DispatchQueue.main.async {
+                MainActor.assumeIsolated {
+                    let open = NSApp.windows.contains { $0 !== closing && $0.isVisible && $0.styleMask.contains(.titled) }
+                    if !open { NSApp.setActivationPolicy(.accessory) }
+                }
+            }
+        }
         guard Self.launchedAtLogin else { return }
         // Started by the login item: stay in the menu bar without a window.
         NSApp.setActivationPolicy(.accessory)

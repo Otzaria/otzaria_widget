@@ -164,6 +164,13 @@ final class PathResolverTests: XCTestCase {
             .addingFile(root + "/otzaria_capabilities.json", text: "{\"exePath\":\"/Apps/Otzaria.app/Contents/MacOS/otzaria\"}")
             .addingFile("/Apps/Otzaria.app/Contents/MacOS/otzaria")
         XCTAssertEqual(resolve(env).otzariaApp, "/Apps/Otzaria.app")
+        // Only an Otzaria bundle or its Contents/MacOS executable, not any file whose name starts with "otzaria".
+        for bad in ["/tmp/otzaria-evil.sh", "/Apps/Evil.app/Contents/MacOS/otzaria", "/Apps/Otzaria.app/Contents/Resources/otzaria-x"] {
+            env = base().addingFile(root + "/otzaria_capabilities.json", text: "{\"exePath\":\"\(bad)\"}").addingFile(bad)
+            XCTAssertNil(resolve(env).otzariaApp, bad)
+        }
+        env = base().addingFile(root + "/otzaria_capabilities.json", text: "{\"exePath\":\"/Apps/אוצריא.app/\"}").addingDir("/Apps/אוצריא.app/")
+        XCTAssertNotNil(resolve(env).otzariaApp)
     }
 
     func testCorruptCapabilitiesIgnored() {

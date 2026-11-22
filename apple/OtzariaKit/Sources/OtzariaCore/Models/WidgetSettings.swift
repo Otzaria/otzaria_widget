@@ -49,22 +49,25 @@ public struct WidgetSettings: Codable, Sendable, Equatable {
         case dayTransitionOverride, showYerushalmiDaf, hideSearches
     }
 
+    /// Each key is recovered on its own (like JsonSettingsStore.RecoverPerProperty): one wrongly-typed value keeps
+    /// its default instead of resetting every other setting (e.g. the hideSearches privacy switch).
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
-        schemaVersion = try c.decodeIfPresent(Int.self, forKey: .schemaVersion) ?? 1
-        dataRootOverride = try c.decodeIfPresent(String.self, forKey: .dataRootOverride)
-        databasesDirOverride = try c.decodeIfPresent(String.self, forKey: .databasesDirOverride)
-        libraryDbOverride = try c.decodeIfPresent(String.self, forKey: .libraryDbOverride)
-        otzariaAppOverride = try c.decodeIfPresent(String.self, forKey: .otzariaAppOverride)
-        linkMode = (try? c.decodeIfPresent(LinkOpenMode.self, forKey: .linkMode)) ?? .openUrl
-        theme = (try? c.decodeIfPresent(ThemeMode.self, forKey: .theme)) ?? .followSystem
-        accentColor = try c.decodeIfPresent(String.self, forKey: .accentColor)
-        cityOverride = try c.decodeIfPresent(String.self, forKey: .cityOverride)
-        zmanimOverride = try c.decodeIfPresent([String].self, forKey: .zmanimOverride)
-        twelveHourClockOverride = try c.decodeIfPresent(Bool.self, forKey: .twelveHourClockOverride)
-        dayTransitionOverride = try c.decodeIfPresent(String.self, forKey: .dayTransitionOverride)
-        showYerushalmiDaf = try c.decodeIfPresent(Bool.self, forKey: .showYerushalmiDaf) ?? false
-        hideSearches = try c.decodeIfPresent(Bool.self, forKey: .hideSearches) ?? false
+        func value<T: Decodable>(_ type: T.Type, _ key: CodingKeys) -> T? { (try? c.decodeIfPresent(type, forKey: key)) ?? nil }
+        schemaVersion = value(Int.self, .schemaVersion) ?? 1
+        dataRootOverride = value(String.self, .dataRootOverride)
+        databasesDirOverride = value(String.self, .databasesDirOverride)
+        libraryDbOverride = value(String.self, .libraryDbOverride)
+        otzariaAppOverride = value(String.self, .otzariaAppOverride)
+        linkMode = value(LinkOpenMode.self, .linkMode) ?? .openUrl
+        theme = value(ThemeMode.self, .theme) ?? .followSystem
+        accentColor = value(String.self, .accentColor)
+        cityOverride = value(String.self, .cityOverride)
+        zmanimOverride = value([String].self, .zmanimOverride)
+        twelveHourClockOverride = value(Bool.self, .twelveHourClockOverride)
+        dayTransitionOverride = value(String.self, .dayTransitionOverride)
+        showYerushalmiDaf = value(Bool.self, .showYerushalmiDaf) ?? false
+        hideSearches = value(Bool.self, .hideSearches) ?? false
     }
 }
 
@@ -76,7 +79,7 @@ public struct WidgetSettingsStore: Sendable {
 
     public var fileURL: URL { directory.appendingPathComponent(WidgetSettings.fileName) }
 
-    /// Missing or corrupt file yields the defaults; never throws.
+    /// Missing or corrupt file yields the defaults (a bad value only resets its own key); never throws.
     public func load() -> WidgetSettings {
         guard let data = try? Data(contentsOf: fileURL),
               let settings = try? JSONDecoder().decode(WidgetSettings.self, from: data)

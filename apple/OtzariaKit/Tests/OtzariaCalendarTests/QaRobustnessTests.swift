@@ -216,6 +216,17 @@ final class QaRobustnessTests: XCTestCase {
         XCTAssertEqual(zone.local(atMs: start - 1000).date, D("2026-10-31"))
     }
 
+    /// A DST gap that skips midnight (America/Santiago 2026-09-06 00:00 -> 01:00): the day starts at 01:00, not 23:00 the day before.
+    func testStartOfDayWhenDstSkipsMidnight() {
+        let zone = CityZone.resolve("America/Santiago")
+        let start = zone.startOfDayMs(D("2026-09-06"))
+        XCTAssertEqual(start, ZmanTimeFormatter.ms(at(2026, 9, 6, 1, 0, offset: -3)))
+        XCTAssertEqual(zone.local(atMs: start).date, D("2026-09-06"))
+        XCTAssertEqual(zone.local(atMs: start - 1000).date, D("2026-09-05"))
+        XCTAssertEqual(zone.startOfDayMs(D("2026-09-05")), ZmanTimeFormatter.ms(at(2026, 9, 5, 0, 0, offset: -4)))
+        XCTAssertEqual(zone.startOfDayMs(D("2026-09-07")), ZmanTimeFormatter.ms(at(2026, 9, 7, 0, 0, offset: -3)))
+    }
+
     // MARK: day transition boundaries (all four transitions, every city, DST days, high latitude)
 
     func testTheTransitionInstantFlipsTheEffectiveDateExactlyForAllCities() {

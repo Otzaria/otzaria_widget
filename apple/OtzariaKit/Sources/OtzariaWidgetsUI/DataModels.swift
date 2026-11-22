@@ -159,7 +159,7 @@ struct ProgressRow: Equatable {
 
 struct ShamorZachorModel: Equatable {
     var state: ContentState
-    var subtitle = ""
+    /// "<N> בתהליך" (ShamorZachorBuilder headerEnd); empty when there is no list, like Windows.
     var headerEnd = ""
     var note = ""
     var rows: [ProgressRow] = []
@@ -173,18 +173,9 @@ struct ShamorZachorModel: Equatable {
         }
     }
 
-    static func filterLabel(_ f: ShamorZachorFilter) -> String {
-        switch f {
-        case .completed: return "הושלמו"
-        case .all: return "כל הספרים"
-        case .inProgress: return "בתהליך"
-        }
-    }
-
     static func make(_ ctx: WidgetContext, _ o: ShamorZachorOptions) -> ShamorZachorModel {
-        let subtitle = filterLabel(o.filter)
         if let reason = DataText.missingReason(ctx.snapshot, sources: [SourceNames.preferences, SourceNames.progress]) {
-            return ShamorZachorModel(state: .missing(reason), subtitle: subtitle)
+            return ShamorZachorModel(state: .missing(reason))
         }
         let snap = ctx.snapshot!
         let list = snap.shamorZachor.filter { matches($0, o.filter) }
@@ -195,7 +186,7 @@ struct ShamorZachorModel: Equatable {
             case .all: text = "לא נמצאו ספרים בשמור וזכור"
             case .inProgress: text = "אין ספרים בתהליך"
             }
-            return ShamorZachorModel(state: .empty(text), subtitle: subtitle)
+            return ShamorZachorModel(state: .empty(text))
         }
         let suffix: String
         switch o.filter {
@@ -203,7 +194,7 @@ struct ShamorZachorModel: Equatable {
         case .all: suffix = " ספרים"
         case .inProgress: suffix = " בתהליך"
         }
-        var model = ShamorZachorModel(state: .ok, subtitle: subtitle, headerEnd: "\(list.count)\(suffix)")
+        var model = ShamorZachorModel(state: .ok, headerEnd: "\(list.count)\(suffix)")
         if snap.sources.contains(where: { $0.name == SourceNames.library && $0.health != .ok }) { model.note = DataText.libraryPartial }
 
         let allCols = o.allColumns && ctx.size == .large

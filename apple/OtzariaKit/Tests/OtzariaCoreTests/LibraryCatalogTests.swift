@@ -32,6 +32,17 @@ final class LibraryCatalogTests: XCTestCase {
         XCTAssertNil(c.learnableItemCount(bookId: 99))
     }
 
+    func testOutOfRangeTotalLinesGivesNoCountInsteadOfTrapping() {
+        let db = makeDb()
+        db.exec("INSERT INTO book VALUES (4,4,'פגום',9223372036854775807),(5,2,'גדול',4611686018427387904),(6,4,'שלילי',-9223372036854775808)")
+        let c = LibraryCatalog(databasePath: db.path)
+        XCTAssertNil(c.learnableItemCount(bookId: 4))
+        XCTAssertNil(c.learnableItemCount(bookId: 5))
+        XCTAssertEqual(c.learnableItemCount(bookId: 6), 2)
+        db.exec("INSERT INTO book VALUES (7,4,'גבול',2147483647)")
+        XCTAssertEqual(c.learnableItemCount(bookId: 7), 2 * 2_147_483_647)
+    }
+
     func testCycleInTocDoesNotHang() {
         let db = makeDb()
         db.exec("INSERT INTO tocEntry VALUES (20,3,NULL),(21,3,20),(22,3,21),(23,3,22)")

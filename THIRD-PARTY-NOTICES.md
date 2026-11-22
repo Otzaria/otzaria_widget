@@ -39,7 +39,7 @@ and ship it next to the application / inside the MSIX).
 * License: **GNU Lesser General Public License, version 2.1 (LGPL-2.1)**
   * Text: the `LICENSE` file in the project repository / <https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html>
 * How it is used (LGPL compliance):
-  * Referenced as an **unmodified Swift Package Manager dependency** (`.upToNextMinor(from: "3.1.1")`); no file of the
+  * Referenced as an **unmodified Swift Package Manager dependency** (`exact: "3.1.2"`); no file of the
     library is copied into this repository or changed.
   * In the macOS and iOS apps it ships as its **own dynamic framework** (`KosherSwift_…_PackageProduct.framework`,
     built by Xcode from the unmodified package), embedded once in the app bundle and loaded by the widget extension from

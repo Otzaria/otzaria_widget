@@ -44,7 +44,7 @@ private struct StatusPage: View {
         Form {
             if !model.location.isShared {
                 Section {
-                    Label("הרשאת App Group חסרה (בנייה לא חתומה): הווידג'טים לא יראו את הנתונים", systemImage: "exclamationmark.triangle")
+                    Label("הבנייה אינה חתומה בידי צוות מפתחים של Apple (חתימה אד-הוק או ללא חתימה): ייתכן שהווידג'טים לא יראו את נתוני אוצריא", systemImage: "exclamationmark.triangle")
                         .foregroundStyle(.orange)
                 }
             }
@@ -147,10 +147,7 @@ private struct LocationPage: View {
     private func field(_ title: String, _ key: WritableKeyPath<WidgetSettings, String?>, effective: String?, directory: Bool, app: Bool = false) -> some View {
         Section(title) {
             HStack {
-                TextField(title, text: Binding(
-                    get: { model.settings[keyPath: key] ?? "" },
-                    set: { value in model.update { $0[keyPath: key] = value.isEmpty ? nil : value } }), prompt: Text("זיהוי אוטומטי"))
-                    .labelsHidden().environment(\.layoutDirection, .leftToRight)
+                PathField(title: title, key: key, model: model)
                 Button("עיון…") {
                     if let path = Self.choose(directory: directory, app: app) { model.update { $0[keyPath: key] = path } }
                 }
@@ -160,6 +157,35 @@ private struct LocationPage: View {
                 Text("בשימוש: \(effective)").font(.footnote).foregroundStyle(.secondary)
                     .textSelection(.enabled).environment(\.layoutDirection, .leftToRight)
             }
+        }
+    }
+
+    /// Edits a path locally and saves it on Return or focus loss, not on every keystroke (each save reloads the widgets
+    /// and re-reads Otzaria's files).
+    private struct PathField: View {
+        let title: String
+        let key: WritableKeyPath<WidgetSettings, String?>
+        @ObservedObject var model: SettingsModel
+        @State private var text = ""
+        @FocusState private var focused: Bool
+
+        var body: some View {
+            TextField(title, text: $text, prompt: Text("זיהוי אוטומטי"))
+                .labelsHidden().environment(\.layoutDirection, .leftToRight)
+                .focused($focused)
+                .onAppear { text = saved }
+                .onSubmit(commit)
+                .onChange(of: focused) { _, isFocused in if !isFocused { commit() } }
+                .onChange(of: saved) { _, value in text = value } // "עיון…" / "זיהוי אוטומטי" win over a pending edit
+                .onDisappear(perform: commit)
+        }
+
+        private var saved: String { model.settings[keyPath: key] ?? "" }
+
+        private func commit() {
+            let value = text.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard value != saved else { return }
+            model.update { $0[keyPath: key] = value.isEmpty ? nil : value }
         }
     }
 

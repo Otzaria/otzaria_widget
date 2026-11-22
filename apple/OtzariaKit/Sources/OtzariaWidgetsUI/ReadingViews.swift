@@ -102,7 +102,7 @@ struct ShamorZachorView: View {
         let model = ShamorZachorModel.make(entry.context(size: size), entry.options)
         let tint = Accent.color(entry.snapshot, scheme: scheme)
         let url = size == .small ? model.rows.first?.url ?? model.url : model.url
-        WidgetBody(title: "שמור וזכור", headerEnd: size == .large ? model.headerEnd : model.subtitle, size: size,
+        WidgetBody(title: "שמור וזכור", headerEnd: model.headerEnd, size: size,
                    state: model.state, url: url, tint: tint) {
             switch size {
             case .small:

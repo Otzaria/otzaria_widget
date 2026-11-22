@@ -71,7 +71,8 @@ public struct CityZone: Sendable {
         return (CivilDate(epochDay: Int(day)), Int(localSeconds - day * 86400), off)
     }
 
-    /// Epoch milliseconds of local midnight starting `date` (the first instant of that civil day).
+    /// Epoch milliseconds of the first instant of the civil day `date`: local midnight, or the end of a DST gap
+    /// that skips it (America/Santiago 2026-09-06 starts at 01:00, like C#'s NextLocalMidnight).
     func startOfDayMs(_ date: CivilDate) -> Int64 {
         let naive = Int64(date.epochDay) * 86_400_000
         // two-pass: guess with the offset at naive-UTC, then correct
@@ -79,6 +80,14 @@ public struct CityZone: Sendable {
         var ms = naive - Int64(off) * 1000
         let off2 = offsetSeconds(atMs: ms)
         if off2 != off { off = off2; ms = naive - Int64(off) * 1000 }
-        return ms
+        let l = local(atMs: ms)
+        if l.date == date && l.secondOfDay == 0 { return ms }
+        // No local midnight: the first second whose local date is `date` (lo is always before it, hi on or after it).
+        var lo = naive / 1000 - 86_400, hi = naive / 1000 + 86_400
+        while hi - lo > 1 {
+            let mid = lo + (hi - lo) / 2
+            if local(atMs: mid * 1000).date < date { lo = mid } else { hi = mid }
+        }
+        return hi * 1000
     }
 }

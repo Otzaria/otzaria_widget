@@ -35,6 +35,8 @@ final class SnapshotAgent: ObservableObject {
         timer = Timer.scheduledTimer(withTimeInterval: Self.pollInterval, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.refresh(force: false) }
         }
+        // Polling needs no precision: let the system coalesce the wake-ups.
+        timer?.tolerance = Self.pollInterval / 5
         NotificationCenter.default.addObserver(forName: NSApplication.didBecomeActiveNotification, object: nil, queue: .main) { [weak self] _ in
             Task { @MainActor in self?.refresh(force: false) }
         }

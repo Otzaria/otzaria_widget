@@ -59,7 +59,8 @@ extension CalendarService {
         var found = Set<Ms>()
         var day = civilToday.addingDays(-1) // yesterday's late zmanim (chatzos layla, after-midnight events) may still be ahead
         var scanned = 0
-        // each civil day yields several moments; stop once enough lie ahead and the scanned day is past the Nth moment
+        // each civil day yields moments from its own start on (a far-ahead kidush levana is found early, so it must not
+        // end the scan): stop once the Nth earliest moment lies before the next day to scan
         while scanned < 400 {
             var candidates: [Ms] = []
             candidates.append(z.startOfDayMs(day.addingDays(1)))
@@ -69,7 +70,7 @@ extension CalendarService {
             for t in zmanim(for: day, city: city, ids: ids) { if let i = t.time { candidates.append(ZmanTimeFormatter.ms(i)) } }
             for c in candidates where c > nowMs { found.insert(c) }
             scanned += 1
-            if scanned >= 2, found.count >= count, z.startOfDayMs(day) > nowMs { break }
+            if scanned >= 2, found.count >= count, found.sorted()[count - 1] <= z.startOfDayMs(day.addingDays(1)) { break }
             day = day.addingDays(1)
         }
         return found.sorted().prefix(count).map(Self.date)

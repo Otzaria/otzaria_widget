@@ -122,6 +122,10 @@ final class DataModelTests: XCTestCase {
         let m = ShamorZachorModel.make(T.ctx(.large), ShamorZachorOptions())
         XCTAssertEqual(m.rows[0].meta, "52%")
         XCTAssertEqual(m.headerEnd, "4 בתהליך")
+        // Windows shows the count in the medium header too (and nothing when there is no list).
+        XCTAssertEqual(ShamorZachorModel.make(T.ctx(.medium), ShamorZachorOptions()).headerEnd, "4 בתהליך")
+        XCTAssertEqual(ShamorZachorModel.make(T.ctx(.medium), ShamorZachorOptions(filter: .completed)).headerEnd, "1 הושלמו")
+        XCTAssertEqual(ShamorZachorModel.make(T.ctx(.medium, snapshot: nil), ShamorZachorOptions()).headerEnd, "")
         XCTAssertEqual(ShamorZachorModel.make(T.ctx(.medium), ShamorZachorOptions()).rows[0].sub, "")
         let done = ShamorZachorModel.make(T.ctx(.large), ShamorZachorOptions(filter: .completed)).rows[0]
         XCTAssertEqual(done.meta, "הושלם ✓")

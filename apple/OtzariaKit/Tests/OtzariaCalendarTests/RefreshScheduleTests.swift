@@ -62,6 +62,15 @@ final class RefreshScheduleTests: XCTestCase {
         XCTAssertEqual(m, [layla])
     }
 
+    func testFarAheadKidushLevanaDoesNotHideTheMidnightsBeforeIt() {
+        let now = at(2026, 11, 13, 12, 0, offset: 2)
+        let sof = svc.zman("2026-11-13", jerusalem, "sofKidushLevana15")
+        XCTAssertGreaterThan(sof, at(2026, 11, 17, 0, 0, offset: 2))
+        let m = svc.refreshMoments(after: now, count: 4, city: jerusalem, ids: ["sofKidushLevana15"], dayTransition: "midnight")
+        XCTAssertEqual(m, [at(2026, 11, 14, 0, 0, offset: 2), at(2026, 11, 15, 0, 0, offset: 2),
+                           at(2026, 11, 16, 0, 0, offset: 2), at(2026, 11, 17, 0, 0, offset: 2)])
+    }
+
     func testZmanimDayPicksTodayAndMarksTheNextZman() {
         let now = at(2026, 11, 13, 12, 0, offset: 2)
         let day = svc.zmanimDay(now: now, city: jerusalem, ids: core, dayTransition: "sunset")

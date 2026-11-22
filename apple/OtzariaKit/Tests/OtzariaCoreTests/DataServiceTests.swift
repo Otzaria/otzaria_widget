@@ -128,6 +128,22 @@ final class DataServiceTests: XCTestCase {
         XCTAssertNil(svc.refreshIfChanged())
     }
 
+    func testRefreshIfChangedNoticesDataCreatedAfterStart() throws {
+        let install = Install()
+        let hidden = install.root + ".later"
+        try FileManager.default.moveItem(atPath: install.root, toPath: hidden)
+        let svc = service(install)
+        XCTAssertEqual(svc.snapshot().status.first { $0.name == SourceNames.userState }?.health, .notFound)
+        XCTAssertNil(svc.refreshIfChanged(), "still missing")
+        // Otzaria runs for the first time: its data folder appears.
+        try FileManager.default.moveItem(atPath: hidden, toPath: install.root)
+        let fresh = try XCTUnwrap(svc.refreshIfChanged())
+        XCTAssertEqual(fresh.status.first { $0.name == SourceNames.userState }?.health, .ok)
+        XCTAssertEqual(fresh.preferences.selectedCity, "חיפה")
+        XCTAssertEqual(fresh.status.first { $0.name == SourceNames.library }?.health, .ok)
+        XCTAssertNil(svc.refreshIfChanged())
+    }
+
     func testStaleCacheIsRebuilt() {
         let install = Install()
         let box = ClockBox()

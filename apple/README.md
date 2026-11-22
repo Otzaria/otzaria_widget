@@ -65,6 +65,7 @@ xcodebuild -project apple/App/OtzariaWidget.xcodeproj -scheme OtzariaWidgetiOS \
 
 - זמני היום והלוח העברי עובדים מיד, לפי ההגדרות שנשמרות באפליקציה.
 - ווידג'טים שמציגים נתוני אוצריא יציגו הסבר, עד שאוצריא עצמה תכתוב את `widget-snapshot.json` ל-App Group `group.org.otzaria.widget` (שינוי עתידי בצד אוצריא). פורמט הקובץ מוגדר ב-`OtzariaKit/Sources/OtzariaCore/Widget/WidgetSnapshot.swift`.
+- כדי שאוצריא תוכל לכתוב ל-`group.org.otzaria.widget`, אוצריא ואפליקציית הווידג'טים צריכות להיות חתומות בידי אותו צוות מפתחים של Apple (אותו Team): App Group משותף רק לאפליקציות של אותו צוות.
 
 ## רישיון ו-LGPL
 

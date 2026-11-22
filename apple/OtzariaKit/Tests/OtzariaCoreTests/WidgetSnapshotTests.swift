@@ -151,6 +151,15 @@ final class WidgetSnapshotTests: XCTestCase {
         XCTAssertEqual(WidgetSnapshotStore.macOSAppGroupID(teamID: "ABCDE12345"), "ABCDE12345.org.otzaria.widget")
         // Without the entitlement there is no container (never crashes).
         _ = WidgetSnapshotStore.appGroupDirectory(groupID: "group.invalid.test")
+        // An ad-hoc / unsigned build has no team: its group is not shared even when macOS hands out a container.
+        XCTAssertTrue(WidgetSnapshotStore.isTeamSignedGroup("ABCDE12345.org.otzaria.widget", signingTeamID: "ABCDE12345"))
+        XCTAssertFalse(WidgetSnapshotStore.isTeamSignedGroup("org.otzaria.widget", signingTeamID: nil))
+        XCTAssertFalse(WidgetSnapshotStore.isTeamSignedGroup("ABCDE12345.org.otzaria.widget", signingTeamID: nil))
+        XCTAssertFalse(WidgetSnapshotStore.isTeamSignedGroup("ZZZZZ99999.org.otzaria.widget", signingTeamID: "ABCDE12345"))
+        XCTAssertFalse(WidgetSnapshotStore.isTeamSignedGroup("org.otzaria.widget", signingTeamID: ""))
+        #if os(macOS)
+        _ = WidgetSnapshotStore.currentSigningTeamID() // never crashes, whatever signed the test runner
+        #endif
     }
 
     func testSettingsStoreRoundTripAndDefaults() throws {
@@ -173,6 +182,28 @@ final class WidgetSnapshotTests: XCTestCase {
         XCTAssertEqual(lenient.theme, .followSystem)
         XCTAssertTrue(lenient.hideSearches)
         dir.write("widget-settings.json", "garbage")
+        XCTAssertEqual(store.load(), WidgetSettings())
+    }
+
+    func testSettingsStoreRecoversEachKeyOnItsOwn() {
+        let dir = TempDir()
+        let store = WidgetSettingsStore(directory: dir.url)
+        // Wrongly-typed values (and a JSON null for a non-optional key) must not reset the valid ones.
+        dir.write("widget-settings.json", """
+            {"schemaVersion":"1","dataRootOverride":5,"showYerushalmiDaf":"true","zmanimOverride":"x",
+             "twelveHourClockOverride":null,"theme":null,"hideSearches":true,"cityOverride":"חיפה","linkMode":"providerLaunch"}
+            """)
+        let s = store.load()
+        XCTAssertTrue(s.hideSearches)
+        XCTAssertEqual(s.cityOverride, "חיפה")
+        XCTAssertEqual(s.linkMode, .providerLaunch)
+        XCTAssertEqual(s.schemaVersion, 1)
+        XCTAssertNil(s.dataRootOverride)
+        XCTAssertNil(s.zmanimOverride)
+        XCTAssertNil(s.twelveHourClockOverride)
+        XCTAssertFalse(s.showYerushalmiDaf)
+        XCTAssertEqual(s.theme, .followSystem)
+        dir.write("widget-settings.json", "[true]")
         XCTAssertEqual(store.load(), WidgetSettings())
     }
 
