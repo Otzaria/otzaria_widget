@@ -13,10 +13,10 @@
 
 ## התקנה מגרסה (macOS, תצוגה מקדימה)
 
-כל גרסה ב-[Releases](https://github.com/Otzaria/otzaria_widget/releases) כוללת גם `OtzariaWidget-<גרסה>-macOS.zip` (macOS 14 ומעלה).
+כל גרסה ב-[Releases](https://github.com/Otzaria/otzaria_widget/releases) כוללת גם `OtzariaWidget-<גרסה>-macOS.dmg` (macOS 14 ומעלה).
 האפליקציה חתומה בחתימת ad-hoc בלבד ואינה עוברת notarization, כי אין עדיין Developer ID:
 
-1. פותחים את ה-zip ומעבירים את `OtzariaWidget.app` לתיקיית היישומים.
+1. פותחים את ה-DMG וגוררים את `OtzariaWidget.app` אל הקיצור **Applications** שבחלון.
 2. פותחים בלחיצה ימנית ← **פתח** (או **הגדרות המערכת** ← **פרטיות ואבטחה** ← **פתח בכל זאת**).
 3. מוסיפים ווידג'טים מגלריית הווידג'טים של macOS.
 

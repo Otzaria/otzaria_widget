@@ -164,7 +164,7 @@ jobs:
           files: artifacts/OtzariaWidget-${{ steps.version.outputs.version }}-x64-setup.exe
           generate_release_notes: true
 
-  # אפליקציית macOS עם הווידג'טים, מצורפת לאותה גרסה. חתימה ad-hoc (אין עדיין Developer ID), לכן זו גרסת תצוגה מקדימה.
+  # אפליקציית macOS עם הווידג'טים (DMG), מצורפת לאותה גרסה. חתימה ad-hoc (אין עדיין Developer ID), לכן זו גרסת תצוגה מקדימה.
   # כשל כאן אינו פוגע בגרסת Windows, שכבר פורסמה. iOS אינו מופץ: אין הפצה בלי חשבון מפתח של Apple.
   macos:
     needs: build
@@ -186,26 +186,28 @@ jobs:
             CODE_SIGN_IDENTITY=- CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM= CODE_SIGN_INJECT_BASE_ENTITLEMENTS=NO \
             MARKETING_VERSION="$VERSION" CURRENT_PROJECT_VERSION="$VERSION" build
 
-      - name: Package zip
+      - name: Package DMG
         run: |
           stage=artifacts/OtzariaWidget
           mkdir -p "$stage"
           ditto build/dd/Build/Products/Release/OtzariaWidget.app "$stage/OtzariaWidget.app"
           cp THIRD-PARTY-NOTICES.md "$stage/"
+          ln -s /Applications "$stage/Applications"
           codesign --verify --deep --strict "$stage/OtzariaWidget.app"
-          ditto -c -k --keepParent "$stage" "artifacts/OtzariaWidget-$VERSION-macOS.zip"
+          hdiutil create -volname "Otzaria Widget" -srcfolder "$stage" -fs HFS+ -format UDZO -ov \
+            "artifacts/OtzariaWidget-$VERSION-macOS.dmg"
 
       - name: Attach to the GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           tag="v$VERSION"
-          gh release upload "$tag" "artifacts/OtzariaWidget-$VERSION-macOS.zip" --clobber
+          gh release upload "$tag" "artifacts/OtzariaWidget-$VERSION-macOS.dmg" --clobber
           gh release view "$tag" --json body -q .body > notes.md
           cat >> notes.md <<NOTES
 
-          **macOS (preview):** \`OtzariaWidget-$VERSION-macOS.zip\` — macOS 14 or later. Ad-hoc signed and not notarized (no Apple Developer ID yet):
-          unzip, move \`OtzariaWidget.app\` to Applications, then open it with right-click → Open (or System Settings → Privacy & Security → Open Anyway).
+          **macOS (preview):** \`OtzariaWidget-$VERSION-macOS.dmg\` — macOS 14 or later. Ad-hoc signed and not notarized (no Apple Developer ID yet):
+          open the DMG, drag \`OtzariaWidget.app\` onto Applications, then open it with right-click → Open (or System Settings → Privacy & Security → Open Anyway).
           The zmanim and Hebrew calendar widgets work on their own; the widgets that show Otzaria data may stay empty until the app is signed with a Developer ID. See \`apple/README.md\`.
           NOTES
           gh release edit "$tag" --notes-file notes.md
