@@ -223,6 +223,19 @@ final class UserStateTests: XCTestCase {
         XCTAssertEqual(try reader.readRecentBooks(path: f.path, max: 5).count, 2)
     }
 
+    func testReadsWalDatabaseAfterWriterClosed() throws {
+        let f = F(wal: true)
+        f.setList("history", "history", [F.entry(F.book(1, "א"), index: 1)])
+        // Otzaria's SQLite removes -wal and -shm on a clean close (Apple's keeps them, so drop them by hand);
+        // the system SQLite then refuses mode=ro on the original.
+        f.sqlite.close()
+        for ext in ["-wal", "-shm"] { try? FileManager.default.removeItem(atPath: f.path + ext) }
+        let before = try Data(contentsOf: URL(fileURLWithPath: f.path))
+        XCTAssertEqual(try reader.readRecentBooks(path: f.path, max: 5).count, 1)
+        XCTAssertEqual(reader.probe(path: f.path).health, .ok)
+        XCTAssertEqual(try Data(contentsOf: URL(fileURLWithPath: f.path)), before)
+    }
+
     func testReaderNeverWrites() throws {
         let f = F()
         f.setList("history", "history", [F.entry(F.book(1, "א"), index: 1)])

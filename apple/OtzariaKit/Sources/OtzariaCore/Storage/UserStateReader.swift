@@ -421,7 +421,7 @@ public struct UserStateReader: Sendable {
         do {
             return try Self.withRetry { try Self.runOn(path, work) }
         } catch let e as SQLiteError where (e.primaryCode == 14 || e.primaryCode == 8) && FileManager.default.fileExists(atPath: path) {
-            // Directory not writable / -shm cannot be created: read a private copy (db + wal) instead.
+            // -shm missing and cannot be created (Otzaria closed cleanly, or the folder is read-only): read a private copy.
             return try Self.runOnCopy(path, work)
         }
     }
@@ -439,7 +439,7 @@ public struct UserStateReader: Sendable {
         defer { try? FileManager.default.removeItem(at: dir) }
         let target = dir.appendingPathComponent("user_state.db").path
         try copyConsistent(path, to: target)
-        return try withRetry { try runOn(target, work) }
+        return try withRetry { try work(try SQLiteReadConnection(path: target, busyTimeoutMs: 1500, privateCopy: true)) }
     }
 
     /// Copies the db and its -wal (not the -shm: SQLite rebuilds it from the -wal), retrying while Otzaria writes.

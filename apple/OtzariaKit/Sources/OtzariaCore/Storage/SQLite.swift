@@ -9,15 +9,18 @@ struct SQLiteError: Error {
     var primaryCode: Int32 { code & 0xFF }
 }
 
-/// Minimal read-only SQLite connection over the system `SQLite3` module. Never opens with write access and never
-/// uses `immutable`, so WAL databases that Otzaria holds open are read correctly.
+/// Minimal read-only SQLite connection over the system `SQLite3` module. Never opens Otzaria's files with write
+/// access and never uses `immutable`, so WAL databases that Otzaria holds open are read correctly.
 final class SQLiteReadConnection {
     private var db: OpaquePointer?
 
-    /// Opens `path` with `file:...?mode=ro` (SQLITE_OPEN_READONLY | SQLITE_OPEN_URI).
-    init(path: String, busyTimeoutMs: Int32) throws {
-        let uri = Self.readOnlyURI(path)
-        let rc = sqlite3_open_v2(uri, &db, SQLITE_OPEN_READONLY | SQLITE_OPEN_URI, nil)
+    /// Opens `path` with `file:...?mode=ro` (SQLITE_OPEN_READONLY | SQLITE_OPEN_URI). `privateCopy` is only for our own
+    /// temp copy: the system SQLite can't open a WAL file read-only without its -shm, so it opens read-write, query_only.
+    init(path: String, busyTimeoutMs: Int32, privateCopy: Bool = false) throws {
+        let uri = privateCopy ? Self.fileURI(path) : Self.readOnlyURI(path)
+        let flags = (privateCopy ? SQLITE_OPEN_READWRITE : SQLITE_OPEN_READONLY) | SQLITE_OPEN_URI
+        var rc = sqlite3_open_v2(uri, &db, flags, nil)
+        if rc == SQLITE_OK && privateCopy { rc = sqlite3_exec(db, "PRAGMA query_only = 1", nil, nil, nil) }
         if rc != SQLITE_OK {
             let message = db.map { String(cString: sqlite3_errmsg($0)) } ?? "open failed"
             sqlite3_close(db)
@@ -29,11 +32,12 @@ final class SQLiteReadConnection {
 
     deinit { sqlite3_close(db) }
 
-    static func readOnlyURI(_ path: String) -> String {
+    static func readOnlyURI(_ path: String) -> String { fileURI(path) + "?mode=ro" }
+
+    private static func fileURI(_ path: String) -> String {
         var allowed = CharacterSet.urlPathAllowed
         allowed.remove(charactersIn: "?#%")
-        let escaped = path.addingPercentEncoding(withAllowedCharacters: allowed) ?? path
-        return "file:" + escaped + "?mode=ro"
+        return "file:" + (path.addingPercentEncoding(withAllowedCharacters: allowed) ?? path)
     }
 
     enum Value {
